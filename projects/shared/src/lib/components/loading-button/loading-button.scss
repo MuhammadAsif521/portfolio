@@ -1,0 +1,248 @@
+// Base button styles
+.btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-body, 'Manrope', sans-serif);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--transition-normal, 0.3s ease);
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px rgb(var(--primary-color) / 0.4);
+  }
+
+  &:disabled,
+  &.btn-loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// Icon layout
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &.icon-right {
+    order: 2;
+  }
+
+  &.icon-left {
+    order: 0;
+  }
+}
+
+.btn-label {
+  order: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+// Variant: Flat (solid background)
+.btn-flat {
+  border: none;
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:active:not(:disabled):not(.btn-loading) {
+    transform: translateY(0);
+  }
+}
+
+// Variant: Stroked (outlined)
+.btn-stroked {
+  background-color: transparent;
+  border: 1px solid;
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    background-color: rgb(var(--primary-color) / 0.04);
+  }
+
+  &:active:not(:disabled):not(.btn-loading) {
+    transform: scale(0.98);
+  }
+}
+
+// Size variants
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-medium {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
+// Loading spinner
+.btn-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: btn-spin 0.6s linear infinite;
+  order: 0;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ── Color variants for flat buttons ──
+.btn-flat.btn-color-primary {
+  background-color: rgb(var(--primary-color));
+  color: rgb(var(--text-on-primary));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    background-color: rgb(var(--primary-color-dark));
+  }
+}
+
+.btn-flat.btn-color-secondary {
+  background-color: rgb(var(--secondary-color));
+  color: rgb(var(--text-on-primary));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    background-color: rgb(var(--secondary-color-dark));
+  }
+}
+
+.btn-flat.btn-color-accent {
+  background-color: rgb(var(--accent-color));
+  color: rgb(var(--neutral-color)); // accent is gold, use dark text
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    background-color: rgb(var(--accent-color-dark));
+  }
+}
+
+.btn-flat.btn-color-warn {
+  background-color: rgb(var(--warning-color));
+  color: rgb(var(--neutral-color));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    filter: brightness(0.92);
+  }
+}
+
+.btn-flat.btn-color-success {
+  background-color: rgb(var(--success-color));
+  color: rgb(var(--text-on-primary));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    filter: brightness(0.92);
+  }
+}
+
+.btn-flat.btn-color-error {
+  background-color: rgb(var(--error-color));
+  color: rgb(var(--text-on-primary));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    filter: brightness(0.92);
+  }
+}
+
+// ── Color variants for stroked buttons ──
+.btn-stroked.btn-color-primary {
+  color: rgb(var(--primary-color));
+  border-color: rgb(var(--primary-color));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    background-color: rgb(var(--primary-color) / 0.08);
+  }
+}
+
+.btn-stroked.btn-color-secondary {
+  color: rgb(var(--secondary-color));
+  border-color: rgb(var(--secondary-color));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    background-color: rgb(var(--secondary-color) / 0.08);
+  }
+}
+
+.btn-stroked.btn-color-accent {
+  color: rgb(var(--accent-color));
+  border-color: rgb(var(--accent-color));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    background-color: rgb(var(--accent-color) / 0.08);
+  }
+}
+
+.btn-stroked.btn-color-warn {
+  color: rgb(var(--warning-color));
+  border-color: rgb(var(--warning-color));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    background-color: rgb(var(--warning-color) / 0.08);
+  }
+}
+
+.btn-stroked.btn-color-success {
+  color: rgb(var(--success-color));
+  border-color: rgb(var(--success-color));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    background-color: rgb(var(--success-color) / 0.08);
+  }
+}
+
+.btn-stroked.btn-color-error {
+  color: rgb(var(--error-color));
+  border-color: rgb(var(--error-color));
+
+  &:hover:not(:disabled):not(.btn-loading) {
+    background-color: rgb(var(--error-color) / 0.08);
+  }
+}
+
+// Full width helper (optional via customClass)
+.btn-full-width {
+  width: 100%;
+}
+
+// Border radius variants
+.btn-radius-none {
+  border-radius: 0;
+}
+
+.btn-radius-small {
+  border-radius: 8px;
+}
+
+.btn-radius-medium {
+  border-radius: 1.75rem;
+}
+
+.btn-radius-large {
+  border-radius: 9999px;
+}
+
+// Disabled state for anchor-based buttons (no native disabled attr on <a>)
+.disabled-link {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
+}

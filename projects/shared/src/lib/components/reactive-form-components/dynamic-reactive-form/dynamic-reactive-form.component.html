@@ -1,0 +1,269 @@
+@if (!config.hidden && isVisible()) {
+@if (config.type !== 'group' && config.type !== 'array') {
+@switch (config.type) {
+@case ('text') {
+<app-custom-reactive-textfield [controlName]="config.name" [control]="control" [placeholder]="config.placeholder || ''"
+  [label$]="label$" [type]="'text'" [pattern]="config.pattern" />
+}
+
+@case ('email') {
+<app-custom-reactive-textfield [controlName]="config.name" [control]="control" [placeholder]="config.placeholder || ''"
+  [label$]="label$" [type]="'email'" [pattern]="config.pattern" />
+}
+
+@case ('otp') {
+<app-custom-input-otp [controlName]="config.name" [control]="control" [label$]="label$" [type]="'otp'" />
+}
+
+@case ('number') {
+<app-custom-reactive-textfield [controlName]="config.name" [control]="control" [placeholder]="config.placeholder || ''"
+  [label$]="label$" [type]="'number'" [min]="config.min" [max]="config.max" />
+}
+
+@case ('password') {
+<app-custom-reactive-passwordfield [controlName]="config.name" [control]="control"
+  [placeholder]="config.placeholder || ''" [label$]="label$" [showHints]="config.showHints" />
+}
+
+@case ('textarea') {
+<app-custom-reactive-textarea [controlName]="config.name" [control]="control" [placeholder]="config.placeholder || ''"
+  [label$]="label$" [rows]="config.rows" />
+}
+
+@case ('richtext') {
+<app-custom-text-editor [controlName]="config.name" [control]="control" [placeholder]="config.placeholder || ''"
+  [label$]="label$" />
+}
+
+@case ('dropdown') {
+<app-custom-reactive-dropdown [controlName]="config.name" [control]="control" [showSearch]="config.searchable"
+  [placeholder]="config.placeholder || 'Select'" [label$]="label$" [options]="config.options || []"
+  [multiple]="!!config.multiple" />
+}
+
+@case ('multiselect') {
+<app-custom-reactive-dropdown [controlName]="config.name" [control]="control"
+  [placeholder]="config.placeholder || 'Select'" [label$]="label$" [options]="config.options || []" [multiple]="true"
+  [showSearch]="config.searchable" />
+}
+
+@case ('autocomplete') {
+<app-custom-reactive-autocomplete [controlName]="config.name" [control]="control"
+  [placeholder]="config.placeholder || 'Search...'" [label$]="label$" [options]="config.options || []"
+  [multiple]="!!config.multiple" />
+}
+
+@case ('file') {
+<app-custom-file-input [controlName]="config.name" [label$]="label$" [accept]="config.accept || '*/*'"
+  [multiple]="!!config.multiple" [patchedImages]="control?.value" [cropConfig]="config.cropConfig || null"
+  (file)="onFileSelected($event)" />
+}
+
+@case ('date') {
+<app-custom-date-component [controlName]="config.name" [control]="control" [label$]="label$" [dateType]="config.type" />
+}
+
+@case ('month') {
+<app-custom-date-component [controlName]="config.name" [control]="control" [label$]="label$" [dateType]="config.type" />
+}
+
+@case ('year') {
+<app-custom-date-component [controlName]="config.name" [control]="control" [label$]="label$" [dateType]="config.type" />
+}
+
+@case ('time') {
+<app-custom-reactive-timefield [controlName]="config.name" [control]="control" [label$]="label$"
+  [format]="config.format || 24" />
+}
+
+@case ('toggle') {
+<app-custom-reactive-toggle-button [controlName]="config.name" [control]="control" [label$]="label$" />
+}
+
+@case ('checkbox') {
+<app-custom-reactive-checkbox [controlName]="config.name" [control]="control" [label$]="label$"
+  [options]="config.options || []" />
+}
+
+@case ('single-checkbox') {
+<app-custom-reactive-single-checkbox [controlName]="config.name" [control]="control" [label$]="label$" />
+}
+
+@case ('radio') {
+<app-custom-reactive-radio [controlName]="config.name" [control]="control" [label$]="label$"
+  [options]="config.options || []" />
+}
+
+@case ('color') {
+<app-custom-reactive-colorfield [controlName]="config.name" [control]="control" [placeholder]="config.placeholder || ''"
+  [label$]="label$" />
+}
+
+@case ('tel') {
+<app-phone-input [label$]="label$" [required]="!!config.required"
+  [initialCountryInput]="(config.defaultCountryCode || 'US').toLowerCase()" [formControl]="control" />
+}
+
+@case ('phone') {
+<app-phone-input [label$]="label$" [required]="!!config.required"
+  [initialCountryInput]="(config.defaultCountryCode || 'US').toLowerCase()" [formControl]="control" />
+}
+
+@case ('url') {
+<app-custom-reactive-textfield [controlName]="config.name" [control]="control"
+  [placeholder]="config.placeholder || 'https://'" [label$]="label$" [type]="'url'"
+  [pattern]="config.pattern || 'https?://.+'" />
+}
+
+@case ('integer') {
+<app-custom-reactive-textfield [controlName]="config.name" [control]="control" [placeholder]="config.placeholder || ''"
+  [label$]="label$" [type]="'number'" [min]="config.min" [max]="config.max" [pattern]="config.pattern || '^[0-9]+$'" />
+}
+
+@case ('decimal') {
+<app-custom-reactive-textfield [controlName]="config.name" [control]="control" [placeholder]="config.placeholder || ''"
+  [label$]="label$" [type]="'number'" [min]="config.min" [max]="config.max"
+  [pattern]="config.pattern || '^[0-9]+(\\.[0-9]+)?$'" />
+}
+
+@case ('datetime') {
+<app-custom-reactive-textfield [controlName]="config.name" [control]="control" [placeholder]="config.placeholder || ''"
+  [label$]="label$" [type]="'datetime-local'" />
+}
+
+@case ('cascading') {
+<app-custom-reactive-dropdown [controlName]="config.name" [control]="control"
+  [placeholder]="config.placeholder || 'Select'" [label$]="label$" [options]="config.options || []"
+  [multiple]="false" />
+}
+
+@case ('heading') {
+<div class="col-span-12 mb-2">
+  <h3 class="text-lg font-bold uppercase tracking-wider"
+    style="color: var(--form-label); font-family: var(--font-body)">
+    {{ config.label }}
+  </h3>
+  <div class="mt-1 h-px" style="background: var(--form-control-border)"></div>
+</div>
+}
+
+@case ('paragraph') {
+<div class="col-span-12">
+  <p class="text-sm leading-relaxed" style="color: var(--form-label-muted); font-family: var(--font-body)">
+    {{ config.label }}
+  </p>
+</div>
+}
+
+@case ('location') {
+<app-custom-location-input [control]="control" [placeholder]="config.placeholder || 'Address'" [label$]="label$"
+  [controlName]="config.name" (places)="onPlaceSelected($event)" />
+}
+
+@default {
+<div class="rounded-xl border px-4 py-3 text-xs"
+  style="border-color: var(--error-color); background: transparent; color: var(--error-color); font-family: var(--font-body)">
+  Unknown field type: <strong>{{ config.type }}</strong>
+</div>
+}
+}
+}
+
+@if (config.type === 'group') {
+<div class="rounded-2xl border p-5"
+  style="border-color: var(--form-control-border); background: transparent; font-family: var(--font-body)">
+  <div class="mb-4 flex items-center gap-3">
+    <div class="h-4 w-1 rounded-full" style="background: var(--primary)"></div>
+
+    <h4 class="text-sm font-semibold uppercase tracking-widest" style="color: var(--form-label)">
+      {{ config.label }}
+      @if (config.required) {
+      <span class="form-label-required">*</span>
+      }
+    </h4>
+  </div>
+
+  <div class="grid grid-cols-12 items-center gap-4">
+    @for (field of config.fields; track $index) {
+    <div [class]="field.colClass || 'col-span-12'">
+      <app-dynamic-reactive-form [config]="field" [formGroup]="getNestedFormGroup()" [level]="level + 1"
+        (placeSelected)="placeSelected.emit($event)" />
+    </div>
+    }
+  </div>
+</div>
+}
+
+@if (config.type === 'array') {
+<div class="mb-6">
+  <div class="mb-3 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <h4 class="text-sm font-semibold uppercase tracking-widest"
+        style="color: var(--form-label); font-family: var(--font-body)">
+        {{ config.label }}
+        @if (config.required) {
+        <span class="form-label-required">*</span>
+        }
+      </h4>
+
+      <span class="rounded-full px-2 py-0.5 text-xs font-bold"
+        style="background: transparent; color: var(--form-label-muted)">
+        {{ getFormArray().length }}
+      </span>
+    </div>
+
+    @if (config.arrayConfig && !isMaxItemsReached() && !config.disabled) {
+    <button type="button" (click)="addArrayItem()"
+      class="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-opacity"
+      style="background: var(--primary); color: var(--black); font-family: var(--font-body)" aria-label="Add item">
+      <i-lucide name="plus" [size]="20" />
+      Add
+    </button>
+    }
+  </div>
+
+  <div class="space-y-3">
+    @for (item of getFormArray().controls; track $index; let i = $index) {
+    <div class="relative rounded-2xl border p-5"
+      style="border-color: var(--form-control-border); background: transparent; font-family: var(--font-body)">
+      <div class="mb-4 flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-widest" style="color: var(--form-label-muted)">
+          {{ config.label }} {{ i + 1 }}
+        </span>
+
+        @if (getFormArray().length > (config.arrayConfig?.minItems || 0) && !config.disabled) {
+        <button type="button" (click)="removeArrayItem(i)"
+          class="inline-flex items-center gap-1.5 rounded-[12px] border px-2.5 py-1.5 text-xs font-medium transition-opacity"
+          style="background: var(--field-bg); border-color: var(--error-color); color: var(--error-color)"
+          aria-label="Remove item">
+          <i-lucide name="trash" [size]="20" />
+          Remove
+        </button>
+        }
+      </div>
+
+      <div class="grid grid-cols-12 gap-4">
+        @for (field of config.arrayConfig?.itemFields; track $index) {
+        <div [class]="field.colClass || 'col-span-12'">
+          <app-dynamic-reactive-form [config]="field" [formGroup]="getFormArrayItem(i)" [parentArray]="getFormArray()"
+            [arrayIndex]="i" [level]="level + 1" (placeSelected)="placeSelected.emit($event)" />
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    @if (getFormArray().length === 0) {
+    <div class="rounded-xl border border-dashed px-6 py-8 text-center"
+      style="border-color: var(--form-control-border); font-family: var(--font-body)">
+      <p class="text-sm" style="color: var(--form-label-muted)">
+        No items yet. Click
+        <strong style="color: var(--primary)">Add</strong>
+        to get started.
+      </p>
+    </div>
+    }
+  </div>
+</div>
+}
+}

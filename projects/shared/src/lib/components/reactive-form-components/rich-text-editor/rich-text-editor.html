@@ -1,0 +1,323 @@
+<div class="mb-6 font-body">
+  <!-- Label + Canned Responses Row -->
+  <div class="mb-1.5 flex items-center justify-between gap-2 flex-wrap">
+    @if (label && showLabel) {
+    <label class="text-[11px] font-semibold uppercase tracking-[0.18em]" style="color: rgb(var(--text-secondary))">
+      {{ label }}
+      @if (hasRequiredValidator) {
+      <span class="ml-0.5" style="color: rgb(var(--error-color))">*</span>
+      }
+    </label>
+    }
+
+    @if (cannedResponses?.length) {
+    <div class="relative" (click)="$event.stopPropagation()">
+      <button type="button" (click)="toggleCannedDropdown()"
+        class="flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors"
+        style="border-color: rgb(var(--form-control-border)); background: rgb(var(--form-control-bg-muted)); color: rgb(var(--form-control-text))">
+        <i-lucide name="message-circle-more" [size]="14"></i-lucide>
+        Canned Responses
+        <i-lucide name="chevron-down" [size]="12"></i-lucide>
+      </button>
+
+      @if (showCannedDropdown) {
+      <div class="absolute right-0 top-full z-50 mt-1 max-h-48 w-56 overflow-y-auto rounded-xl border"
+        style="background: rgb(var(--form-control-bg-active)); border-color: rgb(var(--form-control-border)); box-shadow: var(--shadow-lg)">
+        @for (resp of cannedResponses; track resp.id) {
+        <button type="button" (click)="insertCannedResponse(resp)"
+          class="w-full border-b px-4 py-2.5 text-left text-[13px] font-medium transition-colors last:border-0"
+          [style.background]="hoveredCannedId === resp.id ? 'rgb(var(--hover-bg))' : 'transparent'"
+          [style.borderColor]="'rgb(var(--form-control-border))'" style="color: rgb(var(--form-control-text))"
+          (mouseenter)="hoveredCannedId = resp.id" (mouseleave)="hoveredCannedId = null">
+          {{ resp.name }}
+        </button>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- Editor Shell -->
+  <div class="overflow-hidden rounded-xl border transition-all duration-200"
+    [style.background]="isFocused ? 'rgb(var(--form-control-bg-active))' : 'rgb(var(--form-control-bg))'"
+    [style.borderColor]="
+      control.invalid && (control.dirty || control.touched)
+        ? 'rgb(var(--error-color))'
+        : isFocused
+        ? 'rgb(var(--form-control-border-active))'
+        : 'rgb(var(--form-control-border))'
+    " [style.boxShadow]="isFocused ? 'var(--form-focus-shadow)' : 'none'">
+    <!-- ── Toolbar ── -->
+    <div class="toolbar-scroll border-b px-2 py-1.5 flex items-center gap-0.5"
+      style="border-color: rgb(var(--form-control-border)); background: rgb(var(--form-control-bg-muted))">
+      <!-- History -->
+      <div class="flex items-center gap-0.5">
+        @for (btn of historyControls; track btn.cmd) {
+        <button type="button" (mousedown)="$event.preventDefault(); execCmd(btn.cmd)" [matTooltip]="btn.title"
+          matTooltipPosition="above"
+          class="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:opacity-80"
+          style="color: rgb(var(--text-secondary))">
+          <i-lucide [name]="btn.icon" [size]="14"></i-lucide>
+        </button>
+        }
+      </div>
+
+      <div class="mx-1 h-5 w-px shrink-0" style="background: rgb(var(--form-control-border))"></div>
+
+      <!-- Inline formatting -->
+      <div class="flex items-center gap-0.5">
+        @for (btn of inlineControls; track btn.cmd) {
+        <button type="button" (mousedown)="$event.preventDefault(); execCmd(btn.cmd)" [matTooltip]="btn.title"
+          matTooltipPosition="above" [class.opacity-100]="isActive(btn.cmd)" [style.background]="
+              isActive(btn.cmd) ? 'color-mix(in srgb, rgb(var(--primary-color)) 15%, transparent)' : 'transparent'
+            " class="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:opacity-80"
+          style="color: rgb(var(--text-secondary))">
+          <i-lucide [name]="btn.icon" [size]="14"></i-lucide>
+        </button>
+        }
+      </div>
+
+      <div class="mx-1 h-5 w-px shrink-0" style="background: rgb(var(--form-control-border))"></div>
+
+      <!-- Alignment -->
+      <div class="flex items-center gap-0.5">
+        @for (btn of alignControls; track btn.cmd) {
+        <button type="button" (mousedown)="$event.preventDefault(); execCmd(btn.cmd)" [matTooltip]="btn.title"
+          matTooltipPosition="above" [style.background]="
+              isActive(btn.cmd) ? 'color-mix(in srgb, rgb(var(--primary-color)) 15%, transparent)' : 'transparent'
+            " class="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:opacity-80"
+          style="color: rgb(var(--text-secondary))">
+          <i-lucide [name]="btn.icon" [size]="14"></i-lucide>
+        </button>
+        }
+      </div>
+
+      <div class="mx-1 h-5 w-px shrink-0" style="background: rgb(var(--form-control-border))"></div>
+
+      <!-- Lists -->
+      <div class="flex items-center gap-0.5">
+        @for (btn of listControls; track btn.cmd) {
+        <button type="button" (mousedown)="$event.preventDefault(); execCmd(btn.cmd)" [matTooltip]="btn.title"
+          matTooltipPosition="above" [style.background]="
+              isActive(btn.cmd) ? 'color-mix(in srgb, rgb(var(--primary-color)) 15%, transparent)' : 'transparent'
+            " class="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:opacity-80"
+          style="color: rgb(var(--text-secondary))">
+          <i-lucide [name]="btn.icon" [size]="14"></i-lucide>
+        </button>
+        }
+      </div>
+
+      <div class="mx-1 h-5 w-px shrink-0" style="background: rgb(var(--form-control-border))"></div>
+      <div class="flex items-center gap-0.5">
+        <app-custom-dropdown [options]="dropdownBlockStyles" [value]="selectedBlockStyle" placeholder="Block style"
+          size="compact" [showLabel]="false" (changedOuput)="onBlockFormat($event)"></app-custom-dropdown>
+
+        <app-custom-dropdown [options]="dropdownFontFamilies" [value]="selectedFontFamily" placeholder="Font family"
+          size="compact" [showLabel]="false" (changedOuput)="onFontFamily($event)"></app-custom-dropdown>
+
+        <app-custom-dropdown [options]="dropdownFontSizes" [value]="selectedFontSize" placeholder="Font size"
+          size="compact" [showLabel]="false" (changedOuput)="onFontSize($event)"></app-custom-dropdown>
+      </div>
+      <div class="mx-1 h-5 w-px shrink-0" style="background: rgb(var(--form-control-border))"></div>
+
+      <!-- Text color (simple input) -->
+      <label
+        class="relative flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg transition-colors hover:opacity-80"
+        style="color: rgb(var(--text-secondary))" matTooltip="Text color" matTooltipPosition="above">
+        <i-lucide name="palette" [size]="14"></i-lucide>
+        <input type="color" class="absolute inset-0 h-full w-full cursor-pointer opacity-0" [value]="textColor"
+          (input)="onTextColor($event)" />
+      </label>
+
+      <!-- Background color (simple input) -->
+      <label
+        class="relative flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg transition-colors hover:opacity-80"
+        style="color: rgb(var(--text-secondary))" matTooltip="Highlight color" matTooltipPosition="above">
+        <i-lucide name="highlighter" [size]="14"></i-lucide>
+        <input type="color" class="absolute inset-0 h-full w-full cursor-pointer opacity-0" [value]="bgColor"
+          (input)="onBgColor($event)" />
+      </label>
+
+      <div class="mx-1 h-5 w-px shrink-0" style="background: rgb(var(--form-control-border))"></div>
+
+      <button type="button" (click)="openImportModal()" matTooltip="Import HTML"
+        class="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:opacity-80"
+        style="color: var(--form-label-muted)">
+        <i-lucide name="file-code-2" [size]="14"></i-lucide>
+      </button>
+
+      <!-- Insert link -->
+      <button type="button" (click)="insertLink()" matTooltip="Insert link" matTooltipPosition="above"
+        class="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:opacity-80"
+        style="color: rgb(var(--text-secondary))">
+        <i-lucide name="link" [size]="14"></i-lucide>
+      </button>
+
+      <!-- Image upload -->
+      <label
+        class="relative flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg transition-colors hover:opacity-80"
+        style="color: rgb(var(--text-secondary))" matTooltip="Insert image" matTooltipPosition="above"
+        (mousedown)="$event.preventDefault()" (click)="openImagePicker()">
+        <i-lucide name="image" [size]="14"></i-lucide>
+        <input #imageUpload type="file" accept="image/*" class="sr-only" (change)="onImageUpload($event)" />
+      </label>
+
+      <div class="mx-1 h-5 w-px shrink-0" style="background: rgb(var(--form-control-border))"></div>
+
+      <!-- Clear formatting -->
+      <button type="button" (mousedown)="$event.preventDefault(); execCmd('removeFormat')" matTooltip="Clear formatting"
+        matTooltipPosition="above"
+        class="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:opacity-80"
+        style="color: rgb(var(--error-color))">
+        <i-lucide name="x" [size]="14"></i-lucide>
+      </button>
+    </div>
+
+    <!-- ── Placeholders Insert Bar ── -->
+    @if (placeholders?.length) {
+    <div class="flex flex-wrap items-center gap-1.5 border-b px-3 py-2"
+      style="border-color: rgb(var(--form-control-border)); background: rgb(var(--form-control-bg-muted))">
+      <span class="text-[10px] font-semibold uppercase tracking-widest shrink-0"
+        style="color: rgb(var(--text-secondary))">Insert Field:</span>
+      <div class="flex flex-wrap gap-1">
+        @for (ph of placeholders; track ph.key) {
+        <button type="button" (click)="insertPlaceholder(ph)"
+          class="inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold transition-colors hover:opacity-80"
+          [style.background]="
+                ph.required
+                  ? 'color-mix(in srgb, rgb(var(--warning-color)) 12%, transparent)'
+                  : 'color-mix(in srgb, rgb(var(--primary-color)) 12%, transparent)'
+              " [style.color]="ph.required ? 'rgb(var(--warning-color))' : 'rgb(var(--primary-color))'"
+          [style.borderColor]="
+                ph.required
+                  ? 'color-mix(in srgb, rgb(var(--warning-color)) 30%, transparent)'
+                  : 'color-mix(in srgb, rgb(var(--primary-color)) 30%, transparent)'
+              ">
+          + {{ ph.label }}
+          @if (ph.required) {
+          <span class="rounded-full px-1.5 py-0.5 text-[9px] font-bold"
+            style="background: rgb(var(--warning-color)); color: #fff">REQ</span>
+          }
+        </button>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- ── Editor Pane Header ── -->
+
+    <!-- <div class="flex items-center justify-between border-b px-4 py-2"
+      style="border-color: rgb(var(--form-control-border)); background: rgb(var(--form-control-bg-muted))"> 
+
+      @if (requiredPlaceholders.length) {
+      <span class="flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold" [style.background]="
+            phStatus === 'ok'
+              ? 'color-mix(in srgb, rgb(var(--success-color)) 12%, transparent)'
+              : 'color-mix(in srgb, rgb(var(--warning-color)) 12%, transparent)'
+          " [style.color]="phStatus === 'ok' ? 'rgb(var(--success-color))' : 'rgb(var(--warning-color))'">
+        <i-lucide [name]="phStatus === 'ok' ? 'check-circle' : 'alert-circle'" [size]="12"></i-lucide>
+        @if (phStatus === 'ok') {
+        All required fields present
+        }
+        @if (phStatus === 'warn') {
+        Missing: {{ missingPlaceholderLabels }}
+        }
+      </span>
+      }
+    </div> -->
+
+    <!-- ── Contenteditable Editor ── -->
+    <div #editorRef class="ee-editor min-h-[160px] px-4 py-3.5 text-[13px] outline-none
+                 [&_h1]:mb-2 [&_h1]:text-xl [&_h1]:font-bold
+                 [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-bold
+                 [&_h3]:mb-1 [&_h3]:text-base [&_h3]:font-bold
+                 [&_ul]:mb-2 [&_ul]:list-disc [&_ul]:pl-5
+                 [&_ol]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5
+                 [&_a]:underline
+                 [&_blockquote]:border-l-4 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:opacity-80
+                 [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:text-xs [&_pre]:font-mono"
+      [attr.data-placeholder]="placeholder || 'Start typing here...'" contenteditable="true" spellcheck="true"
+      aria-label="Text editor" role="textbox"
+      [style.background]="isFocused ? 'rgb(var(--form-control-bg-active))' : 'rgb(var(--form-control-bg))'"
+      [style.color]="'rgb(var(--form-control-text))'" [class.opacity-50]="isDisabled"
+      [class.pointer-events-none]="isDisabled"></div>
+
+    <!-- ── Required Fields Status Bar ── -->
+    @if (requiredPlaceholders.length) {
+    <div class="flex flex-wrap items-center gap-1.5 border-t px-4 py-2"
+      style="border-color: rgb(var(--form-control-border)); background: rgb(var(--form-control-bg-muted))">
+      <span class="text-[10px] font-semibold uppercase tracking-widest"
+        style="color: rgb(var(--text-secondary))">Required:</span>
+      @for (ph of requiredPlaceholders; track ph.key) {
+      <span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold"
+        [style.background]="
+              isPresent(ph.key)
+                ? 'color-mix(in srgb, rgb(var(--success-color)) 12%, transparent)'
+                : 'color-mix(in srgb, rgb(var(--error-color)) 12%, transparent)'
+            " [style.color]="isPresent(ph.key) ? 'rgb(var(--success-color))' : 'rgb(var(--error-color))'"
+        [style.borderColor]="
+              isPresent(ph.key)
+                ? 'color-mix(in srgb, rgb(var(--success-color)) 30%, transparent)'
+                : 'color-mix(in srgb, rgb(var(--error-color)) 30%, transparent)'
+            " [matTooltip]="isPresent(ph.key) ? ph.label + ' is present' : ph.label + ' is missing'"
+        matTooltipPosition="above">
+        {{ isPresent(ph.key) ? '✅' : '❌' }} {{ ph.label }}
+      </span>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- Validation hint -->
+  @if (showHints && control.invalid && (control.dirty || control.touched) && control.hasError('required')) {
+  <p class="mt-1.5 text-xs" style="color: rgb(var(--error-color))">{{ label }} is required.</p>
+  }
+  @if (
+  showHints && control.invalid && (control.dirty || control.touched) && control.hasError('missingPlaceholders')
+  ) {
+  <p class="mt-1.5 text-xs" style="color: rgb(var(--error-color))">
+    Missing required fields: {{ missingPlaceholderLabels }}
+  </p>
+  }
+</div>
+
+@if (showImportModal) {
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.5)"
+  (click)="closeImportModal()">
+  <div class="w-full max-w-2xl rounded-2xl border shadow-xl border-border bg-background" (click)="$event.stopPropagation()">
+
+    <div class="flex items-center justify-between border-b px-5 py-3.5"
+      style="border-color: var(--form-control-border)">
+      <h3 class="text-sm font-semibold" style="color: var(--form-control-text)">Import HTML</h3>
+      <button type="button" (click)="closeImportModal()"
+        class="flex h-7 w-7 items-center justify-center rounded-lg hover:opacity-70"
+        style="color: var(--form-label-muted)">
+        <i-lucide name="x" [size]="16"></i-lucide>
+      </button>
+    </div>
+
+    <div class="px-5 py-4">
+      <textarea [(ngModel)]="importHtmlValue" rows="30"
+        class="w-full rounded-xl border px-3.5 py-3 font-mono text-xs outline-none resize-none"
+        style="background: var(--form-control-bg); border-color: var(--form-control-border); color: var(--form-control-text)"
+        placeholder="Paste raw HTML here..."></textarea>
+      <p class="mt-2 text-[11px]" style="color: var(--form-label-muted)">
+        This will replace the current editor content.
+      </p>
+    </div>
+
+    <div class="flex justify-end gap-2 border-t px-5 py-3.5" style="border-color: var(--form-control-border)">
+      <button type="button" (click)="closeImportModal()"
+        class="rounded-lg border px-4 py-1.5 text-xs font-medium hover:opacity-80"
+        style="border-color: var(--form-control-border); color: var(--form-control-text)">
+        Cancel
+      </button>
+      <button type="button" (click)="confirmImportHtml()"
+        class="rounded-lg px-4 py-1.5 text-xs font-semibold text-white hover:opacity-90 bg-primary">
+        Import
+      </button>
+    </div>
+  </div>
+</div>
+}

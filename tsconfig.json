@@ -11,6 +11,17 @@
     "isolatedModules": true,
     "experimentalDecorators": true,
     "importHelpers": true,
+    "paths": {
+      "@shared/*": [
+        "./projects/shared/src/lib/*"
+      ],
+      "@website/*": [
+        "./projects/website/src/app/*"
+      ],
+      "@cusadmin/*": [
+        "./projects/cusadmin/src/app/*"
+      ]
+    },
     "target": "ES2022",
     "module": "preserve"
   },
@@ -19,5 +30,25 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true
   },
-  "files": []
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/website/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/website/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/cusadmin/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/cusadmin/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/shared/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/shared/tsconfig.spec.json"
+    }
+  ]
 }

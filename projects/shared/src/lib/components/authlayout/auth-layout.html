@@ -1,0 +1,55 @@
+<!-- auth-layout.html -->
+<div class="auth-shell">
+
+  <!-- Brand panel (hidden on small screens) -->
+  <aside class="auth-brand">
+    <div class="auth-brand__inner">
+      <a routerLink="/" class="auth-brand__wordmark" aria-label="Khan Meat Pointe home">
+        Khan Meat Pointe
+      </a>
+
+      <h2 class="auth-brand__title">Fresh Halal Meat&nbsp;&mdash;&nbsp;Your&nbsp;Way</h2>
+      <p class="auth-brand__subtitle">
+        Premium chicken, lamb &amp; beef, freshly cut and delivered to your door.
+      </p>
+
+      <ul class="auth-brand__points">
+        <li>100% halal, freshly cut to order</li>
+        <li>Fast, reliable delivery</li>
+        <li>Trusted by home cooks &amp; restaurants</li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Form panel -->
+  <main class="auth-panel">
+    <div class="auth-card">
+
+      <!-- Compact logo for small screens (brand panel is hidden there) -->
+      <a routerLink="/" class="auth-card__logo" aria-label="Khan Meat Pointe home">
+        <img src="assets/images/logos/khan-meat-pointe.png" alt="Khan Meat Pointe" />
+      </a>
+
+      <div class="auth-card__head">
+        <h1>{{ cardtitle }}</h1>
+        @if (subtitle) {
+          <p>{{ subtitle }}</p>
+        }
+      </div>
+
+      <!-- Content Slot (form) -->
+      <ng-content></ng-content>
+
+      <!-- reCAPTCHA disclosure (required when the badge is hidden) -->
+      <p class="recaptcha-disclosure auth-card__recaptcha">
+        This site is protected by reCAPTCHA and the Google
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        and
+        <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        apply.
+      </p>
+
+    </div>
+  </main>
+
+</div>

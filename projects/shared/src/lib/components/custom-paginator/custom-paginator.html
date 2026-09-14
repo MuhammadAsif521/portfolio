@@ -1,0 +1,62 @@
+<div class="flex flex-col sm:flex-row items-center justify-between gap-4 font-body">
+
+    <!-- Left: range info + optional page size -->
+    <div class="flex items-center gap-3 text-sm text-text-secondary">
+        <span>
+            Showing
+            <span class="font-semibold text-secondary">{{ rangeStart }}–{{ rangeEnd }}</span>
+            of
+            <span class="font-semibold text-secondary">{{ pagination?.totalItems ?? 0 }}</span>
+            items
+        </span>
+
+        @if (showPageSize) {
+        <app-custom-dropdown controlName="pageSize" [size]="'compact'" [showLabel]="false"
+            [options]="resolvedPageSizeOptions" [value]="pagination?.pageSize?.toString()"
+            (changedOuput)="onPageSizeChange($event)">
+        </app-custom-dropdown>
+        }
+    </div>
+
+    <!-- Right: page buttons -->
+    <div class="flex items-center gap-2 flex-wrap justify-center">
+
+        <!-- First -->
+        <button (click)="goToPage(1)" [disabled]="pagination?.currentPage === 1"
+            class="w-9 h-9 rounded-[1.5rem] bg-surface border border-border text-text-secondary hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center">
+            <i-lucide name="chevron-first"></i-lucide>
+        </button>
+
+        <!-- Prev -->
+        <button (click)="goToPage((pagination?.currentPage ?? 1) - 1)" [disabled]="pagination?.currentPage === 1"
+            class="w-9 h-9 rounded-[1.5rem] bg-surface border border-border text-text-secondary hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center">
+            <i-lucide name="chevron-left"></i-lucide>
+        </button>
+
+        <!-- Page numbers -->
+        @for (page of pageNumbers; track $index) {
+        @if (page === '...') {
+        <span class="w-9 h-9 flex items-center justify-center text-text-secondary text-sm select-none">…</span>
+        } @else {
+        <button (click)="goToPage(+page)" [class]="getPageClass(+page)">
+            {{ page }}
+        </button>
+        }
+        }
+
+        <!-- Next -->
+        <button (click)="goToPage((pagination?.currentPage ?? 1) + 1)"
+            [disabled]="pagination?.currentPage === pagination?.totalPages"
+            class="w-9 h-9 rounded-[1.5rem] bg-surface border border-border text-text-secondary hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center">
+            <i-lucide name="chevron-right"></i-lucide>
+        </button>
+
+        <!-- Last -->
+        <button (click)="goToPage(pagination?.totalPages ?? 1)"
+            [disabled]="pagination?.currentPage === pagination?.totalPages"
+            class="w-9 h-9 rounded-[1.5rem] bg-surface border border-border text-text-secondary hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center">
+            <i-lucide name="chevron-last"></i-lucide>
+        </button>
+
+    </div>
+</div>

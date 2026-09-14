@@ -1,0 +1,51 @@
+@if (routerLink) {
+
+ <a [routerLink]="routerLink"
+  [queryParams]="queryParams"
+  [class]="'btn-base btn-' + variant + ' btn-' + size + ' btn-color-' + color + ' btn-radius-' + radius + ' ' + customClass"
+  [class.btn-loading]="loading"
+  [class.disabled-link]="disabled || loading"
+>
+  @if (loading) {
+    <span class="btn-spinner"></span>
+    <span class="btn-label">Processing...</span>
+  } @else {
+    @if (icon) {
+      <i-lucide
+        class="btn-icon"
+        [class.icon-left]="iconPos === 'left'"
+        [class.icon-right]="iconPos === 'right'"
+        [name]="icon"
+        [size]="iconSize"
+        [color]="iconColor"
+      ></i-lucide>
+    }
+    <span class="btn-label">{{ buttonText }}</span>
+  }
+</a>
+} @else {
+<button
+  [type]="type"
+  [disabled]="disabled || loading"
+  [class]="'btn-base btn-' + variant + ' btn-' + size + ' btn-color-' + color + ' btn-radius-' + radius + ' ' + customClass"
+  [class.btn-loading]="loading"
+  (click)="handleClick($event)"
+>
+  @if (loading) {
+    <span class="btn-spinner"></span>
+    <span class="btn-label">Processing...</span>
+  } @else {
+    @if (icon) {
+      <i-lucide
+        class="btn-icon"
+        [class.icon-left]="iconPos === 'left'"
+        [class.icon-right]="iconPos === 'right'"
+        [name]="icon"
+        [size]="iconSize"
+        [color]="iconColor"
+      ></i-lucide>
+    }
+    <span class="btn-label">{{ buttonText }}</span>
+  }
+</button>
+}

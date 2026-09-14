@@ -1,0 +1,46 @@
+<mat-dialog-content class="!m-0 dialog-content">
+  <div class="w-[380px] max-w-full">
+    <header class="flex items-start justify-between gap-4 border-b border-outline-variant px-5 py-4">
+      <div>
+        <h2 class="text-xl font-semibold text-text">Crop Image</h2>
+        <p class="text-xs text-text-muted">
+          Drag to reposition &middot; output max {{ data.maxWidth }}&times;{{ data.maxHeight }}px
+        </p>
+      </div>
+      <button type="button" aria-label="Close dialog"
+        class="inline-flex size-10 items-center justify-center rounded-full border border-outline-variant bg-field text-text-muted transition hover:bg-primary/10 hover:text-primary"
+        (click)="cancel()">
+        <i-lucide name="x" [size]="18"></i-lucide>
+      </button>
+    </header>
+
+    <div class="flex flex-col items-center gap-4 px-5 py-5">
+      <div #viewport
+        class="relative overflow-hidden rounded-lg border border-outline-variant bg-field touch-none select-none"
+        [style.width.px]="viewportWidth" [style.height.px]="viewportHeight"
+        (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)"
+        (pointerup)="onPointerUp()" (pointercancel)="onPointerUp()">
+        <img [src]="imageUrl" (load)="onImageLoad($event)" alt="Image to crop" draggable="false"
+          class="absolute max-w-none cursor-move"
+          [style.width.px]="displayWidth" [style.height.px]="displayHeight"
+          [style.left.px]="posX" [style.top.px]="posY" />
+      </div>
+
+      @if (imageReady()) {
+      <div class="flex w-full items-center gap-3">
+        <i-lucide name="zoom-out" [size]="16" class="shrink-0 text-text-muted"></i-lucide>
+        <input type="range" min="1" [max]="maxZoom" step="0.01" [value]="zoom()"
+          (input)="onZoomInput($any($event.target).value)" class="w-full accent-primary" />
+        <i-lucide name="zoom-in" [size]="16" class="shrink-0 text-text-muted"></i-lucide>
+      </div>
+      }
+    </div>
+
+    <footer class="flex flex-col-reverse gap-3 border-t border-outline-variant px-5 py-5 sm:flex-row sm:justify-end">
+      <app-loading-button buttonText="Cancel" type="button" color="neutral" variant="stroked" radius="small"
+        (click)="cancel()" />
+      <app-loading-button buttonText="Apply Crop" type="button" color="secondary" radius="small"
+        [disabled]="!imageReady()" (click)="apply()" />
+    </footer>
+  </div>
+</mat-dialog-content>

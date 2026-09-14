@@ -1,0 +1,103 @@
+<div class="bg-white  w-full  shadow-sm overflow-hidden font-body">
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+
+      <!-- ALWAYS SHOW HEADER -->
+      <thead>
+        <tr class="bg-[rgb(var(--breadcrumb-bg))]">
+          @for (col of columns; track col.key) {
+          <th [class]="getHeaderClass(col)" (click)="col.sortable ? toggleSort(col.key) : null">
+            <span class="flex items-center gap-1.5 text-[1rem] text-primary font-bold capitalize"
+              [class.justify-center]="col.align === 'center'" [class.justify-end]="col.align === 'right'">
+              {{ col.label }}
+
+              @if (col.sortable) {
+              <span class="flex flex-col gap-[2px]">
+                <!-- icons -->
+              </span>
+              }
+            </span>
+          </th>
+          }
+
+          @if (actions?.length) {
+          <th class="px-4 py-3.5 text-[1rem] font-bold text-primary capitalize text-center">
+            Actions
+          </th>
+          }
+        </tr>
+      </thead>
+
+      <!-- BODY -->
+      <tbody  class="divide-y divide-accent/30 ">
+
+        <!-- LOADING STATE INSIDE TABLE -->
+        @if (isLoading) {
+        <tr>
+          <td [attr.colspan]="columns.length + (actions?.length ? 1 : 0)">
+            <div class="flex items-center justify-center min-h-[240px]">
+              <app-page-loader></app-page-loader>
+            </div>
+          </td>
+        </tr>
+        }
+
+        @else if (!data?.length) {
+        <tr>
+          <td [attr.colspan]="columns.length + (actions?.length ? 1 : 0)">
+            <app-empty-products [message]="emptyMessage" />
+          </td>
+        </tr>
+        }
+
+        @else {
+        @for (row of data; track rowKey ? row[rowKey] : $index; let i = $index) {
+        <tr class="hover:bg-primary/10 transition-colors group">
+
+          @for (col of columns; track col.key) {
+          <td [class]="getCellClass(col)">
+            @if (getCellTemplate(col.key); as tmpl) {
+            <ng-container
+              *ngTemplateOutlet="tmpl; context: { $implicit: row, row: row, value: row[col.key], index: getRowIndex(i) }">
+            </ng-container>
+            } @else {
+            {{ row[col.key] ?? '—' }}
+            }
+          </td>
+          }
+
+          @if (actions?.length) {
+          <td class="px-4 py-3  text-center whitespace-nowrap">
+            <div class="flex items-center justify-center gap-1">
+              @for (action of actions; track action.key) {
+              @if (!isActionHidden(action, row)){
+              <button (click)="onAction(action.key, row)" [matTooltip]="action.label"
+                [class]="getActionClass(action.color)"
+                class="p-1.5 rounded-lg text-[1rem] transform transition-transform duration-200 ease-in-out hover:scale-105">
+                <i-lucide [name]="action.icon" color="currentColor" [size]="iconSize" />
+              </button>
+              }
+              }
+            </div>
+          </td>
+          }
+
+        </tr>
+        }
+        }
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINATOR ALWAYS VISIBLE -->
+  @if (pagination) {
+  <div class="px-5 pb-5 pt-3 border-t border-border">
+    <app-custom-paginator [pagination]="pagination" [showPageSize]="showPageSize" (pageChange)="pageChange.emit($event)"
+      (pageSizeChange)="pageSizeChange.emit($event)">
+    </app-custom-paginator>
+  </div>
+  }
+
+</div>

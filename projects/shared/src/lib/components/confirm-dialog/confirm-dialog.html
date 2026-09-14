@@ -1,0 +1,36 @@
+<mat-dialog-content class="!p-0 dialog-content">
+  <div class="p-6">
+
+    <div class="mb-5 flex items-start gap-4">
+
+      <!-- Tone-based icon -->
+      <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl" [class]="iconClasses">
+        <i-lucide [name]="iconName" [size]="24"></i-lucide>
+      </div>
+
+      <!-- Content -->
+      <div class="min-w-0">
+        <h2 class="m-0 text-xl font-semibold tracking-[-0.03em] text-black dark:text-white">
+          {{ data.title }}
+        </h2>
+
+        <p class="mt-2 text-sm leading-6 text-black dark:text-white">
+          {{ data.message }}
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-3 pt-2">
+
+      <app-loading-button [buttonText]="data.cancelText || 'Cancel'" color="neutral" variant="stroked" radius="medium"
+        size="medium" [disabled]="loading()" (click)="close(false)" />
+
+      <app-loading-button [buttonText]="data.confirmText || 'Confirm'" [color]="confirmColor" radius="medium"
+        size="medium" [loading]="loading()" [disabled]="loading()" (click)="confirm()" />
+
+    </div>
+
+  </div>
+</mat-dialog-content>

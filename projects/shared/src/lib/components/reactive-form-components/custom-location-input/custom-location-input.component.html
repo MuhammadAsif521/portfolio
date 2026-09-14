@@ -1,0 +1,45 @@
+<div class="relative fc-wrapper" (click)="$event.stopPropagation()">
+
+  @if (showLabel) {
+  <label [attr.for]="controlName" class="fc-label">
+    {{ displayLabel }}
+    @if (hasRequiredValidator) {
+    <span class="fc-required">*</span>
+    }
+  </label>
+  }
+
+  <!-- Input wrapper -->
+  <div class="relative">
+    <input #triggerInput [id]="controlName" [formControl]="control" [placeholder]="placeholder || 'Search address...'"
+      (input)="onInput($event)" (focus)="isFocused = true" (blur)="isFocused = false" autocomplete="off"
+      class="fc-control pl-10" [class.fc-focused]="isFocused" [class.fc-invalid]="isInvalid" />
+
+    <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
+      style="color: rgb(var(--form-control-icon))">
+      <i-lucide name="map-pin" [size]="18"></i-lucide>
+    </span>
+  </div>
+
+  <!-- Suggestions dropdown — fixed portal, flips above/below automatically -->
+  @if (suggestions.length > 0) {
+  <ul class="fc-panel max-h-60 overflow-y-auto" [style.top.px]="panelTop" [style.left.px]="panelLeft"
+    [style.width.px]="panelWidth">
+    @for (suggestion of suggestions; track $index) {
+    <li (click)="onSelect(suggestion)" class="fc-option" [class.bg-transparent]="true">
+      <span class="text-primary">
+        <i-lucide name="map-pin" [size]="15"></i-lucide>
+      </span>
+      <span class="truncate">{{ suggestion.placePrediction?.text }}</span>
+    </li>
+    }
+  </ul>
+  }
+
+  @if (isInvalid) {
+  <p class="fc-error-text">
+    @if (control.hasError('required')) { {{ displayLabel }} is required. }
+  </p>
+  }
+
+</div>

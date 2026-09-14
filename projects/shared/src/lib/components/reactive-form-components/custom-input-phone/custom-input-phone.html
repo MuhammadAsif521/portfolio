@@ -1,0 +1,19 @@
+<div class="fc-wrapper">
+  @if (resolvedLabel) {
+  <label class="fc-label">
+    {{ resolvedLabel }}
+    @if (_required) { <span class="fc-required">*</span> }
+  </label>
+  }
+
+  <div class="fc-control-phone" [class.fc-invalid]="hasError()" [class.fc-focused]="isFocused()" [class.fc-disabled]="isDisabled()">
+    <input #phoneInputRef type="tel" class="phone-native-input" [placeholder]="placeholder()" [disabled]="isDisabled()"
+      (blur)="onTouched(); isFocused.set(false); cdr.markForCheck()" (focus)="isFocused.set(true)" />
+  </div>
+
+  @if (hasError()) {
+  <span class="fc-error-text" style="display:flex; align-items:center; gap:6px">
+    {{ errorMessage() }}
+  </span>
+  }
+</div>

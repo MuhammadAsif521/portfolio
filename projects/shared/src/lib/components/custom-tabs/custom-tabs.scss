@@ -1,0 +1,142 @@
+$transition: all 0.2s ease;
+
+.nav-tabs-wrapper {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    margin-bottom: 10px;
+    background: rgb(var(--surface-color));
+    border-radius: 12px;
+    gap: 8px;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.nav-tabs-container {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    border-radius: 12px;
+    padding: 5px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.nav-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 15px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: black;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: $transition;
+    white-space: nowrap;
+    position: relative;
+
+    &.active {
+        background: rgb(var(--primary-color));
+        color: white;
+
+        .tab-badge {
+            background: rgb(var(--primary-color));
+            color: white;
+        }
+    }
+
+    &:not(.active):hover {
+        background: rgb(var(--background-color-dark));
+    }
+
+    &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        color: rgb(var(--text-muted));
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--color-border);
+        outline-offset: 2px;
+    }
+}
+
+.tab-icon {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.tab-badge {
+    background: rgb(var(--secondary-color));
+    border-radius: 12px;
+    padding: 0 6px;
+    font-size: 0.7rem;
+    line-height: 18px;
+}
+
+.tab-scroll-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: $transition;
+
+    &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .arrow-icon {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-tab {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+
+    .tab-badge {
+        min-width: 18px;
+        height: 18px;
+        font-size: 0.65rem;
+        padding: 0 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-tab {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+    .arrow-icon {
+        font-size: 0.9rem;
+    }
+
+    .tab-scroll-btn .arrow-icon {
+        font-size: 0.9rem;
+    }
+}

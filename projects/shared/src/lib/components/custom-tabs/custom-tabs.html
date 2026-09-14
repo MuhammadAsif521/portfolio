@@ -1,0 +1,45 @@
+<div class="nav-tabs-wrapper font-body">
+    @if (hasOverflow) {
+    <button class="tab-scroll-btn" [disabled]="!canScrollLeft" (click)="scrollTabs('left')" type="button"
+        aria-label="Scroll tabs left">
+        <i-lucide name="chevron-left" class="arrow-icon"></i-lucide>
+    </button>
+    }
+
+    <div class="nav-tabs-container" #tabsContainer (scroll)="onTabsScroll($event)">
+        @for (tab of tabs; track tab.value) {
+        @if (tab.routeUrl) {
+        <a class="nav-tab" [class.active]="activeTab === tab.value" [class.disabled]="tab.disabled"
+            [routerLink]="tab.routeUrl" [attr.aria-disabled]="tab.disabled">
+            @if (tab.icon) {
+            <i-lucide [name]="tab.icon" class="tab-icon"></i-lucide>
+            }
+            <span class="tab-label">{{ tab.label }}</span>
+            @if (tab.badge !== undefined && tab.badge !== null) {
+            <span class="tab-badge">{{ tab.badge }}</span>
+            }
+        </a>
+        } @else {
+        <button type="button" class="nav-tab" [class.active]="activeTab === tab.value" [class.disabled]="tab.disabled"
+            [disabled]="tab.disabled" (click)="onTabClick(tab)">
+            @if (tab.icon) {
+            <i-lucide [name]="tab.icon" class="tab-icon"></i-lucide>
+            }
+            <span class="tab-label">{{ tab.label }}</span>
+            @if (tab.badge !== undefined && tab.badge !== null) {
+            <span class="tab-badge">{{ tab.badge }}</span>
+            }
+        </button>
+        }
+        }
+    </div>
+
+    @if (hasOverflow) {
+    <button class="tab-scroll-btn" [disabled]="!canScrollRight" (click)="scrollTabs('right')" type="button"
+        aria-label="Scroll tabs right">
+        <i-lucide name="chevron-right" class="arrow-icon"></i-lucide>
+    </button>
+    }
+</div>
+
+<ng-content></ng-content>

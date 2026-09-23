@@ -1,0 +1,47 @@
+<section id="about" class="about" appSpySection aria-labelledby="about-title">
+  <div class="about__inner">
+    <div class="about__portrait" data-reveal>
+      <div class="about__backdrop" aria-hidden="true"></div>
+      @if (portraitVisible()) {
+        <img
+          class="about__image"
+          [src]="content.portrait.src"
+          [alt]="content.portrait.alt"
+          [width]="content.portrait.width"
+          [height]="content.portrait.height"
+          loading="lazy"
+          decoding="async"
+          (error)="onPortraitError()"
+        />
+      }
+    </div>
+
+    <div class="about__body">
+      <h2 id="about-title" class="about__title" data-reveal>
+        {{ content.title }} <span class="about__accent">{{ content.accent }}</span>?
+      </h2>
+
+      @for (paragraph of content.bio; track $index) {
+        <p class="about__bio" data-reveal>{{ paragraph }}</p>
+      }
+
+      <dl class="about__stats" data-reveal>
+        @for (stat of content.stats; track stat.label) {
+          <div class="about__stat">
+            <dt class="about__stat-label">{{ stat.label }}</dt>
+            <dd class="about__stat-value">{{ stat.value }}<span class="about__stat-suffix">{{ stat.suffix }}</span></dd>
+          </div>
+        }
+      </dl>
+
+      <div class="about__actions" data-reveal>
+        <a class="about__cta about__cta--outline" routerLink="/" fragment="contact">Hire me</a>
+        @if (resumeUrl(); as url) {
+          <a class="about__cta about__cta--link" [href]="url" target="_blank" rel="noopener">
+            Download resume <i-lucide name="download" [size]="18" aria-hidden="true" />
+          </a>
+        }
+      </div>
+    </div>
+  </div>
+</section>

@@ -7,6 +7,8 @@ import { ThemeToggle } from './layout/theme-toggle/theme-toggle';
 import { HERO_CONTENT } from './content/hero.content';
 import { SERVICES_CONTENT } from './content/services.content';
 import { Services } from './sections/services/services';
+import { About } from './sections/about/about';
+import { ABOUT_CONTENT } from './content/about.content';
 import { Experience, monthYear } from './sections/experience/experience';
 import { EXPERIENCE_CONTENT } from './content/experience.content';
 import { PublicApiService } from '@shared/services/public-api.service';
@@ -64,7 +66,7 @@ describe('App shell', () => {
     const labels = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.site-nav__link')).map((a) =>
       a.textContent?.trim(),
     );
-    expect(labels).toEqual(['Home', 'About', 'What I Do', 'Experience', 'Projects', 'Blog', 'Contact']);
+    expect(labels).toEqual(['Home', 'What I Do', 'Experience', 'About', 'Projects', 'Blog', 'Contact']);
   });
 });
 
@@ -221,5 +223,45 @@ describe('Experience', () => {
       expect(roles).toEqual(EXPERIENCE_CONTENT.fallback.map((entry) => entry.role));
       expect(el.querySelector('#experience h2')?.textContent?.replace(/\s+/g, ' ').trim()).toBe('My Work Experience');
     }
+  });
+});
+
+describe('About (Why Hire Me)', () => {
+  beforeEach(setup);
+
+  it('is the #about anchor with heading, bio and labelled stats', async () => {
+    const fixture = TestBed.createComponent(About);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('section#about h2')?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Why Hire me?');
+    expect(el.querySelectorAll('.about__bio').length).toBe(ABOUT_CONTENT.bio.length);
+    const stats = Array.from(el.querySelectorAll('.about__stat')).map((stat) => [
+      stat.querySelector('dt')?.textContent,
+      stat.querySelector('dd')?.textContent,
+    ]);
+    expect(stats).toEqual([
+      ['Production applications delivered', '7+'],
+      ['Public sites on one multi-tenant backend', '4'],
+    ]);
+  });
+
+  it('links Hire me to #contact and offers the resume from settings', async () => {
+    const fixture = TestBed.createComponent(About);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.about__cta--outline')?.getAttribute('href')).toBe('/#contact');
+    const resume = el.querySelector('.about__cta--link');
+    expect(resume?.getAttribute('href')).toBe('https://cdn.test/resume/a.pdf');
+    expect(resume?.getAttribute('rel')).toBe('noopener');
+  });
+
+  it('keeps the orange block when the portrait is missing', async () => {
+    const fixture = TestBed.createComponent(About);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    el.querySelector('img.about__image')!.dispatchEvent(new Event('error'));
+    await fixture.whenStable();
+    expect(el.querySelector('img.about__image')).toBeNull();
+    expect(el.querySelector('.about__backdrop')).toBeTruthy();
   });
 });

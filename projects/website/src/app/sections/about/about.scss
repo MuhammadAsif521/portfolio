@@ -1,0 +1,149 @@
+@use 'styles/mixins' as m;
+
+// Figma "Why Hire me?": light-gray band, cut-out portrait rising out of an orange rounded block (left),
+// heading, bio, two stats and an outlined "Hire me" pill (right).
+
+.about {
+  padding: clamp(3rem, 2rem + 4vw, 5.5rem) var(--container-gutter);
+  background: var(--band-b);
+  scroll-margin-top: var(--header-height);
+}
+
+.about__inner {
+  display: grid;
+  gap: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+  align-items: center;
+  max-width: var(--container-max);
+  margin-inline: auto;
+
+  @include m.up(lg) {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  }
+}
+
+// ── Portrait ──
+
+.about__portrait {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-items: end;
+  width: min(100%, 30rem);
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+
+// The block is shorter than the frame so the head rises above it, as in the Figma.
+.about__backdrop {
+  position: absolute;
+  inset: 22% 0 0;
+  border-radius: var(--radius-band);
+  background: var(--brand-gradient);
+}
+
+.about__image {
+  position: relative;
+  width: 88%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+  border-radius: 0 0 var(--radius-band) var(--radius-band);
+}
+
+// ── Copy ──
+
+.about__title {
+  margin: 0 0 1.25rem;
+  font-size: var(--text-4xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--heading);
+}
+
+.about__accent {
+  color: var(--primary);
+}
+
+.about__bio {
+  margin: 0 0 1rem;
+  max-width: 38rem;
+  color: var(--text-muted);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.about__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem clamp(2rem, 1rem + 4vw, 4rem);
+  margin: 2rem 0;
+}
+
+// Label follows the value visually; the DOM keeps "label: value" order for screen readers.
+.about__stat {
+  display: flex;
+  flex-direction: column-reverse;
+  max-width: 14rem;
+}
+
+.about__stat-value {
+  margin: 0;
+  font-size: var(--text-4xl);
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--heading);
+}
+
+.about__stat-suffix {
+  color: var(--primary);
+}
+
+.about__stat-label {
+  margin-top: 0.25rem;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.about__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+.about__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color var(--transition-normal),
+    border-color var(--transition-normal),
+    color var(--transition-normal);
+
+  @include m.focus-ring;
+
+  &--outline {
+    padding: 0.875rem 2rem;
+    border: 1.5px solid var(--heading);
+    border-radius: var(--radius-pill);
+    color: var(--heading);
+
+    &:hover {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+  }
+
+  &--link {
+    color: var(--heading);
+
+    &:hover {
+      color: var(--primary);
+    }
+  }
+}

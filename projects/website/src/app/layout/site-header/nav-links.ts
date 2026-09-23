@@ -1,4 +1,7 @@
-/** Main navigation (brief, Part 6). Section links scroll the home page; Blog is its own route. */
+/**
+ * Main navigation (brief, Part 6), in page order so the scroll-spy indicator only moves one way.
+ * Section links scroll the home page; Blog is its own route.
+ */
 export interface NavLink {
   label: string;
   /** Home-page section id (scroll-spy) — or a route for Blog. */
@@ -8,9 +11,9 @@ export interface NavLink {
 
 export const NAV_LEFT: readonly NavLink[] = [
   { label: 'Home', section: 'home' },
-  { label: 'About', section: 'about' },
   { label: 'What I Do', section: 'services' },
   { label: 'Experience', section: 'experience' },
+  { label: 'About', section: 'about' },
 ];
 
 export const NAV_RIGHT: readonly NavLink[] = [

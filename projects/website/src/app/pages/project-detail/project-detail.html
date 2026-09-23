@@ -1,0 +1,128 @@
+@let s = state();
+<div class="case" [attr.aria-busy]="s.status === 'loading'">
+  <nav class="case__crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li><a routerLink="/" fragment="projects">Projects</a></li>
+      @if (project(); as p) {
+        <li aria-current="page">{{ p.title }}</li>
+      }
+    </ol>
+  </nav>
+
+  @if (project(); as p) {
+    <article class="case__article">
+      <header class="case__header">
+        @if (p.client) {
+          <p class="case__client">{{ p.client }}</p>
+        }
+        <h1 class="case__title">{{ p.title }}</h1>
+        <p class="case__lead">{{ p.summary }}</p>
+
+        @if (p.techStack.length) {
+          <ul class="case__chips" aria-label="Tech stack">
+            @for (tech of p.techStack; track tech) {
+              <li class="case__chip">{{ tech }}</li>
+            }
+          </ul>
+        }
+
+        @if (p.liveUrl || p.repoUrl) {
+          <div class="case__actions">
+            @if (p.liveUrl) {
+              <a class="case__btn case__btn--primary" [href]="p.liveUrl" target="_blank" rel="noopener noreferrer">
+                {{ content.liveLabel }} <i-lucide name="arrow-up-right" [size]="18" aria-hidden="true" />
+                <span class="sr-only">(opens in a new tab)</span>
+              </a>
+            }
+            @if (p.repoUrl) {
+              <a class="case__btn case__btn--ghost" [href]="p.repoUrl" target="_blank" rel="noopener noreferrer">
+                {{ content.repoLabel }} <i-lucide name="code" [size]="18" aria-hidden="true" />
+                <span class="sr-only">(opens in a new tab)</span>
+              </a>
+            }
+          </div>
+        }
+      </header>
+
+      @if (p.coverImage; as cover) {
+        <img
+          class="case__cover"
+          [src]="cover.url"
+          [alt]="cover.alt"
+          [attr.width]="cover.width ?? 1600"
+          [attr.height]="cover.height ?? 900"
+          fetchpriority="high"
+          decoding="async"
+        />
+      }
+
+      @if (p.architectureDiagram; as diagram) {
+        <section class="case__block" aria-labelledby="case-architecture">
+          <h2 id="case-architecture" class="case__heading">{{ content.architectureTitle }}</h2>
+          <figure class="case__figure">
+            <img
+              [src]="diagram.url"
+              [alt]="diagram.alt"
+              [attr.width]="diagram.width ?? 1600"
+              [attr.height]="diagram.height ?? 1000"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+      }
+
+      <!-- Sanitized on the server (sanitize-html allowlist) and again by Angular's [innerHTML]. -->
+      @if (p.content) {
+        <div class="case__content prose" [innerHTML]="p.content"></div>
+      }
+
+      @if (p.gallery.length) {
+        <section class="case__block" aria-labelledby="case-gallery">
+          <h2 id="case-gallery" class="case__heading">{{ content.galleryTitle }}</h2>
+          <div class="case__gallery">
+            @for (image of p.gallery; track image.key) {
+              <figure class="case__shot">
+                <img
+                  [src]="image.url"
+                  [alt]="image.alt"
+                  [attr.width]="image.width ?? 1200"
+                  [attr.height]="image.height ?? 800"
+                  loading="lazy"
+                  decoding="async"
+                />
+                @if (image.caption) {
+                  <figcaption>{{ image.caption }}</figcaption>
+                }
+              </figure>
+            }
+          </div>
+        </section>
+      }
+    </article>
+
+    <aside class="case__cta" aria-labelledby="case-cta-title">
+      <h2 id="case-cta-title" class="case__cta-title">{{ content.ctaTitle }}</h2>
+      <p class="case__cta-text">{{ content.ctaText }}</p>
+      <a class="case__btn case__btn--primary" routerLink="/" fragment="contact">
+        {{ content.ctaLabel }} <i-lucide name="arrow-up-right" [size]="18" aria-hidden="true" />
+      </a>
+    </aside>
+  } @else if (s.status === 'loading') {
+    <div class="case__skeleton" aria-hidden="true">
+      <span class="case__bone case__bone--title"></span>
+      <span class="case__bone case__bone--text"></span>
+      <span class="case__bone case__bone--cover"></span>
+    </div>
+    <p class="sr-only" role="status">Loading project…</p>
+  } @else {
+    <div class="case__missing">
+      <h1 class="case__title">{{ s.status === 'not-found' ? content.notFoundTitle : content.errorTitle }}</h1>
+      @if (s.status === 'not-found') {
+        <p class="case__lead">{{ content.notFoundText }}</p>
+      }
+      <a class="case__btn case__btn--primary" routerLink="/" fragment="projects">{{ content.backLabel }}</a>
+    </div>
+  }
+</div>

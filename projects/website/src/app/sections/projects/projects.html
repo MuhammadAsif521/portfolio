@@ -1,0 +1,30 @@
+<section id="projects" class="projects" appSpySection aria-labelledby="projects-title" [attr.aria-busy]="loading()">
+  <div class="projects__inner">
+    <h2 id="projects-title" class="projects__title" data-reveal>
+      {{ content.title }} <span class="projects__accent">{{ content.accent }}</span>
+    </h2>
+
+    @if (featured(); as project) {
+      <div class="projects__featured" data-reveal>
+        <app-project-card [project]="project" [featured]="true" />
+      </div>
+
+      @if (others().length) {
+        <div class="projects__more" data-reveal>
+          <h3 class="projects__subtitle">{{ content.moreLabel }}</h3>
+          <app-carousel [items]="others()" [slide]="card" label="More projects" />
+        </div>
+      }
+    } @else if (!loading()) {
+      <div class="projects__empty" data-reveal>
+        <p class="projects__empty-title">{{ content.empty.title }}</p>
+        <p class="projects__empty-text">{{ content.empty.text }}</p>
+        <a class="projects__empty-cta" routerLink="/" fragment="contact">Get in touch</a>
+      </div>
+    }
+  </div>
+</section>
+
+<ng-template #card let-project>
+  <app-project-card [project]="project" [headingLevel]="4" />
+</ng-template>

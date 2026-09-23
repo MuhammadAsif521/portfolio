@@ -104,6 +104,18 @@ export interface LocalBusinessJsonLdInput {
   lng?: number;
 }
 
+/** A portfolio case study (brief: "CreativeWork-style schema on each /projects/:slug"). */
+export interface CreativeWorkJsonLdInput {
+  name: string;
+  description?: string;
+  /** Absolute URL of the case-study page. */
+  url: string;
+  image?: string;
+  datePublished?: string;
+  dateModified?: string;
+  keywords?: string[];
+}
+
 export interface BreadcrumbItem {
   name: string;
   url?: string;
@@ -420,6 +432,25 @@ export class SeoService {
       ...(input.lat != null && input.lng != null
         ? { geo: { '@type': 'GeoCoordinates', latitude: input.lat, longitude: input.lng } }
         : {}),
+    };
+  }
+
+  /** CreativeWork for a case study, authored by the site-wide Person node. */
+  buildCreativeWorkJsonLd(input: CreativeWorkJsonLdInput): Record<string, any> {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'CreativeWork',
+      name: input.name,
+      headline: input.name,
+      ...(input.description ? { description: input.description } : {}),
+      url: input.url,
+      mainEntityOfPage: input.url,
+      ...(input.image ? { image: [this.absoluteUrl(input.image)] } : {}),
+      ...(input.datePublished ? { datePublished: input.datePublished } : {}),
+      ...(input.dateModified ? { dateModified: input.dateModified } : {}),
+      ...(input.keywords?.length ? { keywords: input.keywords.join(', ') } : {}),
+      author: { '@id': this.personId },
+      creator: { '@id': this.personId },
     };
   }
 

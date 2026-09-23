@@ -1,0 +1,79 @@
+@use 'styles/mixins' as m;
+
+// Figma "Lets have a look at my Portfolio": heading, large project cards, dot pagination.
+
+.projects {
+  padding: clamp(3rem, 2rem + 4vw, 5.5rem) var(--container-gutter);
+  background: var(--band-a);
+  scroll-margin-top: var(--header-height);
+}
+
+.projects__inner {
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+.projects__title {
+  max-width: 20ch;
+  margin: 0 0 clamp(2rem, 1.5rem + 2vw, 3rem);
+  font-size: var(--text-4xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--heading);
+}
+
+.projects__accent {
+  color: var(--primary);
+}
+
+.projects__more {
+  margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+}
+
+.projects__subtitle {
+  margin: 0 0 1.25rem;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--heading);
+}
+
+.projects__empty {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+  max-width: 40rem;
+  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-2xl);
+  background: var(--band-b);
+}
+
+.projects__empty-title {
+  margin: 0;
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--heading);
+}
+
+.projects__empty-text {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+}
+
+.projects__empty-cta {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    background: var(--primary-hover);
+  }
+
+  @include m.focus-ring;
+}

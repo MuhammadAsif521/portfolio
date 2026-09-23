@@ -1,0 +1,704 @@
+// ─────────────────────────────────────────────────────────
+//  form-control.scss — shared form UI (form-components / reactive-form-components)
+// ─────────────────────────────────────────────────────────
+//  Global classes consumed by the shared form components; every colour comes from the tokens in
+//  _variables.scss, so controls follow light/dark mode and the admin-selected brand palette.
+//
+//  Conventions
+//  - State classes (.fc-focused, .fc-open, .fc-invalid, .fc-disabled) are toggled by components.
+//  - Text inside inputs is 16px below md: iOS Safari zooms the page on focus for anything smaller.
+//  - Keyboard focus always shows a ring (:focus-visible), mouse focus uses the component state.
+
+@use 'mixins' as m;
+
+$control-radius: var(--radius-md);
+$control-font-size: var(--text-base);
+$control-font-size-md: var(--text-sm);
+
+// ── Labels, wrappers, messages ──
+
+.fc-label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--form-label);
+}
+
+.fc-required {
+  margin-left: 2px;
+  color: var(--error);
+}
+
+.fc-wrapper {
+  margin-bottom: 0.75rem;
+  font-family: var(--font-body);
+
+  @include m.up(md) {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.fc-hint {
+  margin-top: 0.375rem;
+  font-size: var(--text-xs);
+  color: var(--form-label-muted);
+}
+
+.fc-error-text {
+  margin-top: 0.375rem;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--error);
+}
+
+.fc-empty {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+// ── Base control shell (input, select trigger, date, time, colour…) ──
+
+.fc-control {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--form-control-border);
+  border-radius: $control-radius;
+  background: var(--form-control-bg);
+  color: var(--form-control-text);
+  font-family: var(--font-body);
+  font-size: $control-font-size;
+  font-weight: 500;
+  line-height: 1.25;
+  outline: none;
+  transition:
+    border-color var(--transition-normal),
+    background-color var(--transition-normal),
+    box-shadow var(--transition-normal);
+
+  @include m.up(md) {
+    font-size: $control-font-size-md;
+  }
+
+  &::placeholder {
+    color: var(--form-control-placeholder);
+  }
+
+  &:hover:not(:disabled, .fc-disabled, .fc-focused, .fc-open) {
+    border-color: color-mix(in srgb, var(--form-control-border) 60%, var(--form-control-text));
+  }
+
+  &:focus-visible {
+    border-color: var(--form-control-border-active);
+    box-shadow: var(--form-focus-shadow);
+  }
+
+  &:disabled,
+  &.fc-disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    background: var(--form-control-bg-muted);
+  }
+
+  &.fc-compact {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  &.fc-focused,
+  &.fc-open {
+    background: var(--form-control-bg-active);
+    border-color: var(--form-control-border-active);
+    box-shadow: var(--form-focus-shadow);
+  }
+
+  &.fc-invalid {
+    border-color: var(--error);
+
+    &.fc-focused,
+    &:focus-visible {
+      box-shadow: 0 0 0 4px var(--error-soft);
+    }
+  }
+}
+
+// Textarea variant
+.fc-control-textarea {
+  @extend .fc-control;
+  min-height: 7.5rem;
+  resize: vertical;
+  align-items: flex-start;
+  line-height: var(--leading-normal);
+}
+
+// ── Phone input shell (intl-tel-input) ──
+
+.fc-control-phone {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  overflow: visible;
+  border: 1px solid var(--form-control-border);
+  border-radius: $control-radius;
+  background: var(--form-control-bg);
+  transition:
+    border-color var(--transition-normal),
+    background-color var(--transition-normal),
+    box-shadow var(--transition-normal);
+
+  &.fc-focused,
+  &.fc-open {
+    background: var(--form-control-bg-active);
+    border-color: var(--form-control-border-active);
+    box-shadow: var(--form-focus-shadow);
+  }
+
+  &.fc-invalid {
+    border-color: var(--error) !important;
+  }
+
+  &.fc-disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    background: var(--form-control-bg-muted);
+  }
+}
+
+.phone-native-input {
+  width: 100%;
+  height: 3rem;
+  padding: 0 1rem;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: $control-font-size;
+  font-weight: 500;
+  color: var(--form-control-text);
+
+  @include m.up(md) {
+    font-size: $control-font-size-md;
+  }
+
+  &::placeholder {
+    color: var(--form-control-placeholder);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+// ── Floating panels (dropdowns, pickers) ──
+
+.fc-panel {
+  position: fixed;
+  z-index: var(--z-panel);
+  overflow: hidden;
+  border-radius: $control-radius;
+  border: 1px solid var(--border);
+  background: var(--form-control-bg-active);
+  box-shadow: var(--shadow-md);
+}
+
+.fc-panel-inline {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: var(--z-dropdown);
+  margin-top: 0.5rem;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--form-control-bg-active);
+  box-shadow: var(--shadow-md);
+}
+
+.fc-panel-search {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--form-control-bg-active);
+}
+
+.fc-search-box {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--radius-sm);
+  background: var(--form-control-bg);
+  border: 1px solid var(--border);
+  color: var(--form-control-icon);
+
+  &:focus-within {
+    border-color: var(--form-control-border-active);
+  }
+
+  input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: $control-font-size;
+    font-weight: 500;
+    color: var(--form-control-text);
+
+    @include m.up(md) {
+      font-size: var(--text-xs);
+    }
+
+    &::placeholder {
+      color: var(--form-control-placeholder);
+    }
+  }
+}
+
+.fc-group-label {
+  position: sticky;
+  top: 0;
+  padding: 0.5rem 1rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  background: var(--form-control-bg-muted);
+  color: var(--text-muted);
+}
+
+// ── Options (list rows inside panels) ──
+
+.fc-option {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--form-control-text);
+  background: transparent;
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--form-control-hover-bg);
+  }
+
+  &.fc-option-selected {
+    background: var(--primary);
+    color: var(--on-primary);
+
+    &:hover {
+      background: var(--primary-hover);
+    }
+  }
+
+  &.fc-option-selected-multi {
+    background: var(--primary-soft);
+  }
+}
+
+.fc-row-option {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: $control-radius;
+  padding: 0.75rem 0.875rem;
+  background: transparent;
+  transition: background-color var(--transition-fast);
+
+  &:hover,
+  &.fc-row-option-active {
+    background: var(--form-control-hover-bg);
+  }
+}
+
+// Checkbox / radio group wrapper
+.fc-row-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.875rem;
+  border: 1px solid var(--form-control-border);
+  border-radius: $control-radius;
+  background: var(--card-bg);
+  transition: border-color var(--transition-normal);
+
+  &.fc-invalid {
+    border-color: var(--error);
+  }
+}
+
+// ── Checkbox, radio, toggle ──
+
+.fc-check {
+  display: flex;
+  height: 1.25rem;
+  width: 1.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+  border: 2px solid var(--form-control-border);
+  background-color: var(--form-control-bg);
+  color: var(--on-primary);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+
+  &.fc-check-hover {
+    border-color: var(--primary);
+  }
+
+  &.fc-check-active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+}
+
+.fc-radio {
+  display: flex;
+  height: 1.25rem;
+  width: 1.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--form-control-border);
+  background-color: var(--form-control-bg);
+  transition: border-color var(--transition-fast);
+
+  &.fc-radio-active,
+  &.fc-radio-hover {
+    border-color: var(--primary);
+  }
+}
+
+.fc-radio-dot {
+  height: 0.625rem;
+  width: 0.625rem;
+  border-radius: var(--radius-pill);
+  background-color: var(--primary);
+}
+
+.fc-toggle-track {
+  height: 1.5rem;
+  width: 2.75rem;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--form-control-border);
+  background: var(--form-control-border);
+  transition:
+    background-color var(--transition-normal),
+    border-color var(--transition-normal);
+
+  &.fc-toggle-on {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+}
+
+.fc-toggle-thumb {
+  height: 1rem;
+  width: 1rem;
+  border-radius: var(--radius-pill);
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal);
+
+  &.fc-toggle-thumb-on {
+    transform: translateX(1.25rem);
+  }
+}
+
+// ── Chips (multi-select values, tags) ──
+
+.fc-chip {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: hidden;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--form-chip-border);
+  background: var(--form-chip-bg);
+  color: var(--form-chip-text);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fc-chip-summary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-pill);
+  background: var(--form-chip-summary-bg);
+  color: var(--form-chip-summary-text);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+// ── Small pieces ──
+
+.fc-dot {
+  height: 0.375rem;
+  width: 0.375rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+
+  &.fc-dot-error {
+    background: var(--error);
+  }
+}
+
+.fc-chevron {
+  flex-shrink: 0;
+  color: var(--form-control-icon);
+  transition:
+    transform var(--transition-normal),
+    opacity var(--transition-normal);
+
+  &.fc-chevron-open {
+    transform: rotate(180deg);
+    opacity: 0.9;
+  }
+}
+
+.fc-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--form-control-icon);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+
+  &:hover {
+    color: var(--form-control-text);
+  }
+
+  @include m.focus-ring;
+}
+
+.fc-panel-action {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--primary-hover);
+  }
+
+  @include m.focus-ring;
+}
+
+.fc-swatch {
+  height: 1.5rem;
+  width: 1.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.04);
+}
+
+// ── File input drop zone ──
+
+.fc-dropzone {
+  position: relative;
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: $control-radius;
+  border: 2px dashed var(--form-control-border);
+  background: var(--form-control-bg);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  transition:
+    border-color var(--transition-normal),
+    background-color var(--transition-normal);
+
+  &:hover,
+  &.fc-focused {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
+
+  &:focus-visible,
+  &:focus-within {
+    border-color: var(--primary);
+    box-shadow: var(--form-focus-shadow);
+  }
+}
+
+.fc-dropzone-browse {
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+// ── File list ──
+
+.fc-file-list {
+  overflow: hidden;
+  border-radius: $control-radius;
+  border: 1px solid var(--border);
+}
+
+.fc-file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  transition: background-color var(--transition-fast);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.fc-file-thumb {
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+
+  img {
+    display: block;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+}
+
+.fc-file-action {
+  position: relative;
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--form-control-icon);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--form-control-hover-bg);
+  }
+
+  @include m.focus-ring;
+}
+
+.fc-file-add-more {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--form-control-hover-bg);
+  }
+}
+
+// ── OTP input boxes ──
+
+.fc-otp-input {
+  display: block;
+  width: 3.25rem;
+  height: 3.25rem;
+  padding: 0;
+  border: 1px solid var(--form-control-border);
+  border-radius: $control-radius;
+  background: var(--form-control-bg);
+  color: var(--form-control-text);
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+
+  @include m.up(sm) {
+    width: 4rem;
+    height: 3rem;
+  }
+
+  &::placeholder {
+    color: var(--form-control-placeholder);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  &:focus-visible,
+  &.fc-focused {
+    background: var(--form-control-bg-active);
+    border-color: var(--form-control-border-active);
+    box-shadow: var(--form-focus-shadow);
+  }
+
+  &.fc-invalid {
+    border-color: var(--error);
+  }
+}
+
+// Respect reduced-motion preferences for every control transition above.
+@media (prefers-reduced-motion: reduce) {
+  [class^='fc-'],
+  [class*=' fc-'] {
+    transition-duration: 0.01ms !important;
+  }
+}

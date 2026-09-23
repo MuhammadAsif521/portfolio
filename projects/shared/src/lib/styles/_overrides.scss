@@ -1,0 +1,79 @@
+// ─────────────────────────────────────────────────────────
+//  _overrides.scss — element defaults on top of Tailwind's preflight
+// ─────────────────────────────────────────────────────────
+//  Inside `@layer base` so Tailwind emits it right after preflight: utilities still win.
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    line-height: var(--leading-normal);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-padding-top: var(--header-height); // in-page anchors land below the sticky nav
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--body-bg);
+    color: var(--text);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    line-height: var(--leading-tight);
+    color: var(--heading);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  // Keyboard users always see where focus is; mouse clicks don't draw rings.
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  // Smooth colour change when ThemeService toggles light/dark (it adds this class briefly).
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition:
+      background-color var(--duration-normal) var(--ease-in-out),
+      border-color var(--duration-normal) var(--ease-in-out),
+      color var(--duration-normal) var(--ease-in-out) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

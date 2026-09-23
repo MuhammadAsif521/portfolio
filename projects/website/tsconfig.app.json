@@ -4,6 +4,7 @@
     "outDir": "../../out-tsc/app",
     "rootDir": "../../",
     "types": [
+      "node",
       "@types/google.maps"
     ]
   },

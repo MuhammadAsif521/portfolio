@@ -1,0 +1,128 @@
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { PLATFORM_ID } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
+import { API_BASE_URL, SSR_API_KEY } from '@shared/config/api.tokens';
+import { PublicSessionService } from '@shared/services/public-session.service';
+import { publicSessionInterceptor } from './public-session.interceptor';
+
+const API = 'https://api.test/api/v1';
+
+function setup(platform: 'browser' | 'server', extra: object[] = []) {
+  TestBed.configureTestingModule({
+    providers: [
+      provideHttpClient(withInterceptors([publicSessionInterceptor])),
+      provideHttpClientTesting(),
+      { provide: API_BASE_URL, useValue: API },
+      { provide: PLATFORM_ID, useValue: platform },
+      ...extra,
+    ],
+  });
+  return {
+    http: TestBed.inject(HttpClient),
+    backend: TestBed.inject(HttpTestingController),
+    session: TestBed.inject(PublicSessionService),
+  };
+}
+
+/** Lets pending microtasks (the async getToken) run before inspecting the backend. */
+const flushMicrotasks = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+describe('publicSessionInterceptor', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    TestBed.resetTestingModule();
+  });
+
+  it('leaves non-public requests untouched', async () => {
+    const { http, backend } = setup('browser');
+    const done = firstValueFrom(http.get(`${API}/admin/projects`));
+    const req = backend.expectOne(`${API}/admin/projects`);
+    expect(req.request.headers.has('Authorization')).toBe(false);
+    req.flush({ status: true });
+    await done;
+  });
+
+  it('SSR: sends X-SSR-Key and never creates a session', async () => {
+    const { http, backend } = setup('server', [{ provide: SSR_API_KEY, useValue: 'ssr-secret' }]);
+    const done = firstValueFrom(http.get(`${API}/public/settings`));
+    const req = backend.expectOne(`${API}/public/settings`);
+    expect(req.request.headers.get('X-SSR-Key')).toBe('ssr-secret');
+    expect(req.request.headers.has('Authorization')).toBe(false);
+    req.flush({ status: true, data: {} });
+    await done;
+    backend.expectNone(`${API}/public/verify-session`);
+  });
+
+  it('browser: attaches the session token as a Bearer header', async () => {
+    const { http, backend, session } = setup('browser');
+    session.accept('token-1', 1200);
+    const done = firstValueFrom(http.get(`${API}/public/projects`));
+    await flushMicrotasks();
+    const req = backend.expectOne(`${API}/public/projects`);
+    expect(req.request.headers.get('Authorization')).toBe('Bearer token-1');
+    req.flush({ status: true, data: [] });
+    await done;
+  });
+
+  it('adopts a renewed token from X-Session-Token', async () => {
+    const { http, backend, session } = setup('browser');
+    session.accept('old-token', 1200);
+    const done = firstValueFrom(http.get(`${API}/public/blog`));
+    await flushMicrotasks();
+    backend
+      .expectOne(`${API}/public/blog`)
+      .flush({ status: true, data: [] }, { headers: { 'X-Session-Token': 'renewed-token', 'X-Session-Expires-In': '1200' } });
+    await done;
+    expect(await session.getToken()).toBe('renewed-token');
+  });
+
+  it('reuses the cookie session without reCAPTCHA when the expiry hint is still valid', async () => {
+    localStorage.setItem('public-session-expires-at', String(Date.now() + 10 * 60_000));
+    const { http, backend } = setup('browser');
+    const done = firstValueFrom(http.get(`${API}/public/settings`));
+    await flushMicrotasks();
+
+    const verify = backend.expectOne(`${API}/public/verify-session`);
+    expect(verify.request.headers.has('x-recaptcha-token')).toBe(false); // no Google round-trip
+    verify.flush({ status: true, data: { sessionToken: 'cookie-session', expiresIn: 600, reused: true } });
+    await flushMicrotasks();
+
+    const req = backend.expectOne(`${API}/public/settings`);
+    expect(req.request.headers.get('Authorization')).toBe('Bearer cookie-session');
+    req.flush({ status: true, data: {} });
+    await done;
+    expect(document.querySelector('script[src*="recaptcha"]')).toBeNull();
+  });
+
+  it('on 401 PUBLIC_SESSION_EXPIRED re-establishes the session and retries once', async () => {
+    const { http, backend, session } = setup('browser');
+    session.accept('stale-token', 1200);
+    const done = firstValueFrom(http.get(`${API}/public/experience`));
+    await flushMicrotasks();
+
+    // The retry runs synchronously inside the 401 handling, so stub the fresh session first
+    // (the real path would run verify-session + reCAPTCHA).
+    const invalidate = vi.spyOn(session, 'invalidate');
+    vi.spyOn(session, 'getToken').mockResolvedValueOnce('fresh-token');
+    backend
+      .expectOne(`${API}/public/experience`)
+      .flush({ status: false, code: 'PUBLIC_SESSION_EXPIRED' }, { status: 401, statusText: 'Unauthorized' });
+    expect(invalidate).toHaveBeenCalledTimes(1);
+    await flushMicrotasks();
+    const retry = backend.expectOne(`${API}/public/experience`);
+    expect(retry.request.headers.get('Authorization')).toBe('Bearer fresh-token');
+    retry.flush({ status: true, data: [] });
+    await done;
+  });
+
+  it('passes other errors through unchanged', async () => {
+    const { http, backend, session } = setup('browser');
+    session.accept('token', 1200);
+    const done = firstValueFrom(http.get(`${API}/public/projects/missing`)).catch((err: { status: number }) => err.status);
+    await flushMicrotasks();
+    backend.expectOne(`${API}/public/projects/missing`).flush({ status: false, code: 'NOT_FOUND' }, { status: 404, statusText: 'Not Found' });
+    expect(await done).toBe(404);
+  });
+});

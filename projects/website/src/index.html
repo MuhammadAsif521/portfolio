@@ -5,6 +5,33 @@
     <title>Website</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <!--
+      Resolves light / dark / system before first paint (no flash of the wrong theme). Must stay inline
+      and before any stylesheet. Keep in sync with ThemeService (projects/shared/src/lib/services).
+      Precedence: visitor's saved choice → admin default (data-site-mode, set during SSR) → OS setting.
+    -->
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var modes = ['light', 'dark', 'system'];
+        var preference = null;
+        try {
+          preference = localStorage.getItem('theme-preference');
+          if (modes.indexOf(preference) < 0 && localStorage.getItem('theme-explicit') === 'true') {
+            preference = localStorage.getItem('theme'); // pre-three-mode key
+          }
+        } catch (e) {}
+        if (modes.indexOf(preference) < 0) preference = root.getAttribute('data-site-mode');
+        if (modes.indexOf(preference) < 0) preference = 'system';
+        var mode = preference;
+        if (mode === 'system') {
+          mode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        root.setAttribute('data-theme', mode);
+        root.setAttribute('data-theme-preference', preference);
+      })();
+    </script>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>
   <body>

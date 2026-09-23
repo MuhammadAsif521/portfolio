@@ -1,0 +1,254 @@
+// ─────────────────────────────────────────────────────────
+//  _variables.scss — design tokens as CSS custom properties
+// ─────────────────────────────────────────────────────────
+//
+//  Two independent layers (brief, Part 7):
+//
+//  1. Brand (admin-managed Theme): --primary, --secondary, --accent.
+//     The values below are the seeded "Default" theme from the Figma design. ThemeService overwrites
+//     them on <html> at runtime from GET /api/v1/public/settings, so switching the active theme in
+//     cusadmin restyles everything that references these tokens — never hard-code brand hex values.
+//
+//  2. Mode (light / dark, visitor-controlled): surfaces, bands, text, borders, status, forms.
+//     Governed only by [data-theme] on <html>, independent of the brand palette, so bands stay
+//     legible under any Theme.
+//
+//  Emitted once from styles.scss. Components must not @use this file (it would duplicate :root);
+//  Sass-only helpers live in _mixins.scss.
+
+// ── Brand layer + everything that doesn't change between modes ──────────────
+:root {
+  // Brand (Default theme — overwritten at runtime by ThemeService)
+  --primary: #ff7a3d;
+  --secondary: #141414;
+  --accent: #ff9a5c;
+
+  // Text drawn on brand colours: whichever of #FFFFFF / #141414 contrasts better. ThemeService
+  // recomputes these for every admin palette (color.util readableTextOn); the defaults below are its
+  // result for the Default theme — the orange #FF7A3D gets near-black (~7:1; white would be 2.6:1).
+  --on-primary: #141414;
+  --on-secondary: #ffffff;
+  --on-accent: #141414;
+
+  // Derived brand shades (follow any runtime palette automatically)
+  --primary-hover: color-mix(in srgb, var(--primary) 88%, #000000);
+  --primary-active: color-mix(in srgb, var(--primary) 78%, #000000);
+  --primary-soft: color-mix(in srgb, var(--primary) 12%, transparent);
+  --primary-muted: color-mix(in srgb, var(--primary) 24%, transparent);
+  --secondary-hover: color-mix(in srgb, var(--secondary) 85%, #ffffff);
+  --brand-gradient: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  --focus-ring: 0 0 0 4px color-mix(in srgb, var(--primary) 22%, transparent);
+
+  // Signature dark bands (services, testimonials, CTA, footer) stay dark in light mode too
+  --band-dark: #171717;
+  --band-dark-raised: #222222;
+  --band-dark-text: #fcfcfd;
+  --band-dark-muted: #98a2b3;
+  --band-dark-border: #2e2e2e;
+
+  // Typography — Urbanist (self-hosted via @fontsource-variable/urbanist)
+  --font-heading: 'Urbanist Variable', 'Urbanist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+  --font-body: var(--font-heading);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.75rem;
+  --text-display: clamp(2.75rem, 1.6rem + 5vw, 6rem); // hero "I'm Asif, …"
+
+  --leading-tight: 1.15;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  // Shape — Figma: pill buttons/nav/chips, rounded cards, bands with large top corners
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-band: 3rem;
+  --radius-pill: 999px;
+
+  // Layout
+  --container-max: 80rem; // 1280px
+  --container-gutter: clamp(1rem, 0.5rem + 2.5vw, 2rem);
+  --section-space: clamp(4rem, 2.5rem + 6vw, 7.5rem);
+  --header-height: 4.5rem;
+
+  // Motion (GSAP handles scroll animation; these are for CSS state transitions)
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --transition-fast: var(--duration-fast) var(--ease-out);
+  --transition-normal: var(--duration-normal) var(--ease-out);
+
+  // Layering
+  --z-dropdown: 50;
+  --z-sticky: 100;
+  --z-overlay: 900;
+  --z-modal: 1000;
+  --z-toast: 1100;
+  --z-panel: 9999; // form-control floating panels (portals)
+}
+
+// ── Mode layer: light (default) ──────────────────────────────────────────────
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+
+  // Page and bands — brief: white / #FAFAFA alternating
+  --body-bg: #ffffff;
+  --band-a: #ffffff;
+  --band-b: #fafafa;
+  --surface: #ffffff;
+  --surface-muted: #f2f4f7;
+  --card-bg: #ffffff;
+  --overlay: rgb(16 24 40 / 0.55);
+
+  // Text
+  --heading: #171717;
+  --text: #344054;
+  --text-muted: #667085;
+  --text-subtle: #98a2b3;
+  --text-inverse: #ffffff;
+
+  // Lines
+  --border: #eaecf0;
+  --border-strong: #d0d5dd;
+  --divider: #f2f4f7;
+
+  // Status
+  --error: #f04438;
+  --error-rgb: 240, 68, 56;
+  --warning: #f79009;
+  --success: #12b76a;
+  --info: #2e90fa;
+  --error-soft: color-mix(in srgb, var(--error) 10%, transparent);
+  --warning-soft: color-mix(in srgb, var(--warning) 12%, transparent);
+  --success-soft: color-mix(in srgb, var(--success) 12%, transparent);
+  --info-soft: color-mix(in srgb, var(--info) 12%, transparent);
+
+  // Elevation
+  --shadow-xs: 0 1px 2px rgb(16 24 40 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(16 24 40 / 0.1), 0 1px 2px rgb(16 24 40 / 0.06);
+  --shadow-md: 0 12px 16px -4px rgb(16 24 40 / 0.08), 0 4px 6px -2px rgb(16 24 40 / 0.03);
+  --shadow-lg: 0 24px 48px -12px rgb(16 24 40 / 0.18);
+
+  // Form controls (used by shared form-components / reactive-form-components)
+  --form-control-bg: #ffffff;
+  --form-control-bg-active: #ffffff;
+  --form-control-bg-muted: #f9fafb;
+  --form-control-hover-bg: #f9fafb;
+  --form-control-border: var(--border-strong);
+  --form-control-border-active: var(--primary);
+  --form-control-text: var(--heading);
+  --form-control-placeholder: var(--text-subtle);
+  --form-control-icon: var(--text-muted);
+  --form-label: var(--text);
+  --form-label-muted: var(--text-muted);
+  --form-focus-shadow: var(--focus-ring);
+  --form-chip-bg: var(--primary-soft);
+  --form-chip-border: var(--primary-muted);
+  --form-chip-text: color-mix(in srgb, var(--primary) 72%, #000000);
+  --form-chip-summary-bg: var(--surface-muted);
+  --form-chip-summary-text: var(--text);
+}
+
+// ── Mode layer: dark ─────────────────────────────────────────────────────────
+@mixin dark-tokens {
+  color-scheme: dark;
+
+  // Brief: #0D0D0D / #161616 alternating
+  --body-bg: #0d0d0d;
+  --band-a: #0d0d0d;
+  --band-b: #161616;
+  --surface: #161616;
+  --surface-muted: #1f1f1f;
+  --card-bg: #161616;
+  --overlay: rgb(0 0 0 / 0.7);
+
+  --band-dark: #1a1a1a;
+  --band-dark-raised: #242424;
+  --band-dark-border: #333333;
+
+  --heading: #fafafa;
+  --text: #e4e7ec;
+  --text-muted: #98a2b3;
+  --text-subtle: #667085;
+  --text-inverse: #141414;
+
+  --border: #2a2a2a;
+  --border-strong: #3a3a3a;
+  --divider: #1f1f1f;
+
+  --error: #f97066;
+  --error-rgb: 249, 112, 102;
+  --warning: #fdb022;
+  --success: #32d583;
+  --info: #53b1fd;
+
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.5), 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 12px 16px -4px rgb(0 0 0 / 0.5), 0 4px 6px -2px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.7);
+
+  --form-control-bg: #161616;
+  --form-control-bg-active: #1c1c1c;
+  --form-control-bg-muted: #1f1f1f;
+  --form-control-hover-bg: #1f1f1f;
+  --form-chip-text: color-mix(in srgb, var(--primary) 80%, #ffffff);
+}
+
+// Three modes — light / dark / system (ThemeService):
+// 1. Normal path: the inline script in index.html and ThemeService set <html data-theme> to the
+//    resolved mode, so an explicit data-theme always wins.
+[data-theme='dark'] {
+  @include dark-tokens;
+}
+
+// 2. Before that script runs, or without JavaScript: follow the admin's default (data-site-mode,
+//    set during SSR) and, for "system" or no default, the visitor's OS setting.
+:root[data-site-mode='dark']:not([data-theme]) {
+  @include dark-tokens;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]):not([data-site-mode='light']) {
+    @include dark-tokens;
+  }
+}
+
+// ── Legacy aliases ───────────────────────────────────────────────────────────
+// Names the existing shared components still reference (custom-tabs, loading-button, rich-text-editor,
+// phone input, autocomplete…). They point at the tokens above; migrate usages, then delete.
+:root {
+  --primary-color: var(--primary);
+  --primary-color-dark: var(--primary-active);
+  --secondary-color: var(--secondary);
+  --secondary-color-dark: var(--secondary-hover);
+  --accent-color: var(--accent);
+  --accent-color-dark: color-mix(in srgb, var(--accent) 80%, #000000);
+  --error-color: var(--error);
+  --warning-color: var(--warning);
+  --success-color: var(--success);
+  --neutral-color: var(--text-muted);
+  --text-secondary: var(--text-muted);
+  --text-on-primary: var(--on-primary);
+  --background-color: var(--body-bg);
+  --background-color-dark: var(--band-dark);
+  --surface-color: var(--surface);
+  --hover-bg: var(--form-control-hover-bg);
+  --breadcrumb-bg: var(--surface-muted);
+  --color-border: var(--border);
+  --field-bg: var(--form-control-bg);
+  --black: #141414;
+}

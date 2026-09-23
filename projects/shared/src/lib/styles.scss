@@ -1,3 +1,13 @@
-@use './styles/overrides';
-@use './styles/variables';
+// Global stylesheet for website and cusadmin (angular.json → build.options.styles).
+//
+// Order matters: tokens first, then the shared form UI (plain CSS, so Tailwind never purges its
+// dynamically built class names), then Tailwind. Base element styles in _overrides live in
+// `@layer base`, which Tailwind places right after preflight.
 
+@use './styles/variables';
+@use './styles/form-control';
+@use './styles/overrides';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

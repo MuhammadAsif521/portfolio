@@ -24,17 +24,44 @@
             "browser": "projects/website/src/main.ts",
             "tsConfig": "projects/website/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/shared/src/lib"
+              ]
+            },
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/website/public"
+                "input": "projects/shared/src/lib/assets",
+                "output": "assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/intl-tel-input/dist/img",
+                "output": "assets/intl-tel-input/img"
+              },
+              {
+                "glob": "robots.txt",
+                "input": "projects/website/src",
+                "output": "/"
+              },
+              {
+                "glob": "llm.txt",
+                "input": "projects/website/src",
+                "output": "/"
               }
             ],
-            "styles": ["projects/website/src/styles.scss"],
+            "styles": [
+              "node_modules/@fontsource-variable/urbanist/index.css",
+              "projects/shared/src/lib/styles.scss",
+              "node_modules/intl-tel-input/dist/css/intlTelInput.css"
+            ],
             "server": "projects/website/src/main.server.ts",
             "outputMode": "server",
             "security": {
-              "allowedHosts": []
+              "allowedHosts": [
+                "asifdev.com"
+              ]
             },
             "ssr": {
               "entry": "projects/website/src/server.ts"
@@ -98,16 +125,32 @@
             "browser": "projects/cusadmin/src/main.ts",
             "tsConfig": "projects/cusadmin/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/shared/src/lib"
+              ]
+            },
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/cusadmin/public"
+                "input": "projects/shared/src/lib/assets",
+                "output": "assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/intl-tel-input/dist/img",
+                "output": "assets/intl-tel-input/img"
               }
             ],
-            "styles": ["projects/cusadmin/src/styles.scss"]
+            "styles": [
+              "node_modules/@fontsource-variable/urbanist/index.css",
+              "projects/shared/src/lib/styles.scss",
+              "node_modules/intl-tel-input/dist/css/intlTelInput.css"
+            ]
           },
           "configurations": {
             "production": {
+              "baseHref": "/cusadmin/",
               "budgets": [
                 {
                   "type": "initial",

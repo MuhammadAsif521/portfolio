@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { environment } from '@shared/environments/environment';
+import { API_BASE_URL } from '@shared/config/api.tokens';
 import {
     ApiResponse,
     WITH_CREDENTIALS,
@@ -24,7 +24,8 @@ export interface ApiRequestOptions {
 })
 export class ApiService {
     private readonly http = inject(HttpClient);
-    private readonly baseUrl = environment.server;
+    // Public API URL in the browser, internal Docker URL during SSR (see API_BASE_URL).
+    private readonly baseUrl = inject(API_BASE_URL);
 
     get<T>(
         endpoint: string,

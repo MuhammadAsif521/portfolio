@@ -3,21 +3,31 @@ import { Store } from '@ngrx/store';
 import { SeoService } from '@shared/services/seo.service';
 import { HERO_CONTENT } from '../../content/hero.content';
 import { siteFeature } from '../../core/store/site.feature';
-import { Hero } from '../../sections/hero/hero';
-import { Projects } from '../../sections/projects/projects';
 import { About } from '../../sections/about/about';
 import { Experience } from '../../sections/experience/experience';
+import { Hero } from '../../sections/hero/hero';
+import { Marquee } from '../../sections/marquee/marquee';
+import { Projects } from '../../sections/projects/projects';
 import { Services } from '../../sections/services/services';
+import { Testimonials } from '../../sections/testimonials/testimonials';
 
 /**
  * The single scrollable page (brief, Part 4). Sections are added here in build order:
- * Hero → What I Do → Experience → Why Hire Me → Projects → Testimonials → CTA → Blog.
+ * Hero → What I Do → Experience → Why Hire Me → Projects → Testimonials → CTA → Marquee → Blog.
  */
 @Component({
   selector: 'app-home',
-  imports: [Hero, Services, Experience, About, Projects],
+  imports: [Hero, Services, Experience, About, Projects, Testimonials, Marquee],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<app-hero /><app-services /><app-experience /><app-about /><app-projects />`,
+  template: `
+    <app-hero />
+    <app-services />
+    <app-experience />
+    <app-about />
+    <app-projects />
+    <app-testimonials />
+    <app-marquee />
+  `,
 })
 export class HomePage {
   private readonly seo = inject(SeoService);

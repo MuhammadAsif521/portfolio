@@ -1,0 +1,58 @@
+@if (items().length) {
+  <section id="testimonials" class="testimonials" aria-labelledby="testimonials-title">
+    <div class="testimonials__inner">
+      <header class="testimonials__heading">
+        <h2 id="testimonials-title" class="testimonials__title" data-reveal>
+          {{ content.title }} <span class="testimonials__accent">{{ content.accent }}</span>
+        </h2>
+        <p class="testimonials__intro" data-reveal>{{ content.intro }}</p>
+      </header>
+
+      <div data-reveal>
+        <app-carousel [items]="items()" [slide]="card" label="Testimonials" [onDark]="true" />
+      </div>
+    </div>
+  </section>
+}
+
+<ng-template #card let-t>
+  <figure class="quote-card">
+    <figcaption class="quote-card__person">
+      <span class="quote-card__avatar" aria-hidden="true">{{ initials(t.name) }}</span>
+      <span class="quote-card__who">
+        <span class="quote-card__name">{{ t.name }}</span>
+        @if (t.role || t.company) {
+          <span class="quote-card__role">{{ t.role }}{{ t.role && t.company ? ', ' : '' }}{{ t.company }}</span>
+        }
+      </span>
+    </figcaption>
+
+    @if (t.rating) {
+      <p class="quote-card__rating" [attr.aria-label]="t.rating + ' out of 5 stars'">
+        @for (star of stars; track star) {
+          <i-lucide
+            name="star"
+            [size]="16"
+            [fill]="star <= t.rating ? 'currentColor' : 'none'"
+            [class.is-off]="star > t.rating"
+            aria-hidden="true"
+          />
+        }
+        <span class="quote-card__score" aria-hidden="true">{{ t.rating }}.0</span>
+      </p>
+    }
+
+    <i-lucide name="quote" [size]="36" class="quote-card__mark" aria-hidden="true" />
+    <blockquote class="quote-card__quote">
+      <p>{{ t.quote }}</p>
+    </blockquote>
+
+    @if (t.sourceUrl) {
+      <a class="quote-card__source" [href]="t.sourceUrl" target="_blank" rel="noopener noreferrer nofollow" draggable="false">
+        View on {{ sourceLabel(t.source) }}
+        <i-lucide name="arrow-up-right" [size]="14" aria-hidden="true" />
+        <span class="sr-only">(opens in a new tab)</span>
+      </a>
+    }
+  </figure>
+</ng-template>

@@ -1,0 +1,144 @@
+@use 'styles/mixins' as m;
+
+// Figma "Testimonials That Speak to My Results": dark band (dark in both modes), centred heading,
+// quote cards with person, stars and a large quote mark.
+
+.testimonials {
+  padding: clamp(3rem, 2rem + 4vw, 5.5rem) var(--container-gutter);
+  border-radius: var(--radius-band) var(--radius-band) 0 0;
+  background: var(--band-dark);
+  color: var(--band-dark-text);
+}
+
+.testimonials__inner {
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+.testimonials__heading {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  text-align: center;
+}
+
+.testimonials__title {
+  max-width: 18ch;
+  margin: 0;
+  font-size: var(--text-4xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--band-dark-text);
+}
+
+.testimonials__accent {
+  color: var(--primary);
+}
+
+.testimonials__intro {
+  margin: 0;
+  color: var(--band-dark-muted);
+  font-size: var(--text-lg);
+}
+
+// ── Card ──
+
+.quote-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+  margin: 0;
+  padding: 1.75rem;
+  border: 1px solid var(--band-dark-border);
+  border-radius: var(--radius-2xl);
+  background: var(--band-dark-raised);
+}
+
+.quote-card__person {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding-right: 3rem; // clear of the quote mark
+}
+
+.quote-card__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  color: var(--on-primary);
+  font-weight: 700;
+}
+
+.quote-card__who {
+  display: grid;
+}
+
+.quote-card__name {
+  font-weight: 600;
+  color: var(--band-dark-text);
+}
+
+.quote-card__role {
+  color: var(--band-dark-muted);
+  font-size: var(--text-sm);
+}
+
+.quote-card__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin: 0;
+  color: var(--primary);
+
+  .is-off {
+    color: var(--band-dark-muted);
+  }
+}
+
+.quote-card__score {
+  margin-left: 0.5rem;
+  color: var(--band-dark-text);
+  font-weight: 600;
+}
+
+.quote-card__mark {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  color: var(--band-dark-border);
+}
+
+.quote-card__quote {
+  flex: 1;
+  margin: 0;
+
+  p {
+    margin: 0;
+    color: var(--band-dark-text);
+    line-height: var(--leading-relaxed);
+  }
+}
+
+.quote-card__source {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  align-self: flex-start;
+  color: var(--band-dark-muted);
+  font-size: var(--text-sm);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--primary);
+  }
+
+  @include m.focus-ring;
+}

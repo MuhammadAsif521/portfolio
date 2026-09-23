@@ -99,6 +99,24 @@ export interface Experience extends Timestamped {
   order: number;
 }
 
+// ── Testimonials ─────────────────────────────────────────────────────────────
+
+export type TestimonialSource = 'fiverr' | 'upwork' | 'linkedin' | 'client' | 'other';
+
+/** GET /public/testimonials: real client quotes entered in cusadmin (never fabricated). */
+export interface Testimonial extends Timestamped {
+  name: string;
+  role?: string;
+  company?: string;
+  quote: string;
+  /** 1–5, when the source has a rating. */
+  rating?: number;
+  source: TestimonialSource;
+  /** Where the quote can be verified, e.g. the Fiverr review. */
+  sourceUrl?: string;
+  order: number;
+}
+
 // ── Contact ──────────────────────────────────────────────────────────────────
 
 export type ContactSource = 'contact-form' | 'cta' | 'footer';

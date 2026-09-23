@@ -1,0 +1,35 @@
+<div class="marquee" [class.is-still]="still()">
+  <div
+    class="marquee__band"
+    (pointerenter)="holdPause()"
+    (pointerleave)="releasePause()"
+    (focusin)="holdPause()"
+    (focusout)="releasePause()"
+  >
+    <div #track class="marquee__track">
+      <ul class="marquee__list" [attr.aria-label]="content.label">
+        @for (item of content.items; track item) {
+          <li class="marquee__item">{{ item }}</li>
+        }
+      </ul>
+      <!-- Second copy only makes the loop seamless; screen readers get the list once. -->
+      <ul class="marquee__list marquee__list--copy" aria-hidden="true">
+        @for (item of content.items; track item) {
+          <li class="marquee__item">{{ item }}</li>
+        }
+      </ul>
+    </div>
+
+    @if (animated()) {
+      <button
+        type="button"
+        class="marquee__toggle"
+        [attr.aria-label]="playing() ? 'Pause scrolling skills' : 'Play scrolling skills'"
+        [attr.aria-pressed]="!playing()"
+        (click)="toggle()"
+      >
+        <i-lucide [name]="playing() ? 'pause' : 'play'" [size]="14" aria-hidden="true" />
+      </button>
+    }
+  </div>
+</div>

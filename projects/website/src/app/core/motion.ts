@@ -102,3 +102,34 @@ export function disposeWith(destroyRef: DestroyRef, pending: Promise<() => void>
     else cleanup = fn;
   });
 }
+
+export interface LoopControls {
+  pause(): void;
+  play(): void;
+  kill(): void;
+}
+
+/**
+ * Seamless horizontal loop (brief: "continuous GSAP-driven horizontal loop"). `track` must hold its
+ * content twice, so moving it by half its width lands exactly where it started. Resolves to null with
+ * reduced motion (the strip stays still).
+ */
+export async function marqueeLoop(track: HTMLElement, pxPerSecond: number): Promise<LoopControls | null> {
+  if (prefersReducedMotion()) return null;
+  const gsap = await loadGsap();
+  const distance = track.scrollWidth / 2;
+  const tween = gsap.to(track, {
+    xPercent: -50,
+    ease: 'none',
+    duration: Math.max(distance / pxPerSecond, 1),
+    repeat: -1,
+  });
+  return {
+    pause: () => void tween.pause(),
+    play: () => void tween.play(),
+    kill: () => {
+      tween.kill();
+      gsap.set(track, { clearProps: 'transform' });
+    },
+  };
+}

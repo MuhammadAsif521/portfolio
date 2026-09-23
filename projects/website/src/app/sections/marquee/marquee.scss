@@ -1,0 +1,87 @@
+@use 'styles/mixins' as m;
+
+// Figma: a slightly tilted orange strip running edge to edge, items separated by ✦.
+
+:host {
+  display: block;
+  overflow: hidden; // the tilt and the moving track never cause horizontal page scroll
+  padding-block: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  background: var(--band-a);
+}
+
+.marquee__band {
+  position: relative;
+  margin-inline: -2%;
+  padding-block: 0.875rem;
+  background: var(--primary);
+  color: var(--on-primary);
+  transform: rotate(-1.5deg);
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+}
+
+.marquee__list {
+  display: flex;
+  flex: none;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  // Reduced motion: a still, wrapped and centred list; the copy is not needed.
+  .marquee.is-still & {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 0.25rem;
+    width: 100vw;
+    padding-inline: var(--container-gutter);
+  }
+
+  &--copy {
+    .marquee.is-still & {
+      display: none;
+    }
+  }
+}
+
+.marquee__item {
+  display: inline-flex;
+  align-items: center;
+  font-size: clamp(1.125rem, 0.9rem + 1vw, 1.75rem);
+  font-weight: 600;
+  white-space: nowrap;
+
+  // "✦" after every item, including the last, so the two copies join seamlessly.
+  &::after {
+    content: '✦';
+    margin-inline: 1.25rem;
+    font-size: 0.8em;
+  }
+}
+
+.marquee__toggle {
+  position: absolute;
+  top: 50%;
+  right: calc(2% + var(--container-gutter));
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--on-secondary);
+  cursor: pointer;
+  transform: translateY(-50%);
+  opacity: 0.85;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  @include m.focus-ring;
+}

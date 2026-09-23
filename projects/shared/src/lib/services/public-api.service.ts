@@ -11,6 +11,7 @@ import type {
   Project,
   ProjectCard,
   ProjectListQuery,
+  Testimonial,
 } from '@shared/interfaces/public-api.interface';
 import { ApiService } from './api.service';
 
@@ -52,6 +53,11 @@ export class PublicApiService {
   /** The career timeline, newest first. */
   getExperience(): Observable<Experience[]> {
     return this.api.get<Experience[]>('/public/experience').pipe(map((res) => res.data));
+  }
+
+  /** Published client testimonials, in the admin's order. */
+  getTestimonials(): Observable<Testimonial[]> {
+    return this.api.get<Testimonial[]>('/public/testimonials').pipe(map((res) => res.data));
   }
 
   /** Contact form / CTA email box. Protected by the session; no reCAPTCHA call per message. */

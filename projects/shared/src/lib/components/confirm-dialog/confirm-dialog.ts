@@ -18,19 +18,6 @@ export interface ConfirmDialogData {
   confirmText?: string;
   cancelText?: string;
   tone?: 'warning' | 'error' | 'success' | 'info';
-
-  /**
-   * The action to run when the user confirms.
-   *
-   * The calling (parent) component owns the loading flag: return a Promise
-   * that resolves once your operation finishes. The dialog shows a spinner
-   * and stays open for as long as that Promise is pending, and only closes
-   * itself once it resolves `true` (a successful outcome). Resolve `false`
-   * (or throw) to keep the dialog open so the user can retry.
-   *
-   * Omit `onConfirm` for a plain confirmation with no async work — the
-   * dialog then closes immediately on confirm.
-   */
   onConfirm?: () => void | Promise<boolean>;
 }
 

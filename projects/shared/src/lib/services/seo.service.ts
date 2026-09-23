@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, Renderer2, RendererFactory2, inject } from '@angular/core';
-import { Meta, Title } from '@angular/platform-browser';
-import { environment } from '@shared/environments/environment';
+import { Meta, Title } from '@angular/platform-browser'; 
+import { environment } from '@shared/environment/environment';
 
 export interface SeoPayload {
   title?: string;

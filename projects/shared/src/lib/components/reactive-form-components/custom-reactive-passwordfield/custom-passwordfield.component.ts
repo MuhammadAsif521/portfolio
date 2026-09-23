@@ -83,7 +83,7 @@ export class CustomReactivePasswordfieldComponent implements OnInit, OnDestroy {
   @Input() icon: string = '';
   @Input() value: string = '';
   @Input() showLabel: boolean = true;
-  @Input() showHints: boolean = true;
+  @Input() showHints: boolean | undefined = true;
 
   showPassword: boolean = false;
   label: string = '';

@@ -1,29 +1,63 @@
-import { inject, Injectable } from '@angular/core';  
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Injectable } from '@angular/core';
+import { toast, type ExternalToast } from 'ngx-sonner';
+import { TOAST_OPTIONS } from '@shared/constants/const';
+import { getError } from '@shared/utils/get-error.util';
+
+type ToastId = string | number;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ToastService {
-private _snackBar = inject (MatSnackBar);
-
-  showSuccess(message: string) {
-    this._snackBar.open(message, '', {
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      duration: 2000,
-      panelClass: ['success-snackbar'],
-    });
-  }
-  showError(message: string) {
-    this._snackBar.open(message, '', {
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      duration: 2000,
-      panelClass: ['error-snackbar'],
+  success(message: string, options?: ExternalToast): ToastId {
+    return toast.success(message, {
+      ...TOAST_OPTIONS,
+      ...options,
     });
   }
 
-  success(message: string) { this.showSuccess(message); }
-  error(message: string) { this.showError(message); }
+  error(message: string, options?: ExternalToast): ToastId {
+    return toast.error(getError(message), {
+      ...TOAST_OPTIONS,
+      ...options,
+    });
+  }
+
+  info(message: string, options?: ExternalToast): ToastId {
+    return toast.info(message, {
+      ...TOAST_OPTIONS,
+      ...options,
+    });
+  }
+
+  warning(message: string, options?: ExternalToast): ToastId {
+    return toast.warning(message, {
+      ...TOAST_OPTIONS,
+      ...options,
+    });
+  }
+
+  default(message: string, options?: ExternalToast): ToastId {
+    return toast(message, {
+      ...TOAST_OPTIONS,
+      ...options,
+    });
+  }
+
+  loading(message: string, options?: ExternalToast): ToastId {
+    return toast.loading(message, {
+      ...TOAST_OPTIONS,
+      duration: Number.POSITIVE_INFINITY,
+      ...options,
+    });
+  }
+
+  dismiss(id?: ToastId): void {
+    toast.dismiss(id);
+  }
+
+  dismissAll(): void {
+    toast.dismiss();
+  }
 }
+ 

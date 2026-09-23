@@ -5,12 +5,12 @@ import {
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
+import { IconComponent } from '@shared/components/icon-component/icon-component';
+import { environment } from '@shared/environment/environment';
 import { Observable, Subject, Subscription, from, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, takeUntil } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
-import { IconComponent } from '@shared/components/icon-component/icon-component';
 
-/** Minimal shape this shared component needs from the caller's "base location". */
+
 export interface BaseLocationData {
   city?: string;
   state?: string;
@@ -18,8 +18,6 @@ export interface BaseLocationData {
   country?: string;
   countryCode?: string;
 }
-
-/** Ensures the Google Maps API is loaded exactly once per app session, no matter how many component instances mount. */
 let googleMapsLoadPromise: Promise<void> | null = null;
 
 export interface ParsedPlace {
@@ -118,12 +116,11 @@ export class CustomLocationInputComponent implements OnInit, OnChanges, OnDestro
     if (typeof window === 'undefined') return;
     if (!googleMapsLoadPromise) {
       setOptions({ key: environment.google_places, v: 'weekly', libraries: ['places'] });
-      // 'geocoding' is required for google.maps.Geocoder, used by restrictTo bounds
-      // resolution and by useCurrentLocation().
+
       googleMapsLoadPromise = Promise.all([importLibrary('places'), importLibrary('geocoding')])
         .then(() => undefined)
         .catch(error => {
-          googleMapsLoadPromise = null; // allow a retry from the next component instance
+          googleMapsLoadPromise = null;
           throw error;
         });
     }
@@ -285,7 +282,7 @@ export class CustomLocationInputComponent implements OnInit, OnChanges, OnDestro
       this.ngZone.run(() => {
         this.control.setValue(result.formattedAddress);
         this.places.emit(result);
-   
+
         this.suggestions = [];
         this.removeListeners();
         this.cdr.markForCheck();
@@ -345,7 +342,7 @@ export class CustomLocationInputComponent implements OnInit, OnChanges, OnDestro
           this.ngZone.run(() => {
             this.control.setValue(formattedAddress);
             this.places.emit(parsed);
-    
+
             this.suggestions = [];
             this.removeListeners();
             this.cdr.markForCheck();
@@ -368,7 +365,9 @@ export class CustomLocationInputComponent implements OnInit, OnChanges, OnDestro
     window.removeEventListener('resize', this.resizeListener);
   }
 
-  private parseAddressComponents(components: google.maps.places.AddressComponent[] | undefined) {
+  private parseAddressComponents(
+    components: google.maps.places.AddressComponent[] | undefined
+  ) {
     let streetNumber: string | null = null;
     let route: string | null = null;
     let city: { name: string; shortName: string } | null = null;
@@ -380,29 +379,81 @@ export class CustomLocationInputComponent implements OnInit, OnChanges, OnDestro
     let sublocality: string | null = null;
 
     if (!components) {
-      return { streetNumber, route, fullStreet: null as string | null, city, state, zipCode, country, neighborhood, county };
+      return {
+        streetNumber,
+        route,
+        fullStreet: null as string | null,
+        city,
+        state,
+        zipCode,
+        country,
+        neighborhood,
+        county,
+      };
     }
 
     for (const c of components) {
-      if (c.types.includes('street_number')) streetNumber = c.longText;
-      else if (c.types.includes('route')) route = c.longText;
-      else if (c.types.includes('locality')) city = { name: c.longText, shortName: c.shortText };
-      else if (c.types.includes('postal_town') && !city) city = { name: c.longText, shortName: c.shortText };
-      else if (c.types.includes('sublocality_level_1')) sublocality = c.longText;
-      else if (c.types.includes('administrative_area_level_1')) state = { name: c.longText, shortName: c.shortText };
-      else if (c.types.includes('administrative_area_level_2')) county = c.longText;
-      else if (c.types.includes('postal_code')) zipCode = c.longText;
-      else if (c.types.includes('country')) country = { name: c.longText, shortName: c.shortText };
-      else if (c.types.includes('neighborhood')) neighborhood = c.longText;
+      if (c.types.includes('street_number')) {
+        streetNumber = c.longText ?? null;
+      } else if (c.types.includes('route')) {
+        route = c.longText ?? null;
+      } else if (c.types.includes('locality')) {
+        city = {
+          name: c.longText ?? '',
+          shortName: c.shortText ?? '',
+        };
+      } else if (c.types.includes('postal_town') && !city) {
+        city = {
+          name: c.longText ?? '',
+          shortName: c.shortText ?? '',
+        };
+      } else if (c.types.includes('sublocality_level_1')) {
+        sublocality = c.longText ?? null;
+      } else if (c.types.includes('administrative_area_level_1')) {
+        state = {
+          name: c.longText ?? '',
+          shortName: c.shortText ?? '',
+        };
+      } else if (c.types.includes('administrative_area_level_2')) {
+        county = c.longText ?? null;
+      } else if (c.types.includes('postal_code')) {
+        zipCode = c.longText ?? null;
+      } else if (c.types.includes('country')) {
+        country = {
+          name: c.longText ?? '',
+          shortName: c.shortText ?? '',
+        };
+      } else if (c.types.includes('neighborhood')) {
+        neighborhood = c.longText ?? null;
+      }
     }
 
-    // Fallbacks: some localities only expose a sublocality (e.g. certain city districts)
-    if (!city && sublocality) city = { name: sublocality, shortName: sublocality };
-    if (!neighborhood && sublocality) neighborhood = sublocality;
+    // Fallbacks: some localities only expose a sublocality
+    // (e.g. certain city districts)
+    if (!city && sublocality) {
+      city = {
+        name: sublocality,
+        shortName: sublocality,
+      };
+    }
+
+    if (!neighborhood && sublocality) {
+      neighborhood = sublocality;
+    }
 
     const fullStreet = [streetNumber, route].filter(Boolean).join(' ') || null;
 
-    return { streetNumber, route, fullStreet, city, state, zipCode, country, neighborhood, county };
+    return {
+      streetNumber,
+      route,
+      fullStreet,
+      city,
+      state,
+      zipCode,
+      country,
+      neighborhood,
+      county,
+    };
   }
 
   @HostListener('document:click')

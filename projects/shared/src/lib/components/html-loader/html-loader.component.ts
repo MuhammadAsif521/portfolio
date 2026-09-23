@@ -9,7 +9,7 @@ import {
   OnDestroy,
   ViewChild,
 } from '@angular/core';
-import { SafeHtmlPipe } from '@shared/pipe/safeHTML.pipe';
+import { SafeHtmlPipe } from '@shared/pipes/safeHTML.pipe';
 import { ThemeService } from '@shared/services/theme.service';
 
 @Component({

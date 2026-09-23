@@ -32,17 +32,7 @@ export class IconComponent implements OnChanges {
     sizeClass = 'icon-md';
 
     private readonly themeColorMap: Record<string, string> = {
-        primary: 'var(--primary)',
-        secondary: 'var(--secondary)', 
-        error: 'var(--error)',
-        info: 'var(--info)',
-
-        background: 'var(--body-bg)',
-        surface: 'var(--card-bg)',
-        border: 'var(--form-control-border)',
-
-        white: 'var(--white)',
-        black: 'var(--black)', 
+        
     };
 
     ngOnChanges(): void {

@@ -5,7 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-custom-time-component',
+  selector: 'app-custom-timefield',
   standalone: true,
   imports: [ ReactiveFormsModule],
   template: `

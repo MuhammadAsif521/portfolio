@@ -42,7 +42,7 @@ export class CustomReactiveTextareaComponent implements OnInit, OnDestroy {
   @Input() controlName!: string;
   @Input() placeholder: string = '';
   @Input() control!: FormControl;
-  @Input() rows: number = 2;
+  @Input() rows: number | undefined = 2;
   @Input() label$!: Observable<string>;
   @Input() showLabel: boolean = true;
   @Input() showHints: boolean = true;

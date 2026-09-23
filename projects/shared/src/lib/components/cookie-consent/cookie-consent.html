@@ -1,53 +1,39 @@
-@if (visible()) {
-<div @slideUp class="fixed bottom-0 left-0 right-0 z-[9999] p-3 sm:p-5" role="dialog" aria-modal="true"
-    aria-label="Cookie preferences">
-    <div class="max-w-3xl mx-auto rounded-md bg-card border border-border shadow-card overflow-hidden">
-
-
-        <div class="p-4 sm:p-5">
-
-            <!-- ── Header ── -->
-            <div class="flex items-start gap-3 mb-4">
-
-                <!-- Icon badge -->
-                <div
-                    class="shrink-0 w-9 h-9 rounded-sm bg-secondary/10 border border-secondary/20 flex items-center justify-center">
-                    <i-lucide name="cookie" [size]="16" color="secondary" />
-                </div>
-
-                <!-- Text -->
-                <div class="flex-1 min-w-0">
-                    <p class="text-md font-semibold text-default leading-snug">
-                        We value your privacy
-                    </p>
-                    <p class="text-md text-text-secondary mt-0.5 leading-relaxed">
-                        NB Youth Prevention uses cookies to enhance browsing, analyze traffic, and
-                        personalize your experience. See our
-                        <a routerLink="/privacy-policy" class="text-secondary underline-offset-2 cursor-pointer">Privacy
-                            Policy</a>
-                        and
-                        <a routerLink="/terms-conditions" class="text-secondary underline-offset-2 cursor-pointer">Terms &amp;
-                            Conditions</a>.
-                    </p>
-                </div>
+@if (consentService.bannerVisible()) {
+<div role="dialog" aria-live="polite" aria-label="Cookie consent"
+    class="fixed bottom-0 left-0 right-0 z-[9999] px-4 pb-4 sm:px-6 sm:pb-6 md:left-auto md:right-6 md:max-w-sm">
+    <div class="rounded-2xl border border-border bg-bg-surface shadow-xl p-5 flex flex-col gap-4">
+        <!-- Icon + heading -->
+        <div class="flex items-start gap-3">
+            <span class="text-2xl" aria-hidden="true">🍪</span>
+            <div>
+                <h3 class="font-display text-base font-bold text-primary">We use cookies</h3>
+                <p class="mt-1 font-body text-xs text-text-muted leading-relaxed">
+                    We use cookies to improve your experience, remember your preferences, and analyse traffic.
+                    By clicking <strong>Accept</strong> you agree to our use of cookies.
+                    <a [routerLink]="privacyPolicyPath" class="font-bold text-secondary hover:underline ml-1"
+                        (click)="consentService.acceptAll()">
+                        Privacy Policy
+                    </a>
+                </p>
             </div>
-
-            <!-- ── Actions ── -->
-            <div class="flex flex-wrap items-center gap-2">
-
-                <button (click)="acceptAll()"
-                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-sm bg-secondary text-on-secondary text-xs font-semibold hover:bg-[var(--secondary)] transition-colors duration-base">
-                    Accept All
-                </button>
-
-                <button (click)="rejectAll()"
-                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-sm border border-border text-text-secondary text-xs font-medium hover:border-border/60 hover:text-default transition-colors duration-base">
-                    Reject All
-                </button>
-
-            </div>
-
         </div>
+
+        <!-- Actions -->
+        <div class="flex flex-wrap gap-2">
+            <button type="button" (click)="consentService.acceptAll()"
+                class="flex-1 rounded-xl bg-primary px-4 py-2.5 font-body text-sm font-bold text-white transition hover:opacity-90 active:scale-95">
+                Accept All
+            </button>
+            <button type="button" (click)="consentService.rejectNonEssential()"
+                class="flex-1 rounded-xl border border-border bg-transparent px-4 py-2.5 font-body text-sm font-bold text-text-muted transition hover:bg-bg-muted active:scale-95">
+                Essential Only
+            </button>
+        </div>
+
+        <button type="button" (click)="consentService.openPreferences()"
+            class="font-body text-xs font-bold text-text-muted underline underline-offset-2 transition hover:text-primary self-center">
+            Manage Preferences
+        </button>
     </div>
 </div>
 }

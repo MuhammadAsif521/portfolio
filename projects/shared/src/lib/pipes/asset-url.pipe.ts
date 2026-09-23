@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { environment } from '@shared/environments/environment';
+import { environment } from '@shared/environment/environment';
 
 /**
  * Prefixes a relative asset path (e.g. `/uploads/images/foo.png`) returned by

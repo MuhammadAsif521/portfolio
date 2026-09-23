@@ -46,7 +46,7 @@
         @else if (!data?.length) {
         <tr>
           <td [attr.colspan]="columns.length + (actions?.length ? 1 : 0)">
-            <app-empty-products [message]="emptyMessage" />
+            <app-empty-state [message]="emptyMessage" />
           </td>
         </tr>
         }

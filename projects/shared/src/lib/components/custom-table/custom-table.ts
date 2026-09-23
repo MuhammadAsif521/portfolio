@@ -2,9 +2,9 @@ import { Component, ChangeDetectionStrategy, Input, TemplateRef, Output, EventEm
 import {  NgTemplateOutlet } from '@angular/common';
 import { PageLoaderComponent } from '../page-loader/page-loader.component';
 import { CustomPaginatorComponent, PaginationMeta } from '@shared/components/custom-paginator/custom-paginator';
-import { MatTooltip } from "@angular/material/tooltip";
-import { EmptyProductsComponent } from '@shared/components/empty-products/empty-products';
+import { MatTooltip } from "@angular/material/tooltip"; 
 import { IconComponent } from "../icon-component/icon-component";
+import { EmptyStateComponent } from '@shared/components/empty-state/empty-state';
 
 export interface TableColumn {
     key: string;
@@ -37,12 +37,11 @@ export interface SortEvent {
     standalone: true,
     templateUrl: './custom-table.html',
     imports: [
-        
         NgTemplateOutlet,
         PageLoaderComponent,
         CustomPaginatorComponent,
         MatTooltip,
-        EmptyProductsComponent,
+        EmptyStateComponent,
         IconComponent
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,

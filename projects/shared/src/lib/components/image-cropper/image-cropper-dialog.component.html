@@ -37,9 +37,9 @@
     </div>
 
     <footer class="flex flex-col-reverse gap-3 border-t border-outline-variant px-5 py-5 sm:flex-row sm:justify-end">
-      <app-loading-button buttonText="Cancel" type="button" color="neutral" variant="stroked" radius="small"
+      <app-loading-button buttonText="Cancel" type="button" color="error" variant="stroked" radius="small"
         (click)="cancel()" />
-      <app-loading-button buttonText="Apply Crop" type="button" color="secondary" radius="small"
+      <app-loading-button buttonText="Apply Crop" type="button" color="primary" radius="small"
         [disabled]="!imageReady()" (click)="apply()" />
     </footer>
   </div>

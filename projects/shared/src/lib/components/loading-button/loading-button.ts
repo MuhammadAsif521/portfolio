@@ -1,18 +1,18 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import {  } from '@angular/common';
+import { } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 
 export type ButtonVariant = 'flat' | 'stroked';
 export type ButtonSize = 'small' | 'medium' | 'large';
-export type ButtonColor = 'primary' | 'secondary' | 'accent' | 'warn' | 'success' | 'error';
+export type ButtonColor = 'primary' | 'secondary' | 'accent' | 'warn' | 'error';
 export type ButtonRadius = 'none' | 'small' | 'medium' | 'large';
 export type ButtonIconPos = 'left' | 'right';
 
 @Component({
   selector: 'app-loading-button',
   standalone: true,
-  imports: [ RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent],
   templateUrl: './loading-button.html',
   styleUrls: ['./loading-button.scss'],
 })
@@ -31,7 +31,7 @@ export class LoadingButtonComponent {
   @Input() icon?: string;
   @Input() iconPos: ButtonIconPos = 'left';
   @Input() iconSize: number = 18;
-  @Input() iconColor?: string;
+  @Input() iconColor?: any;
 
   // ── Navigation / click support ──
   @Input() routerLink?: string | any[];

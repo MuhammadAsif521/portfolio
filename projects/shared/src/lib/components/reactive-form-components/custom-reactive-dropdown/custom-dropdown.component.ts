@@ -180,7 +180,7 @@ export class CustomReactiveDropdownComponent implements OnInit, OnDestroy, OnCha
   @Input() multiple: boolean = false;
   @Input() showLabel: boolean = true;
   @Input() showHints: boolean = true;
-  @Input() showSearch: boolean = false;
+  @Input() showSearch: boolean | undefined = false;
   @Input() size: 'default' | 'compact' = 'default';
   @Output() onChange = new EventEmitter<any>();
 

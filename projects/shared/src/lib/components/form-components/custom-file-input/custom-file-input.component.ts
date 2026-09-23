@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 import { ImageCropperDialogComponent } from '@shared/components/image-cropper/image-cropper-dialog.component';
-import { environment } from '@shared/environments/environment';
+import { environment } from '@shared/environment/environment';
 import { Observable, Subject, firstValueFrom, takeUntil } from 'rxjs';
 
 export interface FileCropConfig {

@@ -35,9 +35,9 @@ import { CustomReactiveRadioComponent } from '@shared/components/reactive-form-c
 import { CustomReactiveSingleCheckboxComponent } from '@shared/components/reactive-form-components/custom-reactive-single-checkbox/custom-reactive-single-checkbox.component';
 import { CustomReactiveTextareaComponent } from '@shared/components/reactive-form-components/custom-reactive-textarea/custom-textarea.component';
 import { CustomReactiveTextfieldComponent } from '@shared/components/reactive-form-components/custom-reactive-textfield/custom-textfield.component';
-import { CustomReactiveTimeComponent } from '@shared/components/reactive-form-components/custom-reactive-time-component/custom-time-component.component';
 import { CustomReactiveToggleButtonComponent } from '@shared/components/reactive-form-components/custom-reactive-toggle-button/custom-toggle-button.component';
 import { RichTextEditorComponent } from '@shared/components/reactive-form-components/rich-text-editor/rich-text-editor';
+import { CustomTimeComponent } from '@shared/components/form-components/custom-time-component/custom-time-component.component';
 
 export type FieldType =
   | 'text'
@@ -101,7 +101,7 @@ export interface FormFieldConfig {
   options?: { name: string; id: any }[];
   multiple?: boolean;
 
-  format?: number;
+  format?: any;
 
   accept?: string;
   maxFileSize?: number;
@@ -131,7 +131,6 @@ export interface FormFieldConfig {
   templateUrl: './dynamic-reactive-form.component.html',
   standalone: true,
   imports: [
-    
     FormsModule,
     ReactiveFormsModule,
     CustomReactiveTextfieldComponent,
@@ -142,7 +141,6 @@ export interface FormFieldConfig {
     CustomReactiveAutocompleteComponent,
     CustomFileInputComponent,
     CustomDateComponentComponent,
-    CustomReactiveTimeComponent,
     CustomReactiveToggleButtonComponent,
     CustomReactiveCheckboxComponent,
     CustomReactiveRadioComponent,
@@ -152,7 +150,8 @@ export interface FormFieldConfig {
     CustomInputOtpComponent,
     CustomLocationInputComponent,
     PhoneInputComponent,
-  ],
+    CustomTimeComponent
+],
 })
 export class DynamicReactiveFormComponent implements OnInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);

@@ -62,7 +62,7 @@ export class CustomReactiveTextfieldComponent implements OnInit, OnDestroy {
   @Input() minLength!: number;
   @Input() maxLength!: number;
   @Input() value: string = '';
-  @Input() pattern: string = '';
+  @Input() pattern: string | any = '';
   @Input() showLabel: boolean = true;
   @Input() showHints: boolean = true;
   @Input() min!: string | number;

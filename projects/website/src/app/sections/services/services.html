@@ -1,0 +1,57 @@
+<section id="services" class="services" appSpySection aria-labelledby="services-title">
+  <div class="services__inner">
+    <header class="services__heading">
+      <h2 id="services-title" class="services__title" data-reveal>
+        {{ content.eyebrow }} <span class="services__accent">{{ content.title }}</span>
+      </h2>
+      <p class="services__intro" data-reveal>{{ content.intro }}</p>
+    </header>
+
+    <div data-reveal>
+      <app-carousel [items]="content.items" [slide]="card" label="Services" [onDark]="true" />
+    </div>
+  </div>
+</section>
+
+<ng-template #card let-item>
+  <article class="service-card">
+    <div class="service-card__media">
+      @if (item.image; as image) {
+        <img
+          class="service-card__image"
+          [src]="image.src"
+          [alt]="image.alt"
+          [width]="image.width"
+          [height]="image.height"
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        />
+      } @else {
+        <span class="service-card__icon" aria-hidden="true">
+          <i-lucide [name]="item.icon" [size]="32" />
+        </span>
+      }
+    </div>
+
+    <div class="service-card__body">
+      <h3 class="service-card__title">{{ item.title }}</h3>
+      <p class="service-card__summary">{{ item.summary }}</p>
+      <ul class="service-card__points" aria-label="Includes">
+        @for (point of item.points; track point) {
+          <li class="service-card__chip">{{ point }}</li>
+        }
+      </ul>
+    </div>
+
+    <a
+      class="service-card__link"
+      routerLink="/"
+      [fragment]="item.target"
+      [attr.aria-label]="(item.target === 'contact' ? 'Discuss ' : 'See projects for ') + item.title"
+      draggable="false"
+    >
+      <i-lucide name="arrow-up-right" [size]="22" aria-hidden="true" />
+    </a>
+  </article>
+</ng-template>

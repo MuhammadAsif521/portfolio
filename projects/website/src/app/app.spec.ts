@@ -5,6 +5,8 @@ import { App } from './app';
 import { Hero } from './sections/hero/hero';
 import { ThemeToggle } from './layout/theme-toggle/theme-toggle';
 import { HERO_CONTENT } from './content/hero.content';
+import { SERVICES_CONTENT } from './content/services.content';
+import { Services } from './sections/services/services';
 
 const settings = {
   _id: 's1',
@@ -114,5 +116,39 @@ describe('Hero', () => {
     await fixture.whenStable();
     expect(el.querySelector('img.hero__image')).toBeNull();
     expect(el.querySelector('.hero__arc')).toBeTruthy();
+  });
+});
+
+describe('Services', () => {
+  beforeEach(setup);
+
+  it('renders the heading and one labelled slide per service', async () => {
+    const fixture = TestBed.createComponent(Services);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('#services h2')?.textContent?.replace(/\s+/g, ' ').trim()).toBe('My Services');
+    expect(el.querySelector('[aria-roledescription="carousel"]')?.getAttribute('aria-label')).toBe('Services');
+    const slides = el.querySelectorAll('[aria-roledescription="slide"]');
+    expect(slides.length).toBe(SERVICES_CONTENT.items.length);
+    expect(slides[0]?.getAttribute('aria-label')).toBe(`1 of ${SERVICES_CONTENT.items.length}`);
+    expect(slides[0]?.querySelector('h3')?.textContent).toBe(SERVICES_CONTENT.items[0].title);
+  });
+
+  it('links each card to its home-page section', async () => {
+    const fixture = TestBed.createComponent(Services);
+    await fixture.whenStable();
+    const links = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('a.service-card__link'));
+    expect(links.map((a) => a.getAttribute('href'))).toEqual(SERVICES_CONTENT.items.map((i) => `/#${i.target}`));
+    expect(links.every((a) => a.getAttribute('aria-label'))).toBe(true);
+  });
+
+  it('keeps the dots hidden until the track is measured as overflowing', async () => {
+    const fixture = TestBed.createComponent(Services);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    const dots = el.querySelector<HTMLElement>('.carousel__dots')!;
+    expect(dots.hidden).toBe(true); // jsdom has no layout, so nothing overflows
+    expect(el.querySelectorAll('.carousel__dot').length).toBe(SERVICES_CONTENT.items.length);
+    expect(el.querySelector('.carousel__dot.is-active')?.getAttribute('aria-current')).toBe('true');
   });
 });

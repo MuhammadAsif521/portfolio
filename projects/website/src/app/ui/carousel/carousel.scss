@@ -1,0 +1,99 @@
+@use 'styles/mixins' as m;
+
+:host {
+  display: block;
+  // Slide width: one card on phones, two on tablets, three from lg (override per use if needed).
+  --carousel-slide: 86%;
+  --carousel-gap: 1rem;
+
+  @include m.up(md) {
+    --carousel-slide: calc((100% - var(--carousel-gap)) / 2);
+  }
+
+  @include m.up(lg) {
+    --carousel-slide: calc((100% - 2 * var(--carousel-gap)) / 3);
+    --carousel-gap: 1.5rem;
+  }
+}
+
+.carousel__track {
+  display: flex;
+  gap: var(--carousel-gap);
+  margin: 0;
+  padding: 0 0 0.25rem;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  cursor: grab;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @include m.motion-safe {
+    scroll-behavior: smooth;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 4px;
+  }
+
+  // While dragging with a mouse, follow the pointer exactly (snap resumes on release).
+  &--dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+    user-select: none;
+  }
+}
+
+.carousel__slide {
+  flex: 0 0 var(--carousel-slide);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+// Figma: dots, the active one stretched into an orange pill.
+.carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.carousel__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--border-strong);
+  cursor: pointer;
+  transition:
+    width var(--transition-normal),
+    background-color var(--transition-normal);
+
+  // Enlarged hit area without changing the visual size.
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -0.5rem;
+  }
+
+  &.is-active {
+    width: 2.5rem;
+    background: var(--primary);
+  }
+
+  .carousel__dots--on-dark &:not(.is-active) {
+    background: rgb(255 255 255 / 0.3);
+  }
+}

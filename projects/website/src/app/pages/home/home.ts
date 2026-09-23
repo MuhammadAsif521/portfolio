@@ -4,6 +4,7 @@ import { SeoService } from '@shared/services/seo.service';
 import { HERO_CONTENT } from '../../content/hero.content';
 import { siteFeature } from '../../core/store/site.feature';
 import { Hero } from '../../sections/hero/hero';
+import { Services } from '../../sections/services/services';
 
 /**
  * The single scrollable page (brief, Part 4). Sections are added here in build order:
@@ -11,9 +12,9 @@ import { Hero } from '../../sections/hero/hero';
  */
 @Component({
   selector: 'app-home',
-  imports: [Hero],
+  imports: [Hero, Services],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<app-hero />`,
+  template: `<app-hero /><app-services />`,
 })
 export class HomePage {
   private readonly seo = inject(SeoService);

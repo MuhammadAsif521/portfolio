@@ -1,0 +1,149 @@
+import { NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  PLATFORM_ID,
+  TemplateRef,
+  afterNextRender,
+  computed,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
+
+export interface CarouselSlideContext<T> {
+  $implicit: T;
+  index: number;
+}
+
+/**
+ * Accessible, swipeable carousel (brief, Part 8: swipe/drag-enabled, synced dot pagination).
+ *
+ * - Touch swipe and trackpads use native scroll-snap; mouse users can drag.
+ * - Dots follow the scroll position and are hidden when every slide already fits.
+ * - Screen readers get a labelled carousel region with "slide n of m" groups; dots are real buttons.
+ *
+ *   <app-carousel [items]="items" label="Services" [slide]="card" />
+ *   <ng-template #card let-item let-i="index">…</ng-template>
+ */
+@Component({
+  selector: 'app-carousel',
+  imports: [NgTemplateOutlet],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './carousel.html',
+  styleUrl: './carousel.scss',
+})
+export class Carousel<T> {
+  readonly items = input.required<readonly T[]>();
+  readonly slide = input.required<TemplateRef<CarouselSlideContext<T>>>();
+  /** Accessible name of the carousel, e.g. "Services". */
+  readonly label = input.required<string>();
+  /** Dot colours for dark bands (the default suits light backgrounds). */
+  readonly onDark = input(false);
+
+  private readonly track = viewChild.required<ElementRef<HTMLElement>>('track');
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  protected readonly active = signal(0);
+  /** false until measured in the browser, so SSR and wide screens don't show pointless dots. */
+  protected readonly overflowing = signal(false);
+  protected readonly dragging = signal(false);
+  protected readonly count = computed(() => this.items().length);
+
+  constructor() {
+    afterNextRender(() => this.attach());
+  }
+
+  /** Scrolls a slide into view (dots; also usable by a parent via a template ref). */
+  goTo(index: number): void {
+    const track = this.track().nativeElement;
+    const slide = track.children.item(index) as HTMLElement | null;
+    if (!slide) return;
+    const reduce = matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    track.scrollTo({ left: slide.offsetLeft - track.offsetLeft, behavior: reduce ? 'auto' : 'smooth' });
+    this.active.set(index);
+  }
+
+  private attach(): void {
+    if (!this.isBrowser) return;
+    const track = this.track().nativeElement;
+
+    const measure = () => {
+      this.overflowing.set(track.scrollWidth - track.clientWidth > 2);
+      this.active.set(this.nearestIndex(track));
+    };
+
+    let frame = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => this.active.set(this.nearestIndex(track)));
+    };
+    track.addEventListener('scroll', onScroll, { passive: true });
+
+    const resize = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
+    resize?.observe(track);
+    measure();
+
+    // Mouse drag (touch and pens already scroll natively).
+    let startX = 0;
+    let startScroll = 0;
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse' || event.button !== 0 || !this.overflowing()) return;
+      startX = event.clientX;
+      startScroll = track.scrollLeft;
+      this.dragging.set(true);
+      track.setPointerCapture(event.pointerId);
+    };
+    const onPointerMove = (event: PointerEvent) => {
+      if (!this.dragging()) return;
+      track.scrollLeft = startScroll - (event.clientX - startX);
+    };
+    const onPointerUp = (event: PointerEvent) => {
+      if (!this.dragging()) return;
+      this.dragging.set(false);
+      if (track.hasPointerCapture(event.pointerId)) track.releasePointerCapture(event.pointerId);
+      this.goTo(this.nearestIndex(track)); // settle on a slide, as the snap would
+    };
+    // A drag shouldn't also count as a click on a card link.
+    const onClickCapture = (event: MouseEvent) => {
+      if (Math.abs(track.scrollLeft - startScroll) > 6 && startScroll !== -1) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      startScroll = -1;
+    };
+    track.addEventListener('pointerdown', onPointerDown);
+    track.addEventListener('pointermove', onPointerMove);
+    track.addEventListener('pointerup', onPointerUp);
+    track.addEventListener('pointercancel', onPointerUp);
+    track.addEventListener('click', onClickCapture, true);
+
+    this.destroyRef.onDestroy(() => {
+      cancelAnimationFrame(frame);
+      resize?.disconnect();
+      track.removeEventListener('scroll', onScroll);
+      track.removeEventListener('pointerdown', onPointerDown);
+      track.removeEventListener('pointermove', onPointerMove);
+      track.removeEventListener('pointerup', onPointerUp);
+      track.removeEventListener('pointercancel', onPointerUp);
+      track.removeEventListener('click', onClickCapture, true);
+    });
+  }
+
+  private nearestIndex(track: HTMLElement): number {
+    const slides = Array.from(track.children) as HTMLElement[];
+    if (!slides.length) return 0;
+    // At the far right edge the last slide is the active one even if it isn't at the start.
+    if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 2) return slides.length - 1;
+    const left = track.scrollLeft + track.offsetLeft;
+    let best = 0;
+    slides.forEach((slide, index) => {
+      if (Math.abs(slide.offsetLeft - left) < Math.abs((slides[best]?.offsetLeft ?? 0) - left)) best = index;
+    });
+    return best;
+  }
+}

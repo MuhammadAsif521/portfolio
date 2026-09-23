@@ -1,0 +1,80 @@
+@let s = state();
+<div class="blog-list" [attr.aria-busy]="s.status === 'loading'">
+  <nav class="blog-list__crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li aria-current="page">{{ content.title }}</li>
+    </ol>
+  </nav>
+
+  <header class="blog-list__header">
+    <h1 class="blog-list__title">{{ content.title }}</h1>
+    <p class="blog-list__intro">{{ content.intro }}</p>
+
+    @if (currentTag(); as tag) {
+      <p class="blog-list__filter">
+        Tagged <strong class="blog-list__tag">{{ tag }}</strong>
+        <a class="blog-list__clear" routerLink="/blog">
+          <i-lucide name="x" [size]="14" aria-hidden="true" /> {{ content.allTags }} posts
+        </a>
+      </p>
+    }
+  </header>
+
+  @if (result(); as r) {
+    @if (r.data.length) {
+      <ul class="blog-list__grid">
+        @for (post of r.data; track post._id) {
+          <li><app-post-card [post]="post" [headingLevel]="2" /></li>
+        }
+      </ul>
+
+      @if (r.pages > 1) {
+        <nav class="blog-list__pager" aria-label="Blog pages">
+          @if (currentPage() > 1) {
+            <a class="blog-list__step" routerLink="/blog" [queryParams]="params(currentPage() - 1)" rel="prev">
+              <i-lucide name="arrow-left" [size]="16" aria-hidden="true" /> {{ content.previous }}
+            </a>
+          }
+          <ol class="blog-list__pages">
+            @for (n of pages(); track n) {
+              <li>
+                <a
+                  class="blog-list__page"
+                  routerLink="/blog"
+                  [queryParams]="params(n)"
+                  [class.is-current]="n === currentPage()"
+                  [attr.aria-current]="n === currentPage() ? 'page' : null"
+                  [attr.aria-label]="'Page ' + n"
+                >{{ n }}</a>
+              </li>
+            }
+          </ol>
+          @if (currentPage() < r.pages) {
+            <a class="blog-list__step" routerLink="/blog" [queryParams]="params(currentPage() + 1)" rel="next">
+              {{ content.next }} <i-lucide name="arrow-right" [size]="16" aria-hidden="true" />
+            </a>
+          }
+        </nav>
+      }
+    } @else {
+      <div class="blog-list__empty">
+        <p>{{ outOfRange() ? content.emptyPage : currentTag() ? content.emptyTag : content.empty }}</p>
+        @if (outOfRange() || currentTag()) {
+          <a class="blog-list__clear" routerLink="/blog">{{ content.firstPage }}</a>
+        }
+      </div>
+    }
+  } @else if (s.status === 'loading') {
+    <ul class="blog-list__grid" aria-hidden="true">
+      @for (n of [1, 2, 3]; track n) {
+        <li class="blog-list__bone"></li>
+      }
+    </ul>
+    <p class="sr-only" role="status">Loading posts…</p>
+  } @else {
+    <div class="blog-list__empty">
+      <p>{{ content.errorTitle }}</p>
+    </div>
+  }
+</div>

@@ -1,0 +1,44 @@
+@let p = post();
+<article class="post-card">
+  <div class="post-card__media">
+    @if (p.coverImage; as cover) {
+      <img
+        class="post-card__image"
+        [src]="cover.url"
+        [alt]="cover.alt"
+        [attr.width]="cover.width ?? 800"
+        [attr.height]="cover.height ?? 600"
+        loading="lazy"
+        decoding="async"
+      />
+    } @else {
+      <div class="post-card__placeholder" aria-hidden="true">
+        <i-lucide name="pen-line" [size]="40" />
+      </div>
+    }
+    <span class="post-card__arrow" aria-hidden="true"><i-lucide name="arrow-up-right" [size]="22" /></span>
+  </div>
+
+  <div class="post-card__body">
+    @if (tag(); as t) {
+      <p class="post-card__tag">{{ t }}</p>
+    }
+    <p class="post-card__meta">
+      <span>{{ author() }}</span>
+      @if (date(); as d) {
+        <span aria-hidden="true">·</span>
+        <time [attr.datetime]="d.iso">{{ d.label }}</time>
+      }
+      @if (p.readingTime) {
+        <span aria-hidden="true">·</span>
+        <span>{{ p.readingTime }} {{ minutes }}</span>
+      }
+    </p>
+    @if (headingLevel() === 2) {
+      <h2 class="post-card__title"><a class="post-card__link" [routerLink]="link()">{{ p.title }}</a></h2>
+    } @else {
+      <h3 class="post-card__title"><a class="post-card__link" [routerLink]="link()">{{ p.title }}</a></h3>
+    }
+    <p class="post-card__excerpt">{{ p.excerpt }}</p>
+  </div>
+</article>

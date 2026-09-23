@@ -1,0 +1,87 @@
+@let s = state();
+<div class="post" [attr.aria-busy]="s.status === 'loading'">
+  <nav class="post__crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li><a routerLink="/blog">Blog</a></li>
+      @if (post(); as p) {
+        <li aria-current="page">{{ p.title }}</li>
+      }
+    </ol>
+  </nav>
+
+  @if (post(); as p) {
+    <article class="post__article">
+      <header class="post__header">
+        @if (p.tags.length) {
+          <ul class="post__tags" aria-label="Tags">
+            @for (tag of p.tags; track tag) {
+              <li><a class="post__tag" routerLink="/blog" [queryParams]="{ tag }">{{ tag }}</a></li>
+            }
+          </ul>
+        }
+        <h1 class="post__title">{{ p.title }}</h1>
+        <p class="post__lead">{{ p.excerpt }}</p>
+        <p class="post__meta">
+          <span>{{ author() }}</span>
+          @if (published(); as d) {
+            <span aria-hidden="true">·</span>
+            <time [attr.datetime]="d.iso">{{ d.label }}</time>
+          }
+          @if (p.readingTime) {
+            <span aria-hidden="true">·</span>
+            <span>{{ p.readingTime }} {{ content.minutes }}</span>
+          }
+          @if (updated(); as u) {
+            <span aria-hidden="true">·</span>
+            <span>Updated <time [attr.datetime]="u.iso">{{ u.label }}</time></span>
+          }
+        </p>
+      </header>
+
+      @if (p.coverImage; as cover) {
+        <img
+          class="post__cover"
+          [src]="cover.url"
+          [alt]="cover.alt"
+          [attr.width]="cover.width ?? 1600"
+          [attr.height]="cover.height ?? 900"
+          fetchpriority="high"
+          decoding="async"
+        />
+      }
+
+      <!-- Sanitized on the server (sanitize-html allowlist) and again by Angular's [innerHTML]. -->
+      <div class="post__content prose" [innerHTML]="p.content"></div>
+
+      <footer class="post__footer">
+        <a class="post__back" routerLink="/blog">
+          <i-lucide name="arrow-left" [size]="16" aria-hidden="true" /> {{ content.backLabel }}
+        </a>
+      </footer>
+    </article>
+
+    <aside class="post__cta" aria-labelledby="post-cta-title">
+      <h2 id="post-cta-title" class="post__cta-title">{{ content.ctaTitle }}</h2>
+      <p class="post__cta-text">{{ content.ctaText }}</p>
+      <a class="post__btn" routerLink="/" fragment="contact">
+        {{ content.ctaLabel }} <i-lucide name="arrow-up-right" [size]="18" aria-hidden="true" />
+      </a>
+    </aside>
+  } @else if (s.status === 'loading') {
+    <div class="post__skeleton" aria-hidden="true">
+      <span class="post__bone post__bone--title"></span>
+      <span class="post__bone post__bone--text"></span>
+      <span class="post__bone post__bone--cover"></span>
+    </div>
+    <p class="sr-only" role="status">Loading post…</p>
+  } @else {
+    <div class="post__missing">
+      <h1 class="post__title">{{ s.status === 'not-found' ? content.notFoundTitle : content.errorTitle }}</h1>
+      @if (s.status === 'not-found') {
+        <p class="post__lead">{{ content.notFoundText }}</p>
+      }
+      <a class="post__btn" routerLink="/blog">{{ content.backLabel }}</a>
+    </div>
+  }
+</div>

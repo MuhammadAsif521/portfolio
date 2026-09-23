@@ -1,0 +1,144 @@
+@use 'styles/mixins' as m;
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+// The title link is stretched over the card (::after), so the whole card is one click target and one
+// tab stop, and the accessible name is simply the post title.
+.post-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &:has(.post-card__link:focus-visible) {
+    outline: 2px solid var(--primary);
+    outline-offset: 4px;
+    border-radius: var(--radius-2xl);
+  }
+}
+
+.post-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
+  background: var(--surface-muted);
+}
+
+.post-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out);
+
+  @include m.motion-safe {
+    .post-card:hover & {
+      transform: scale(1.04);
+    }
+  }
+}
+
+.post-card__placeholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  background: var(--brand-gradient);
+  color: var(--on-primary);
+}
+
+.post-card__arrow {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--on-secondary);
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal),
+    transform var(--transition-normal);
+
+  .post-card:hover & {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  @include m.motion-safe {
+    .post-card:hover & {
+      transform: rotate(45deg);
+    }
+  }
+}
+
+.post-card__body {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 1rem;
+}
+
+.post-card__tag {
+  justify-self: start;
+  margin: 0;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface-muted);
+  color: var(--text);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.post-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0;
+  color: var(--text-subtle);
+  font-size: var(--text-sm);
+}
+
+.post-card__title {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--heading);
+}
+
+.post-card__link {
+  color: inherit;
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  .post-card:hover & {
+    color: var(--primary);
+  }
+}
+
+.post-card__excerpt {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  color: var(--text-muted);
+  line-height: var(--leading-normal);
+}

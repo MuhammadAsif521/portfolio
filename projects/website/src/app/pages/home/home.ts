@@ -4,6 +4,7 @@ import { SeoService } from '@shared/services/seo.service';
 import { HERO_CONTENT } from '../../content/hero.content';
 import { siteFeature } from '../../core/store/site.feature';
 import { About } from '../../sections/about/about';
+import { Blog } from '../../sections/blog/blog';
 import { Contact } from '../../sections/contact/contact';
 import { Experience } from '../../sections/experience/experience';
 import { Hero } from '../../sections/hero/hero';
@@ -13,12 +14,12 @@ import { Services } from '../../sections/services/services';
 import { Testimonials } from '../../sections/testimonials/testimonials';
 
 /**
- * The single scrollable page (brief, Part 4). Sections are added here in build order:
+ * The single scrollable page (brief, Part 4), in page order:
  * Hero → What I Do → Experience → Why Hire Me → Projects → Testimonials → CTA → Marquee → Blog.
  */
 @Component({
   selector: 'app-home',
-  imports: [Hero, Services, Experience, About, Projects, Testimonials, Contact, Marquee],
+  imports: [Hero, Services, Experience, About, Projects, Testimonials, Contact, Marquee, Blog],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-hero />
@@ -29,6 +30,7 @@ import { Testimonials } from '../../sections/testimonials/testimonials';
     <app-testimonials />
     <app-contact />
     <app-marquee />
+    <app-blog />
   `,
 })
 export class HomePage {

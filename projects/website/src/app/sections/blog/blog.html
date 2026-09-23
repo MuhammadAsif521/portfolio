@@ -1,0 +1,31 @@
+<section id="blog" class="blog" aria-labelledby="blog-title">
+  <div class="blog__inner">
+    <header class="blog__heading">
+      <h2 id="blog-title" class="blog__title" data-reveal>
+        {{ content.title }} <span class="blog__accent">{{ content.accent }}</span>
+      </h2>
+      @if (items().length) {
+        <a class="blog__all" routerLink="/blog" data-reveal>
+          {{ content.seeAll }} <i-lucide name="arrow-up-right" [size]="18" aria-hidden="true" />
+        </a>
+      }
+    </header>
+
+    @if (items().length) {
+      <ul class="blog__grid">
+        @for (post of items(); track post._id) {
+          <li data-reveal><app-post-card [post]="post" /></li>
+        }
+      </ul>
+    } @else if (showUpcoming()) {
+      <ul class="blog__grid" [attr.aria-label]="content.upcomingLabel">
+        @for (topic of content.upcoming; track topic) {
+          <li class="blog__upcoming" data-reveal>
+            <span class="blog__badge">{{ content.upcomingLabel }}</span>
+            <p class="blog__upcoming-title">{{ topic }}</p>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</section>

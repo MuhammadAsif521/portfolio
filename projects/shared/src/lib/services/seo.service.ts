@@ -116,6 +116,20 @@ export interface CreativeWorkJsonLdInput {
   keywords?: string[];
 }
 
+/** A blog post (brief: "BlogPosting schema on each /blog/:slug"). */
+export interface BlogPostingJsonLdInput {
+  headline: string;
+  description?: string;
+  /** Absolute URL of the post. */
+  url: string;
+  image?: string;
+  datePublished?: string;
+  dateModified?: string;
+  keywords?: string[];
+  /** Minutes, rendered as an ISO 8601 duration (timeRequired). */
+  readingTime?: number;
+}
+
 export interface BreadcrumbItem {
   name: string;
   url?: string;
@@ -451,6 +465,27 @@ export class SeoService {
       ...(input.keywords?.length ? { keywords: input.keywords.join(', ') } : {}),
       author: { '@id': this.personId },
       creator: { '@id': this.personId },
+    };
+  }
+
+  /** BlogPosting authored and published by the site-wide Person node. */
+  buildBlogPostingJsonLd(input: BlogPostingJsonLdInput): Record<string, any> {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: input.headline,
+      ...(input.description ? { description: input.description } : {}),
+      url: input.url,
+      mainEntityOfPage: { '@type': 'WebPage', '@id': input.url },
+      ...(input.image ? { image: [this.absoluteUrl(input.image)] } : {}),
+      ...(input.datePublished ? { datePublished: input.datePublished } : {}),
+      ...(input.dateModified || input.datePublished
+        ? { dateModified: input.dateModified || input.datePublished }
+        : {}),
+      ...(input.keywords?.length ? { keywords: input.keywords.join(', ') } : {}),
+      ...(input.readingTime ? { timeRequired: `PT${Math.max(1, Math.round(input.readingTime))}M` } : {}),
+      author: { '@id': this.personId },
+      publisher: { '@id': this.personId },
     };
   }
 

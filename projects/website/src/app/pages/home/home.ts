@@ -4,6 +4,7 @@ import { SeoService } from '@shared/services/seo.service';
 import { HERO_CONTENT } from '../../content/hero.content';
 import { siteFeature } from '../../core/store/site.feature';
 import { Hero } from '../../sections/hero/hero';
+import { Experience } from '../../sections/experience/experience';
 import { Services } from '../../sections/services/services';
 
 /**
@@ -12,9 +13,9 @@ import { Services } from '../../sections/services/services';
  */
 @Component({
   selector: 'app-home',
-  imports: [Hero, Services],
+  imports: [Hero, Services, Experience],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<app-hero /><app-services />`,
+  template: `<app-hero /><app-services /><app-experience />`,
 })
 export class HomePage {
   private readonly seo = inject(SeoService);

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRe
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 import { SERVICES_CONTENT } from '../../content/services.content';
-import { revealOnScroll } from '../../core/motion';
+import { disposeWith, revealOnScroll } from '../../core/motion';
 import { ScrollSpyDirective } from '../../core/scroll-spy.directive';
 import { Carousel } from '../../ui/carousel/carousel';
 
@@ -25,9 +25,7 @@ export class Services {
       const root = this.host.nativeElement;
       const section = root.querySelector('section');
       if (!section) return;
-      void revealOnScroll(section, root.querySelectorAll('[data-reveal]')).then((cleanup) =>
-        this.destroyRef.onDestroy(cleanup),
-      );
+      disposeWith(this.destroyRef, revealOnScroll(section, root.querySelectorAll('[data-reveal]')));
     });
   }
 }

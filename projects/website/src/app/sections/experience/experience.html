@@ -1,0 +1,60 @@
+<section id="experience" class="experience" appSpySection aria-labelledby="experience-title">
+  <div class="experience__inner">
+    <h2 id="experience-title" class="experience__title" data-reveal>
+      {{ content.eyebrow }} <span class="experience__accent">{{ content.title }}</span>
+    </h2>
+
+    <div class="timeline">
+      <span class="timeline__track" aria-hidden="true"></span>
+      <span class="timeline__line" aria-hidden="true"></span>
+
+      <ol class="timeline__list">
+      @for (entry of entries(); track entry.company + entry.startDate) {
+        @let start = monthYear(entry.startDate);
+        @let end = entry.current ? null : monthYear(entry.endDate);
+        <li class="timeline__item" [class.timeline__item--current]="entry.current" data-reveal>
+          <div class="timeline__meta">
+            <h3 class="timeline__company">
+              {{ entry.company }}@if (entry.location) {<span>, {{ entry.location }}</span>}
+            </h3>
+            <p class="timeline__dates">
+              @if (start) {
+                <time [attr.datetime]="start.iso">{{ start.label }}</time>
+              }
+              –
+              @if (entry.current) {
+                <span>Present</span>
+              } @else if (end) {
+                <time [attr.datetime]="end.iso">{{ end.label }}</time>
+              }
+            </p>
+          </div>
+
+          <span class="timeline__node" aria-hidden="true"></span>
+
+          <div class="timeline__detail">
+            <p class="timeline__role">{{ entry.role }}</p>
+            @if (entry.summary) {
+              <p class="timeline__summary">{{ entry.summary }}</p>
+            }
+            @if (entry.highlights.length) {
+              <ul class="timeline__highlights">
+                @for (highlight of entry.highlights; track highlight) {
+                  <li>{{ highlight }}</li>
+                }
+              </ul>
+            }
+            @if (entry.techStack.length) {
+              <ul class="timeline__tech" aria-label="Technologies">
+                @for (tech of entry.techStack; track tech) {
+                  <li class="timeline__chip">{{ tech }}</li>
+                }
+              </ul>
+            }
+          </div>
+        </li>
+      }
+      </ol>
+    </div>
+  </div>
+</section>

@@ -7,6 +7,10 @@ import { ThemeToggle } from './layout/theme-toggle/theme-toggle';
 import { HERO_CONTENT } from './content/hero.content';
 import { SERVICES_CONTENT } from './content/services.content';
 import { Services } from './sections/services/services';
+import { Experience, monthYear } from './sections/experience/experience';
+import { EXPERIENCE_CONTENT } from './content/experience.content';
+import { PublicApiService } from '@shared/services/public-api.service';
+import { of, throwError } from 'rxjs';
 
 const settings = {
   _id: 's1',
@@ -150,5 +154,72 @@ describe('Services', () => {
     expect(dots.hidden).toBe(true); // jsdom has no layout, so nothing overflows
     expect(el.querySelectorAll('.carousel__dot').length).toBe(SERVICES_CONTENT.items.length);
     expect(el.querySelector('.carousel__dot.is-active')?.getAttribute('aria-current')).toBe('true');
+  });
+});
+
+describe('Experience', () => {
+  const live = [
+    {
+      _id: 'e1',
+      company: 'ICTGE',
+      location: 'Lahore',
+      role: 'Angular Developer',
+      startDate: '2025-10-01T00:00:00.000Z',
+      current: true,
+      highlights: ['Shipped the City of New Britain ecosystem'],
+      techStack: ['Angular', 'NgRx'],
+      order: 0,
+    },
+    {
+      _id: 'e2',
+      company: 'Learn2Earn Tech',
+      role: 'MEAN Stack Developer',
+      startDate: '2024-03-01T00:00:00.000Z',
+      endDate: '2025-09-30T00:00:00.000Z',
+      current: false,
+      highlights: [],
+      techStack: [],
+      order: 1,
+    },
+  ];
+
+  function render(getExperience: () => unknown) {
+    setup();
+    TestBed.overrideProvider(PublicApiService, { useValue: { getExperience } });
+    const fixture = TestBed.createComponent(Experience);
+    return fixture.whenStable().then(() => fixture.nativeElement as HTMLElement);
+  }
+
+  it('formats month ranges in UTC and rejects bad dates', () => {
+    expect(monthYear('2025-10-01T00:00:00.000Z')).toEqual({ label: 'Oct 2025', iso: '2025-10' });
+    expect(monthYear('2020-06-01')).toEqual({ label: 'Jun 2020', iso: '2020-06' });
+    expect(monthYear(undefined)).toBeNull();
+    expect(monthYear('not a date')).toBeNull();
+  });
+
+  it('renders the live timeline newest first with dates, highlights and tech chips', async () => {
+    const el = await render(() => of(live));
+    const items = el.querySelectorAll('.timeline__item');
+    expect(items.length).toBe(2);
+    expect(items[0]?.querySelector('h3')?.textContent?.replace(/\s+/g, ' ').trim()).toBe('ICTGE, Lahore');
+    expect(items[0]?.querySelector('.timeline__dates')?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      'Oct 2025 – Present',
+    );
+    expect(items[0]?.querySelector('time')?.getAttribute('datetime')).toBe('2025-10');
+    expect(items[0]?.classList).toContain('timeline__item--current');
+    expect(items[0]?.querySelectorAll('.timeline__chip').length).toBe(2);
+    expect(items[1]?.querySelector('.timeline__dates')?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      'Mar 2024 – Sep 2025',
+    );
+  });
+
+  it('falls back to the built-in entries when the API is empty or fails', async () => {
+    for (const source of [() => of([]), () => throwError(() => new Error('down'))]) {
+      TestBed.resetTestingModule();
+      const el = await render(source);
+      const roles = Array.from(el.querySelectorAll('.timeline__role')).map((node) => node.textContent);
+      expect(roles).toEqual(EXPERIENCE_CONTENT.fallback.map((entry) => entry.role));
+      expect(el.querySelector('#experience h2')?.textContent?.replace(/\s+/g, ' ').trim()).toBe('My Work Experience');
+    }
   });
 });

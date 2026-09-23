@@ -1,0 +1,62 @@
+<section id="home" class="hero" appSpySection aria-labelledby="hero-title">
+  <div class="hero__inner">
+    <div class="hero__heading">
+      <p class="hero__badge" data-hero-anim>
+        {{ content.greeting }}
+        <!-- Figma doodle beside the "Hello!" pill -->
+        <svg class="hero__doodle" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M8 22 L4 30 M15 18 L14 28 M22 22 L28 28" />
+        </svg>
+      </p>
+
+      <h1 id="hero-title" class="hero__title" data-hero-anim>
+        <span class="hero__line">I'm <span class="hero__name">{{ content.firstName }}</span>,</span>
+        <span class="hero__line hero__role">
+          <!-- Screen readers get the stable first role; the typewriter is visual only -->
+          <span class="sr-only">{{ content.roles[0] }}</span>
+          <span aria-hidden="true">{{ role() }}<span class="hero__caret" [class.hero__caret--typing]="typing()"></span></span>
+        </span>
+      </h1>
+    </div>
+
+    <div class="hero__stage">
+      <blockquote class="hero__quote" data-hero-anim>
+        <i-lucide name="quote" [size]="28" class="hero__quote-mark" aria-hidden="true" />
+        <p>{{ tagline() }}</p>
+      </blockquote>
+
+      <div class="hero__portrait">
+        <div class="hero__arc" aria-hidden="true"></div>
+        @if (portraitVisible()) {
+          <img
+            class="hero__image"
+            [src]="content.portrait.src"
+            [alt]="content.portrait.alt"
+            [width]="content.portrait.width"
+            [height]="content.portrait.height"
+            fetchpriority="high"
+            decoding="async"
+            (error)="onPortraitError()"
+          />
+        }
+
+        <div class="hero__actions" data-hero-anim>
+          <a class="hero__cta hero__cta--primary" routerLink="/" fragment="projects">
+            Projects <i-lucide name="arrow-up-right" [size]="18" />
+          </a>
+          <a class="hero__cta hero__cta--ghost" routerLink="/" fragment="contact">Hire me</a>
+        </div>
+      </div>
+
+      <div class="hero__stat" data-hero-anim>
+        <p class="hero__stars" [attr.aria-label]="content.stat.rating + ' out of 5 stars'">
+          @for (star of stars; track $index) {
+            <i-lucide name="star" [size]="18" fill="currentColor" aria-hidden="true" />
+          }
+        </p>
+        <p class="hero__stat-value">{{ content.stat.value }}</p>
+        <p class="hero__stat-label">{{ content.stat.label }}</p>
+      </div>
+    </div>
+  </div>
+</section>

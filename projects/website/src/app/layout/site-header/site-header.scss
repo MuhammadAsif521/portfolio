@@ -1,0 +1,268 @@
+@use 'styles/mixins' as m;
+
+// Figma: a dark pill bar floating over the page (dark in both modes), orange active pill.
+
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  padding: 0.75rem var(--container-gutter) 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: var(--z-toast);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 600;
+  transition: top var(--transition-fast);
+
+  &:focus-visible {
+    top: 0.75rem;
+  }
+}
+
+.site-nav {
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+.site-nav__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--header-height);
+  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--band-dark) 94%, transparent);
+  color: var(--band-dark-text);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+
+  @include m.up(lg) {
+    padding-inline: 0.5rem;
+  }
+}
+
+.site-nav__indicator {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 2.5rem;
+  margin-top: -1.25rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  pointer-events: none;
+  transition:
+    transform var(--duration-slow) var(--ease-out),
+    width var(--duration-slow) var(--ease-out);
+}
+
+.site-nav__links {
+  display: none;
+  align-items: center;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include m.up(lg) {
+    display: flex;
+    flex: 1;
+  }
+
+  &--right {
+    justify-content: flex-end;
+  }
+}
+
+.site-nav__link {
+  position: relative; // above the indicator
+  display: inline-flex;
+  align-items: center;
+  height: 2.5rem;
+  padding-inline: 1rem;
+  border-radius: var(--radius-pill);
+  color: var(--band-dark-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+
+  &:hover {
+    color: var(--band-dark-text);
+  }
+
+  // Static pill until the sliding indicator is measured (SSR, no JS); then the indicator takes over.
+  &.is-active {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  .has-indicator &.is-active {
+    background: transparent;
+  }
+}
+
+.site-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-right: auto;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: -0.01em;
+  color: var(--band-dark-text);
+
+  @include m.up(lg) {
+    margin-inline: 1rem;
+  }
+}
+
+.site-nav__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.site-nav__logo-img {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
+.site-nav__name {
+  @include m.down(sm) {
+    @include m.sr-only;
+  }
+}
+
+.site-nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  @include m.up(lg) {
+    margin-left: 0.5rem;
+  }
+}
+
+.site-nav__resume {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+  height: 2.5rem;
+  padding-inline: 1rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--band-dark-border);
+  color: var(--band-dark-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+
+  &:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--on-primary);
+  }
+
+  @include m.up(sm) {
+    display: inline-flex;
+  }
+}
+
+.site-nav__menu-button {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--band-dark-border);
+  background: var(--band-dark-raised);
+  color: var(--band-dark-text);
+  cursor: pointer;
+
+  @include m.up(lg) {
+    display: none;
+  }
+}
+
+// ── Mobile menu ──
+
+.mobile-menu {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-xl);
+  background: var(--band-dark);
+  color: var(--band-dark-text);
+  box-shadow: var(--shadow-lg);
+
+  &[hidden] {
+    display: none;
+  }
+
+  @include m.motion-safe {
+    animation: menu-in var(--duration-normal) var(--ease-out);
+  }
+
+  @include m.up(lg) {
+    display: none;
+  }
+}
+
+.mobile-menu__links {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mobile-menu__link {
+  display: flex;
+  align-items: center;
+  min-height: 3rem; // comfortable touch target
+  padding-inline: 1rem;
+  border-radius: var(--radius-lg);
+  color: var(--band-dark-text);
+  font-weight: 500;
+
+  &:hover {
+    background: var(--band-dark-raised);
+  }
+
+  &.is-active {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+}
+
+.mobile-menu__resume {
+  display: inline-flex;
+  margin-top: 0.75rem;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}

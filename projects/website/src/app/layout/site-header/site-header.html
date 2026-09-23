@@ -1,0 +1,97 @@
+<header class="site-header">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="site-nav" aria-label="Main">
+    <div class="site-nav__bar" #bar [class.has-indicator]="!!indicator()">
+      <!-- Sliding active pill (decorative: the active link also has aria-current) -->
+      @if (indicator(); as box) {
+        <span class="site-nav__indicator" aria-hidden="true" [style.transform]="'translateX(' + box.x + 'px)'" [style.width.px]="box.width"></span>
+      }
+
+      <ul class="site-nav__links site-nav__links--left">
+        @for (link of left; track link.label) {
+          <li>
+            <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: link }" />
+          </li>
+        }
+      </ul>
+
+      <a class="site-nav__brand" routerLink="/" fragment="home" (click)="onSectionClick($event, left[0])" [attr.aria-label]="siteName() + ', home'">
+        @if (logo(); as image) {
+          <img class="site-nav__logo-img" [src]="image.url" [alt]="''" width="32" height="32" />
+        } @else {
+          <span class="site-nav__mark" aria-hidden="true">{{ initials() }}</span>
+        }
+        <span class="site-nav__name">{{ siteName() }}</span>
+      </a>
+
+      <ul class="site-nav__links site-nav__links--right">
+        @for (link of right; track link.label) {
+          <li>
+            <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: link }" />
+          </li>
+        }
+      </ul>
+
+      <div class="site-nav__actions">
+        @if (resumeUrl(); as url) {
+          <a class="site-nav__resume" [href]="url" target="_blank" rel="noopener">
+            Resume <i-lucide name="arrow-up-right" [size]="14" />
+          </a>
+        }
+        <app-theme-toggle [onDark]="true" />
+        <button
+          #menuButton
+          type="button"
+          class="site-nav__menu-button"
+          [attr.aria-expanded]="menuOpen()"
+          aria-controls="mobile-menu"
+          [attr.aria-label]="menuOpen() ? 'Close menu' : 'Open menu'"
+          (click)="toggleMenu()"
+        >
+          <i-lucide [name]="menuOpen() ? 'x' : 'menu'" [size]="20" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="mobile-menu" [class.mobile-menu--open]="menuOpen()" [attr.hidden]="menuOpen() ? null : ''">
+      <ul class="mobile-menu__links">
+        @for (link of all; track link.label; let first = $first) {
+          <li>
+            @if (link.route) {
+              <a class="mobile-menu__link" [class.is-active]="isActive(link)" [routerLink]="link.route" [attr.aria-current]="isActive(link) ? 'page' : null">
+                {{ link.label }}
+              </a>
+            } @else if (first) {
+              <a #firstMenuLink class="mobile-menu__link" [class.is-active]="isActive(link)" routerLink="/" [fragment]="link.section" (click)="onSectionClick($event, link)" [attr.aria-current]="isActive(link) ? 'location' : null">
+                {{ link.label }}
+              </a>
+            } @else {
+              <a class="mobile-menu__link" [class.is-active]="isActive(link)" routerLink="/" [fragment]="link.section" (click)="onSectionClick($event, link)" [attr.aria-current]="isActive(link) ? 'location' : null">
+                {{ link.label }}
+              </a>
+            }
+          </li>
+        }
+      </ul>
+      @if (resumeUrl(); as url) {
+        <a class="site-nav__resume mobile-menu__resume" [href]="url" target="_blank" rel="noopener">
+          Resume <i-lucide name="arrow-up-right" [size]="14" />
+        </a>
+      }
+    </div>
+  </nav>
+</header>
+
+<ng-template #navItem let-link>
+  @if (link.route) {
+    <a #navLink class="site-nav__link" [attr.data-key]="keyOf(link)" [class.is-active]="isActive(link)" [routerLink]="link.route" [attr.aria-current]="isActive(link) ? 'page' : null">
+      {{ link.label }}
+    </a>
+  } @else {
+    <a #navLink class="site-nav__link" [attr.data-key]="keyOf(link)" [class.is-active]="isActive(link)" routerLink="/" [fragment]="link.section" (click)="onSectionClick($event, link)" [attr.aria-current]="isActive(link) ? 'location' : null">
+      {{ link.label }}
+    </a>
+  }
+</ng-template>

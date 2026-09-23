@@ -57,6 +57,11 @@ export interface SiteSeoFallback {
  *  fields left empty are simply omitted from the schema, never fabricated. */
 export interface SiteSettingsSeoInput {
   siteName?: string;
+  /** Headline shown as the Person's jobTitle, e.g. "MEAN Stack Developer". */
+  jobTitle?: string;
+  description?: string;
+  /** Default share image (absolute URL), used when a page has no ogImage of its own. */
+  ogImage?: string;
   logo?: string;
   contactEmail?: string;
   phoneNumber?: string;
@@ -113,19 +118,19 @@ export class SeoService {
   private rendererFactory = inject(RendererFactory2);
   private document = inject(DOCUMENT);
 
-  // Trimmed defensively: environment.siteName carries a trailing space
-  // ('NB Youth Prevention ') used verbatim elsewhere (e.g. the apple-mobile-
-  // web-app-title meta), which would otherwise make withSiteName()'s
-  // "already contains the site name" check fail for any route title that
-  // ends exactly at "NB Youth Prevention" with no trailing space, producing
-  // a duplicated "| NB Youth Prevention | NB Youth Prevention" suffix.
-  private readonly siteName = environment.siteName.trim();
-  private readonly siteUrl = environment.siteUrl;
-  private readonly defaultDescription =
-    "NB Youth Prevention is New Britain, CT's youth substance-use and mental-health prevention coalition — Parent Cafés, Bee Positive, Bee Responsible, Peer to Peer, and Local & Youth Leadership Councils working to keep New Britain's youth healthy, informed, and supported.";
-  private readonly defaultImage = `${this.siteUrl}/assets/logo/nv-logo.svg`;
+  // Environment values are the fallback; applySiteSettings() replaces them with the admin's Site Settings.
+  // Trimmed defensively so withSiteName()'s "already contains the site name" check can't miss.
+  private siteName = environment.siteName.trim();
+  private readonly siteUrl = environment.siteUrl.replace(/\/+$/, '');
+  private defaultDescription =
+    'Building scalable, production Angular & Node systems — from multi-tenant platforms to e-commerce and real-time apps.';
+  // No invented fallback image: without a site or page ogImage, image tags are simply omitted.
+  private defaultImage = '';
 
   private renderer: Renderer2 = this.rendererFactory.createRenderer(null, null);
+
+  /** Stable id of the site owner's Person node; ProfilePage/BlogPosting reference it. */
+  readonly personId = `${environment.siteUrl.replace(/\/+$/, '')}/#person`;
 
   private static readonly ORG_SCHEMA_ID = 'site-org-json-ld';
   private static readonly SITE_VERIFICATION_NAME = 'google-site-verification';
@@ -166,18 +171,29 @@ export class SeoService {
   }
 
   /**
-   * Applies site-wide (not per-route) SEO: the google-site-verification
-   * meta tag and a GovernmentOrganization JSON-LD block built from real
-   * contact/branding data. Call whenever site-settings changes (e.g. from an
-   * effect watching the site-settings store slice) — safe to call repeatedly.
+   * Applies site-wide (not per-route) SEO: the google-site-verification meta tag and the site owner's
+   * Person JSON-LD, built from real Site Settings data. Also makes the settings' name, description and
+   * share image the fallbacks for every page. Call whenever site-settings loads — safe to call repeatedly.
    *
-   * Uses its own script id (distinct from the per-page `data-seo-json-ld`
-   * scripts written by updateSeo()) so this never gets clobbered by, or
-   * clobbers, a route component's own JSON-LD.
+   * Uses its own script id (distinct from the per-page `data-seo-json-ld` scripts written by updateSeo())
+   * so this never gets clobbered by, or clobbers, a route component's own JSON-LD.
    */
   applySiteSettings(input: SiteSettingsSeoInput): void {
+    if (input.siteName?.trim()) this.siteName = input.siteName.trim();
+    if (input.description?.trim()) this.defaultDescription = input.description.trim();
+    if (input.ogImage) this.defaultImage = input.ogImage;
     this.applySiteVerification(input.googleSiteVerification);
     this.applyOrganizationSchema(input);
+  }
+
+  /** ProfilePage JSON-LD for the home page, pointing at the site-wide Person node. */
+  profilePageJsonLd(url: string): Record<string, any> {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'ProfilePage',
+      url: this.buildUrl(url),
+      mainEntity: { '@id': this.personId },
+    };
   }
 
   private applySiteVerification(id?: string): void {
@@ -194,14 +210,18 @@ export class SeoService {
     if (!name) return; // never fabricate a placeholder org name
 
     const address = this.postalAddress(input);
+    // A personal portfolio: the site owner is a Person (brief: Person/ProfilePage on "/").
     const schema: Record<string, any> = {
       '@context': 'https://schema.org',
-      '@type': 'GovernmentOrganization',
+      '@type': 'Person',
+      '@id': this.personId,
       name,
       url: this.siteUrl,
     };
 
-    if (input.logo) schema['logo'] = this.absoluteUrl(input.logo);
+    if (input.jobTitle) schema['jobTitle'] = input.jobTitle;
+    if (input.description) schema['description'] = input.description;
+    if (input.logo) schema['image'] = this.absoluteUrl(input.logo);
     if (input.phoneNumber) schema['telephone'] = input.phoneNumber;
     if (input.contactEmail) schema['email'] = input.contactEmail;
     if (address) schema['address'] = address;
@@ -337,21 +357,11 @@ export class SeoService {
     };
   }
 
-  private organizationJsonLd(): Record<string, any> {
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: this.siteName,
-      url: this.siteUrl,
-      logo: this.defaultImage,
-      sameAs: [],
-    };
-  }
-
-  /** The site's own identity schema — include alongside page-specific JSON-LD so it's
-   * present even when a detail page is the visitor's actual entry point. */
+  /** The site's own identity schema — include alongside page-specific JSON-LD so it's present even
+   * when a detail page is the visitor's entry point. (The owner's Person node is written separately by
+   * applySiteSettings, from real data, under its own script id.) */
   siteJsonLd(): Record<string, any>[] {
-    return [this.websiteJsonLd(), this.organizationJsonLd()];
+    return [this.websiteJsonLd()];
   }
 
   private postalAddress(input: {
@@ -369,7 +379,7 @@ export class SeoService {
       ...(input.city ? { addressLocality: input.city } : {}),
       ...(input.state ? { addressRegion: input.state } : {}),
       ...(input.zipCode ? { postalCode: input.zipCode } : {}),
-      addressCountry: input.country || 'US',
+      ...(input.country ? { addressCountry: input.country } : {}),
     };
   }
 

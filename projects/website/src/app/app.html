@@ -2,4 +2,7 @@
   <ngx-sonner-toaster [position]="toaster.position" [duration]="toaster.duration" [closeButton]="toaster.closeButton"
     [richColors]="toaster.richColors" />
 }
-<router-outlet />
+<app-site-header />
+<main id="main" tabindex="-1">
+  <router-outlet />
+</main>

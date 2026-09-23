@@ -1,0 +1,44 @@
+<section id="contact" class="contact" appSpySection aria-labelledby="contact-title">
+  <div class="contact__inner">
+    <h2 id="contact-title" class="contact__title" data-reveal>
+      {{ content.title }} <span class="contact__accent">{{ content.accent }}</span>
+    </h2>
+    <p class="contact__text" data-reveal>{{ content.text }}</p>
+
+    <div class="contact__quick" data-reveal>
+      <app-quick-contact
+        source="cta"
+        [label]="content.emailLabel"
+        [placeholder]="content.placeholder"
+        [buttonText]="content.button"
+        [sentText]="content.sent"
+      />
+    </div>
+
+    <ul class="contact__badges" data-reveal>
+      @for (badge of content.badges; track badge.label) {
+        <li class="contact__badge">
+          <i-lucide [name]="badge.icon" [size]="18" aria-hidden="true" />
+          {{ badge.label }}
+        </li>
+      }
+    </ul>
+
+    <button
+      type="button"
+      class="contact__toggle"
+      aria-controls="contact-full-form"
+      [attr.aria-expanded]="formOpen()"
+      (click)="toggleForm()"
+    >
+      {{ formOpen() ? content.closeForm : content.openForm }}
+      <i-lucide [name]="formOpen() ? 'chevron-up' : 'chevron-down'" [size]="18" aria-hidden="true" />
+    </button>
+
+    <div id="contact-full-form" class="contact__form" [hidden]="!formOpen()">
+      @if (formOpen()) {
+        <app-contact-form />
+      }
+    </div>
+  </div>
+</section>

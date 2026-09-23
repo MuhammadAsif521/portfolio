@@ -35,7 +35,12 @@ function setup() {
   window.matchMedia ??= ((query: string) =>
     ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList);
   TestBed.configureTestingModule({
-    providers: [provideRouter([]), provideMockStore({ initialState })],
+    providers: [
+      provideRouter([]),
+      provideMockStore({ initialState }),
+      // The footer's email box injects it; sections that fetch data override it per test.
+      { provide: PublicApiService, useValue: {} },
+    ],
   });
 }
 

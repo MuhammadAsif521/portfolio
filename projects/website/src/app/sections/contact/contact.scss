@@ -1,0 +1,97 @@
+@use 'styles/mixins' as m;
+
+// Figma "Have an Awesome Project Idea? Let's Discuss": centred heading, email pill, three badges.
+
+.contact {
+  padding: clamp(3rem, 2rem + 4vw, 5.5rem) var(--container-gutter);
+  background: var(--band-a);
+  scroll-margin-top: var(--header-height);
+}
+
+.contact__inner {
+  display: grid;
+  justify-items: center;
+  max-width: 48rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.contact__title {
+  margin: 0;
+  font-size: var(--text-4xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--heading);
+}
+
+.contact__accent {
+  color: var(--primary);
+}
+
+.contact__text {
+  max-width: 36rem;
+  margin: 1rem 0 2rem;
+  color: var(--text-muted);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.contact__quick {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.contact__badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 2rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 500;
+
+  i-lucide {
+    color: var(--primary);
+  }
+}
+
+.contact__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 2rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--heading);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--primary);
+  }
+
+  @include m.focus-ring;
+}
+
+.contact__form {
+  width: 100%;
+  margin-top: 1.5rem;
+
+  &[hidden] {
+    display: none;
+  }
+}

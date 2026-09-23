@@ -1,11 +1,10 @@
-import {  } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-custom-reactive-textarea',
-  imports: [ FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule],
   template: `
     <div class="fc-wrapper">
       @if (label && showLabel) {
@@ -20,6 +19,11 @@ import { Observable, Subject, takeUntil } from 'rxjs';
         [id]="controlName"
         [placeholder]="placeholder"
         [rows]="rows"
+        [attr.maxlength]="maxLength ?? null"
+        [attr.aria-label]="showLabel ? null : ariaLabel || label || null"
+        [attr.aria-required]="hasRequiredValidator || null"
+        [attr.aria-invalid]="showError || null"
+        [attr.aria-describedby]="showError ? controlName + '-error' : null"
         (focus)="isFocused = true"
         (blur)="isFocused = false"
         class="fc-control-textarea w-full"
@@ -27,12 +31,21 @@ import { Observable, Subject, takeUntil } from 'rxjs';
         [class.fc-invalid]="control.invalid && (control.dirty || control.touched)"
       ></textarea>
 
-      <!-- Character hint row -->
+      <!-- Error (left) and optional character count (right) -->
       <div class="flex justify-between items-center mt-1">
-        @if (showHints && control.invalid && (control.dirty || control.touched) && control.hasError('required')) {
-          <p class="fc-error-text">{{ label }} is required.</p>
+        @if (showError) {
+          <p class="fc-error-text" [id]="controlName + '-error'">
+            @if (control.hasError('required')) { {{ label }} is required. }
+            @else if (control.hasError('minlength')) {
+              Please write at least {{ control.getError('minlength').requiredLength }} characters.
+            }
+            @else if (control.hasError('maxlength')) { Too long. }
+          </p>
         } @else {
           <span></span>
+        }
+        @if (maxLength) {
+          <span class="fc-hint" aria-hidden="true">{{ length }}/{{ maxLength }}</span>
         }
       </div>
     </div>
@@ -46,6 +59,10 @@ export class CustomReactiveTextareaComponent implements OnInit, OnDestroy {
   @Input() label$!: Observable<string>;
   @Input() showLabel: boolean = true;
   @Input() showHints: boolean = true;
+  /** Caps input and shows a "n/max" counter. */
+  @Input() maxLength?: number;
+  /** Accessible name when the visible label is hidden (showLabel = false). */
+  @Input() ariaLabel?: string;
 
   label: string = '';
   isFocused: boolean = false;
@@ -60,6 +77,14 @@ export class CustomReactiveTextareaComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  get length(): number {
+    return String(this.control?.value ?? '').length;
+  }
+
+  get showError(): boolean {
+    return this.showHints && this.control.invalid && (this.control.dirty || this.control.touched);
   }
 
   get hasRequiredValidator(): boolean {

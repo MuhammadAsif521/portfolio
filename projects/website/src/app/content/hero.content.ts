@@ -7,7 +7,7 @@ export const HERO_CONTENT = {
   /** First name shown in the brand colour: "I'm Asif," */
   firstName: 'Asif',
   /** Rotating subtitle (typewriter). The first entry is what SSR, crawlers and reduced-motion users see. */
-  roles: ['MEAN Stack Developer', 'Angular Developer', 'Full-Stack Developer', 'Freelance Developer'],
+  roles: ['MEAN Stack Developer', 'Angular Developer', 'Full-Stack Developer', 'Freelance Developer', 'Ionic Angular Developer', 'Hybrid App Developer'],
   /** Used when Site Settings has no description. */
   tagline:
     'Building scalable, production Angular & Node systems — from multi-tenant platforms to e-commerce and real-time apps.',

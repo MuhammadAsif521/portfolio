@@ -1,0 +1,198 @@
+@use 'styles/mixins' as m;
+
+// Figma footer: dark band with rounded top corners, "Lets Connect there" + Hire me, four columns,
+// copyright row. Dark in both colour modes (brief, Part 7).
+
+:host {
+  display: block;
+  background: var(--band-a); // shows behind the rounded corners
+}
+
+.footer {
+  padding: clamp(2.5rem, 2rem + 3vw, 4rem) var(--container-gutter) 1.5rem;
+  border-radius: var(--radius-band) var(--radius-band) 0 0;
+  background: var(--band-dark);
+  color: var(--band-dark-muted);
+}
+
+.footer__inner {
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+.footer__connect {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  border-bottom: 1px solid var(--band-dark-border);
+}
+
+.footer__connect-title {
+  margin: 0;
+  font-size: var(--text-4xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--band-dark-text);
+}
+
+.footer__hire {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    background: var(--primary-hover);
+  }
+
+  @include m.focus-ring;
+}
+
+.footer__grid {
+  display: grid;
+  gap: 2.5rem 2rem;
+  padding-block: clamp(2rem, 1.5rem + 2vw, 3rem);
+
+  @include m.up(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include m.up(lg) {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1.3fr);
+  }
+}
+
+.footer__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--band-dark-text);
+  text-decoration: none;
+
+  @include m.focus-ring;
+}
+
+.footer__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 0.8125rem;
+  font-weight: 800;
+}
+
+.footer__logo-img {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
+.footer__name {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.footer__description {
+  max-width: 24rem;
+  margin: 1rem 0 0;
+  line-height: var(--leading-relaxed);
+}
+
+.footer__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__social {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--band-dark-border);
+  border-radius: 50%;
+  color: var(--band-dark-text);
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal);
+
+  &:hover {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  @include m.focus-ring;
+}
+
+.footer__col-title {
+  margin: 0 0 1rem;
+  color: var(--primary);
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.footer__list {
+  display: grid;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-style: normal;
+}
+
+.footer__link,
+.footer__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--band-dark-muted);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.footer__meta {
+  margin: 0 0 1rem;
+
+  .footer__contact & {
+    margin: 0;
+  }
+}
+
+.footer__link {
+  transition: color var(--transition-normal);
+
+  &:hover {
+    color: var(--band-dark-text);
+  }
+
+  @include m.focus-ring;
+}
+
+.footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--band-dark-border);
+  font-size: var(--text-sm);
+
+  p {
+    margin: 0;
+  }
+}

@@ -4,6 +4,7 @@ import { SeoService } from '@shared/services/seo.service';
 import { HERO_CONTENT } from '../../content/hero.content';
 import { siteFeature } from '../../core/store/site.feature';
 import { About } from '../../sections/about/about';
+import { Contact } from '../../sections/contact/contact';
 import { Experience } from '../../sections/experience/experience';
 import { Hero } from '../../sections/hero/hero';
 import { Marquee } from '../../sections/marquee/marquee';
@@ -17,7 +18,7 @@ import { Testimonials } from '../../sections/testimonials/testimonials';
  */
 @Component({
   selector: 'app-home',
-  imports: [Hero, Services, Experience, About, Projects, Testimonials, Marquee],
+  imports: [Hero, Services, Experience, About, Projects, Testimonials, Contact, Marquee],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-hero />
@@ -26,6 +27,7 @@ import { Testimonials } from '../../sections/testimonials/testimonials';
     <app-about />
     <app-projects />
     <app-testimonials />
+    <app-contact />
     <app-marquee />
   `,
 })

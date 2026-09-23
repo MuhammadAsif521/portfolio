@@ -1,0 +1,47 @@
+@if (sender.status() === 'sent') {
+  <p class="quick__done" role="status">
+    <i-lucide name="circle-check" [size]="20" aria-hidden="true" />
+    {{ sentText() }}
+  </p>
+} @else {
+  <form class="quick" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="quick__pill" [class.is-invalid]="emailInvalid">
+      <i-lucide name="mail" [size]="20" class="quick__icon" aria-hidden="true" />
+      <label class="sr-only" [for]="id">{{ label() }}</label>
+      <input
+        class="quick__input"
+        [id]="id"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        inputmode="email"
+        maxlength="254"
+        [placeholder]="placeholder()"
+        aria-required="true"
+        [attr.aria-invalid]="emailInvalid || null"
+        [attr.aria-describedby]="emailInvalid || sender.error() ? id + '-msg' : null"
+      />
+      <button class="quick__button" type="submit" [disabled]="sending()" [attr.aria-busy]="sending() || null">
+        @if (sending()) {
+          <span class="quick__spinner" aria-hidden="true"></span>
+          <span class="sr-only">Sending…</span>
+        } @else {
+          {{ buttonText() }}
+        }
+      </button>
+    </div>
+
+    <!-- Honeypot: off-screen and skipped by keyboard and screen readers; bots fill it, people do not. -->
+    <div class="quick__hp" aria-hidden="true">
+      <label>Website <input type="text" formControlName="website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+
+    <p class="quick__msg" [id]="id + '-msg'" role="alert">
+      @if (emailInvalid) {
+        {{ form.controls.email.hasError('required') ? 'Please enter your email address.' : 'Please enter a valid email address.' }}
+      } @else if (sender.error(); as error) {
+        {{ error }}
+      }
+    </p>
+  </form>
+}

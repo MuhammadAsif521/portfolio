@@ -1,0 +1,75 @@
+@use 'styles/mixins' as m;
+
+:host {
+  display: block;
+}
+
+.contact-form {
+  display: grid;
+  gap: 0.25rem;
+  padding: clamp(1.25rem, 1rem + 2vw, 2rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
+  background: var(--card-bg);
+  text-align: left;
+}
+
+.contact-form__row {
+  display: grid;
+  column-gap: 1rem;
+
+  @include m.up(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.contact-form__error {
+  margin: 0 0 0.75rem;
+  color: var(--error);
+  font-size: var(--text-sm);
+
+  &:empty {
+    margin: 0;
+  }
+}
+
+.contact-form__done {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  border-radius: var(--radius-2xl);
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+  color: var(--heading);
+  text-align: center;
+
+  i-lucide {
+    color: var(--success);
+  }
+
+  p {
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
+.contact-form__again {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--primary);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+
+  @include m.focus-ring;
+}
+
+.contact-form__hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

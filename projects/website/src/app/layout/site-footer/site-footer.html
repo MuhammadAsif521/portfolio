@@ -1,0 +1,81 @@
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__connect">
+      <h2 class="footer__connect-title">{{ content.connectTitle }}</h2>
+      <a class="footer__hire" routerLink="/" fragment="contact">
+        {{ content.connectButton }} <i-lucide name="arrow-up-right" [size]="18" aria-hidden="true" />
+      </a>
+    </div>
+
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="footer__logo" routerLink="/" fragment="home" [attr.aria-label]="siteName() + ', home'">
+          @if (logo(); as image) {
+            <img class="footer__logo-img" [src]="image.url" alt="" width="32" height="32" loading="lazy" />
+          } @else {
+            <span class="footer__mark" aria-hidden="true">{{ initials() }}</span>
+          }
+          <span class="footer__name">{{ siteName() }}</span>
+        </a>
+        @if (description(); as text) {
+          <p class="footer__description">{{ text }}</p>
+        }
+        @if (socials().length) {
+          <ul class="footer__socials" aria-label="Social profiles">
+            @for (link of socials(); track link.value) {
+              <li>
+                <a class="footer__social" [href]="link.value" target="_blank" rel="noopener noreferrer me">
+                  <app-social-icon [label]="link.label" />
+                  <span class="sr-only">{{ link.label }} (opens in a new tab)</span>
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <nav class="footer__col" aria-labelledby="footer-nav-title">
+        <h2 id="footer-nav-title" class="footer__col-title">{{ content.navTitle }}</h2>
+        <ul class="footer__list">
+          @for (link of links; track link.label) {
+            <li>
+              @if (link.route) {
+                <a class="footer__link" [routerLink]="link.route">{{ link.label }}</a>
+              } @else {
+                <a class="footer__link" routerLink="/" [fragment]="link.section">{{ link.label }}</a>
+              }
+            </li>
+          }
+        </ul>
+      </nav>
+
+      <div class="footer__col">
+        <h2 class="footer__col-title">{{ content.contactTitle }}</h2>
+        <address class="footer__list footer__contact">
+          <a class="footer__link" [href]="'mailto:' + email()">
+            <i-lucide name="mail" [size]="16" aria-hidden="true" /> {{ email() }}
+          </a>
+          @if (phone(); as number) {
+            <a class="footer__link" [href]="telHref()">
+              <i-lucide name="phone" [size]="16" aria-hidden="true" /> {{ number }}
+            </a>
+          }
+          <span class="footer__meta">
+            <i-lucide name="map-pin" [size]="16" aria-hidden="true" /> {{ location() }}
+          </span>
+        </address>
+      </div>
+
+      <div class="footer__col footer__col--quick">
+        <h2 class="footer__col-title">{{ content.quickTitle }}</h2>
+        <p class="footer__meta">{{ content.quickText }}</p>
+        <app-quick-contact source="footer" tone="dark" [label]="content.quickLabel" buttonText="Send" />
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p>© {{ year }} {{ siteName() }}. All rights reserved.</p>
+      <p>{{ content.builtWith }}</p>
+    </div>
+  </div>
+</footer>

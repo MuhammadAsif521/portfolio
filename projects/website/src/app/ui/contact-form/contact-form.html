@@ -1,0 +1,67 @@
+@if (sender.status() === 'sent') {
+  <div class="contact-form__done" role="status">
+    <i-lucide name="circle-check" [size]="28" aria-hidden="true" />
+    <p>{{ content.sent }}</p>
+    <button type="button" class="contact-form__again" (click)="again()">{{ content.again }}</button>
+  </div>
+} @else {
+  <form class="contact-form" [formGroup]="form" (ngSubmit)="submit()" novalidate aria-label="Contact form">
+    <div class="contact-form__row">
+      <app-custom-reactive-textfield
+        controlName="contact-name"
+        type="text"
+        autocomplete="name"
+        [control]="form.controls.name"
+        [label$]="labels.name"
+        [maxLength]="100"
+      />
+      <app-custom-reactive-textfield
+        controlName="contact-email"
+        type="email"
+        autocomplete="email"
+        inputMode="email"
+        [control]="form.controls.email"
+        [label$]="labels.email"
+        [maxLength]="254"
+      />
+    </div>
+
+    <app-custom-reactive-textfield
+      controlName="contact-subject"
+      type="text"
+      [control]="form.controls.subject"
+      [label$]="labels.subject"
+      [maxLength]="150"
+    />
+
+    <app-custom-reactive-textarea
+      controlName="contact-message"
+      [control]="form.controls.message"
+      [label$]="labels.message"
+      [rows]="6"
+      [maxLength]="content.messageMax"
+    />
+
+    <!-- Honeypot: off-screen and skipped by keyboard and screen readers; bots fill it, people do not. -->
+    <div class="contact-form__hp" aria-hidden="true">
+      <label>Website <input type="text" [formControl]="form.controls.website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+
+    <p class="contact-form__error" role="alert">
+      @if (sender.error(); as error) {
+        {{ error }}
+      }
+    </p>
+
+    <app-loading-button
+      type="submit"
+      color="primary"
+      radius="large"
+      size="large"
+      icon="send"
+      iconPos="right"
+      [buttonText]="content.button"
+      [loading]="sending()"
+    />
+  </form>
+}

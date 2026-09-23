@@ -32,17 +32,23 @@ import { takeUntil } from 'rxjs/operators';
         [formControl]="control"
         [id]="controlName"
         [placeholder]="placeholder"
-        [min]="minLength"
-        [max]="maxLength"
-        autocomplete="off"
+        [attr.min]="min ?? null"
+        [attr.max]="max ?? null"
+        [attr.maxlength]="maxLength ?? null"
+        [attr.autocomplete]="autocomplete"
+        [attr.inputmode]="inputMode ?? null"
+        [attr.aria-label]="showLabel ? null : ariaLabel || label || null"
+        [attr.aria-required]="hasRequiredValidator || null"
+        [attr.aria-invalid]="showError || null"
+        [attr.aria-describedby]="showError ? controlName + '-error' : null"
         (focus)="onFocus()"
         (blur)="onBlur()"
         class="fc-control"
         [class.fc-focused]="isFocused"
         [class.fc-invalid]="control.invalid && (control.dirty || control.touched)" />
 
-      @if (showHints && control.invalid && (control.dirty || control.touched)) {
-        <p class="fc-error-text">
+      @if (showError) {
+        <p class="fc-error-text" [id]="controlName + '-error'">
           @if (control.hasError('required')) { {{ label }} is required. }
           @if (control.hasError('minlength')) { Too short. }
           @if (control.hasError('maxlength')) { Too long. }
@@ -67,6 +73,11 @@ export class CustomReactiveTextfieldComponent implements OnInit, OnDestroy {
   @Input() showHints: boolean = true;
   @Input() min!: string | number;
   @Input() max!: string | number;
+  /** Browser autofill hint, e.g. "email" or "name" (off by default). */
+  @Input() autocomplete = 'off';
+  @Input() inputMode?: string;
+  /** Accessible name when the visible label is hidden (showLabel = false). */
+  @Input() ariaLabel?: string;
 
   label: string = '';
   isFocused: boolean = false;
@@ -98,6 +109,10 @@ export class CustomReactiveTextfieldComponent implements OnInit, OnDestroy {
     this.isFocused = false;
     this.control.markAsTouched();
   }
+  get showError(): boolean {
+    return this.showHints && this.control.invalid && (this.control.dirty || this.control.touched);
+  }
+
   get hasRequiredValidator(): boolean {
     return this.control?.hasValidator(Validators.required) || false;
   }

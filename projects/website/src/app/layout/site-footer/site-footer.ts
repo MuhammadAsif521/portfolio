@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
+import { BRAND_CONTENT } from '../../content/brand.content';
 import { CONTACT_CONTENT } from '../../content/contact.content';
 import { siteFeature } from '../../core/store/site.feature';
 import { QuickContact } from '../../ui/quick-contact/quick-contact';
@@ -47,12 +48,5 @@ export class SiteFooter {
   protected readonly socials = computed(() =>
     (this.settings()?.socialLinks ?? []).filter((link) => link.label?.trim() && SAFE_LINK.test(link.value ?? '')),
   );
-  protected readonly initials = computed(() =>
-    this.siteName()
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((word) => word[0]?.toUpperCase() ?? '')
-      .join(''),
-  );
+  protected readonly mark = BRAND_CONTENT.mark;
 }

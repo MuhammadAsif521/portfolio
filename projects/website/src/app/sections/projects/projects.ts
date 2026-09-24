@@ -15,6 +15,7 @@ import type { ProjectCard as ProjectCardData } from '@shared/interfaces/public-a
 import { PublicApiService } from '@shared/services/public-api.service';
 import { catchError, map, of } from 'rxjs';
 import { PROJECTS_CONTENT } from '../../content/projects.content';
+import { DEMO_CONTENT, DEMO_PROJECTS, orDemo } from '../../core/demo-content';
 import { disposeWith, revealOnScroll } from '../../core/motion';
 import { ScrollSpyDirective } from '../../core/scroll-spy.directive';
 import { Carousel } from '../../ui/carousel/carousel';
@@ -45,6 +46,7 @@ export class Projects {
       .pipe(
         map((page) => page.data),
         catchError(() => of([] as ProjectCardData[])),
+        orDemo<ProjectCardData>(DEMO_PROJECTS, inject(DEMO_CONTENT)),
       ),
     { initialValue: null },
   );

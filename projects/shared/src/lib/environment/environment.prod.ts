@@ -8,4 +8,6 @@ export const environment = {
   SITE_KEY: '6LdR8EctAAAAANRBUd-p2P0HQyTWDEhegk1PAuDU',
   siteUrl: 'https://asifdev.com',
   siteName: 'Asif Portfolio',
+  /** Never in production: only real content from the API is shown. */
+  demoContent: false,
 };

@@ -5,6 +5,7 @@ import type { Testimonial, TestimonialSource } from '@shared/interfaces/public-a
 import { PublicApiService } from '@shared/services/public-api.service';
 import { catchError, of } from 'rxjs';
 import { TESTIMONIALS_CONTENT } from '../../content/testimonials.content';
+import { DEMO_CONTENT, DEMO_TESTIMONIALS, orDemo } from '../../core/demo-content';
 import { disposeWith, revealOnScroll } from '../../core/motion';
 import { Carousel } from '../../ui/carousel/carousel';
 
@@ -35,7 +36,10 @@ export class Testimonials {
   protected readonly items = toSignal(
     inject(PublicApiService)
       .getTestimonials()
-      .pipe(catchError(() => of([] as Testimonial[]))),
+      .pipe(
+        catchError(() => of([] as Testimonial[])),
+        orDemo<Testimonial>(DEMO_TESTIMONIALS, inject(DEMO_CONTENT)),
+      ),
     { initialValue: [] as Testimonial[] },
   );
 

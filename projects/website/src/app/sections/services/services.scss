@@ -8,7 +8,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: clamp(3.5rem, 2rem + 5vw, 7.5rem) var(--container-gutter) clamp(3rem, 1rem + 6vw, 6.6rem);
+  padding: clamp(3rem, 2rem + 3vw, 5rem) var(--container-gutter) clamp(2.5rem, 1.5rem + 2vw, 3.5rem);
   border-radius: var(--radius-band);
   background:
     linear-gradient(rgb(17 17 17 / 0.35), rgb(17 17 17 / 0.35)),
@@ -77,11 +77,13 @@
 }
 
 @keyframes blob-float {
+
   0%,
   100% {
     translate: 0 0;
     rotate: 0deg;
   }
+
   50% {
     translate: 1.5rem -1.25rem;
     rotate: 10deg;
@@ -89,11 +91,13 @@
 }
 
 @keyframes blob-drift {
+
   0%,
   100% {
     translate: 0 0;
     rotate: 0deg;
   }
+
   50% {
     translate: -9rem 0.75rem;
     rotate: -22deg;
@@ -110,7 +114,7 @@
 .services__heading {
   display: grid;
   gap: 1rem;
-  margin-bottom: clamp(2.5rem, 2rem + 3vw, 6rem);
+  margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem);
 
   @include m.up(lg) {
     grid-template-columns: auto minmax(0, 36rem);
@@ -121,7 +125,7 @@
 
 .services__title {
   margin: 0;
-  font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3rem);
+  font-size: var(--fs-h2);
   font-weight: 600;
   line-height: var(--leading-tight);
   letter-spacing: -0.02em;
@@ -139,7 +143,7 @@
   line-height: 1.35;
 
   @include m.up(lg) {
-    font-size: var(--text-xl);
+    font-size: var(--fs-lead);
   }
 }
 
@@ -151,13 +155,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  height: clamp(26rem, 18rem + 16vw, 31.75rem); // Figma 508px
+  height: clamp(21rem, 17rem + 7vw, 25.5rem);
   overflow: hidden;
   border: 1px solid rgb(255 255 255 / 0.45);
   border-radius: var(--card-radius);
-  background: rgb(255 255 255 / 0.06);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: transparent;
   transition: border-color var(--transition-normal);
 
   &:hover,
@@ -170,13 +172,17 @@
 .service-card__title {
   display: flex;
   align-items: center;
+  border-radius: var(--card-radius);
   flex: none;
-  min-height: 6.7rem;
+  min-height: clamp(4.25rem, 3.5rem + 2vw, 5.5rem);
   margin: 0;
-  padding: 0 1.5rem 0 2.25rem;
+  padding: 0 1.25rem 0 1.75rem;
   border-bottom: 1px solid rgb(255 255 255 / 0.4);
+  background: rgb(255 255 255 / 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   color: #fff;
-  font-size: clamp(1.375rem, 1.1rem + 0.8vw, 1.875rem);
+  font-size: var(--fs-h3);
   font-weight: 500;
   line-height: 1.15;
   transition:
@@ -187,7 +193,7 @@
   .service-card:hover &,
   .service-card:focus-within & {
     border-color: transparent;
-    background: var(--primary);
+    // background: var(--primary);
     color: var(--on-primary);
   }
 }
@@ -196,14 +202,14 @@
 .service-card__media {
   position: relative;
   flex: 1;
-  margin-top: 3.1rem;
-  --notch: clamp(8.5rem, 2rem + 9vw, 10rem); // Figma: 114px button
+  margin-top: 1.75rem;
+  --notch: clamp(7rem, 4rem + 4vw, 8.5rem);
 }
 
 .service-card__layer {
   position: absolute;
   top: 0;
-  height: 3rem;
+  height: 2.5rem;
   border-radius: var(--card-radius) var(--card-radius) 0 0;
 
   &--back {
@@ -213,7 +219,7 @@
   }
 
   &--mid {
-    top: 1.4rem;
+    top: 1.1rem;
     right: 5.5%;
     left: 5.5%;
     background: rgb(158 157 157 / 0.95);
@@ -222,7 +228,7 @@
 
 .service-card__screen {
   position: absolute;
-  inset: 2.75rem 0 0;
+  inset: 2.2rem 0 0;
   overflow: hidden;
   border-radius: var(--card-radius) var(--card-radius) 0 var(--card-radius);
   background: linear-gradient(160deg, #f4ede7 0%, #e6d9ce 100%);
@@ -264,11 +270,12 @@
 
 .service-card__summary {
   display: -webkit-box;
+  max-width: 78%; // keep clear of the notch
   margin: 0;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   font-size: var(--text-sm);
   line-height: 1.5;
 }

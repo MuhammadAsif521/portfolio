@@ -20,37 +20,40 @@
         @if (logo(); as image) {
           <img class="site-nav__logo-img" [src]="image.url" [alt]="''" width="32" height="32" />
         } @else {
-          <span class="site-nav__mark" aria-hidden="true">{{ initials() }}</span>
+          <span class="site-nav__mark" aria-hidden="true">{{ brand.mark }}</span>
         }
-        <span class="site-nav__name">{{ siteName() }}</span>
+        <!-- Revealed on hover / keyboard focus -->
+        <span class="site-nav__made" aria-hidden="true">{{ brand.madeBy }} <strong>{{ brand.author }}</strong></span>
       </a>
 
-      <ul class="site-nav__links site-nav__links--right">
-        @for (link of right; track link.label) {
-          <li>
-            <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: link }" />
-          </li>
-        }
-      </ul>
-
-      <div class="site-nav__actions">
-        @if (resumeUrl(); as url) {
-          <a class="site-nav__resume" [href]="url" target="_blank" rel="noopener">
-            Resume <i-lucide name="arrow-up-right" [size]="14" />
-          </a>
-        }
-        <app-theme-toggle [onDark]="true" />
-        <button
-          #menuButton
-          type="button"
-          class="site-nav__menu-button"
-          [attr.aria-expanded]="menuOpen()"
-          aria-controls="mobile-menu"
-          [attr.aria-label]="menuOpen() ? 'Close menu' : 'Open menu'"
-          (click)="toggleMenu()"
-        >
-          <i-lucide [name]="menuOpen() ? 'x' : 'menu'" [size]="20" />
-        </button>
+      <div class="site-nav__end">
+        <ul class="site-nav__links site-nav__links--right">
+          @for (link of right; track link.label) {
+            <li>
+              <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: link }" />
+            </li>
+          }
+        </ul>
+  
+        <div class="site-nav__actions">
+          @if (resumeUrl(); as url) {
+            <a class="site-nav__resume" [href]="url" target="_blank" rel="noopener">
+              Resume <i-lucide name="arrow-up-right" [size]="14" />
+            </a>
+          }
+          <app-theme-toggle [onDark]="true" />
+          <button
+            #menuButton
+            type="button"
+            class="site-nav__menu-button"
+            [attr.aria-expanded]="menuOpen()"
+            aria-controls="mobile-menu"
+            [attr.aria-label]="menuOpen() ? 'Close menu' : 'Open menu'"
+            (click)="toggleMenu()"
+          >
+            <i-lucide [name]="menuOpen() ? 'x' : 'menu'" [size]="20" />
+          </button>
+        </div>
       </div>
     </div>
 

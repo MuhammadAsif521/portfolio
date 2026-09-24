@@ -13,7 +13,7 @@
           @if (logo(); as image) {
             <img class="footer__logo-img" [src]="image.url" alt="" width="32" height="32" loading="lazy" />
           } @else {
-            <span class="footer__mark" aria-hidden="true">{{ initials() }}</span>
+            <span class="footer__mark" aria-hidden="true">{{ mark }}</span>
           }
           <span class="footer__name">{{ siteName() }}</span>
         </a>
@@ -82,7 +82,13 @@
 
     <div class="footer__bottom">
       <p>© {{ year }} {{ siteName() }}. All rights reserved.</p>
-      <p>{{ content.builtWith }}</p>
+      <p class="footer__recaptcha">
+        This site is protected by reCAPTCHA and the Google
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        and
+        <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        apply.
+      </p>
     </div>
   </div>
 </footer>

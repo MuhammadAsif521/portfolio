@@ -8,10 +8,11 @@ export interface ServiceItem {
   icon: string;
   /** Home-page section the card's arrow button scrolls to. */
   target: 'projects' | 'contact';
-  /** Optional artwork (e.g. a WebP from the CDN); the icon is used when absent. */
+  /** Optional artwork (e.g. a WebP from the CDN); the icon panel is used when absent. */
   image?: { src: string; alt: string; width: number; height: number };
 }
 
+/** What a MEAN-stack developer delivers, front to back. Shown in the swipeable carousel. */
 export const SERVICES_CONTENT = {
   eyebrow: 'My',
   title: 'Services',
@@ -19,24 +20,59 @@ export const SERVICES_CONTENT = {
     'Production systems end to end — from server-rendered Angular front ends to the Node and MongoDB APIs and admin tools behind them.',
   items: [
     {
-      title: 'Full-Stack Angular & Node Development',
-      summary: 'SSR Angular with NgRx on the front, Express and MongoDB APIs behind it, built for real traffic.',
-      points: ['Angular SSR', 'NgRx', 'Express / MongoDB', 'Multi-tenant architecture'],
+      title: 'Full-Stack MEAN Web Apps',
+      summary: 'Complete web applications on MongoDB, Express, Angular and Node, from first sketch to production.',
+      points: ['MongoDB', 'Express', 'Angular', 'Node.js'],
       icon: 'layers',
       target: 'projects',
     },
     {
+      title: 'Angular Front-End & SSR',
+      summary: 'Fast, SEO-friendly Angular apps with server-side rendering, hydration and clean state management.',
+      points: ['Angular SSR', 'NgRx', 'Tailwind', 'Core Web Vitals'],
+      icon: 'monitor-smartphone',
+      target: 'projects',
+    },
+    {
+      title: 'REST APIs & Backend',
+      summary: 'Secure, validated Node.js/Express APIs with authentication, roles and rate limiting built in.',
+      points: ['Node.js / Express', 'Zod validation', 'JWT & RBAC'],
+      icon: 'server',
+      target: 'projects',
+    },
+    {
+      title: 'MongoDB Database Design',
+      summary: 'Schemas, indexes and aggregation pipelines designed for your queries, not the other way round.',
+      points: ['Data modelling', 'Indexes', 'Aggregation'],
+      icon: 'database',
+      target: 'contact',
+    },
+    {
       title: 'E-Commerce Platforms',
       summary: 'Storefronts that sell: checkout, catalogue and order flows, plus the admin back office to run them.',
-      points: ['Stripe checkout', 'Product & order management', 'Custom admin back offices'],
+      points: ['Stripe checkout', 'Orders & inventory', 'Admin back office'],
       icon: 'shopping-bag',
       target: 'projects',
     },
     {
-      title: 'Real-Time & Multi-Tenant Systems',
-      summary: 'Live features over WebSockets and shared backends that serve several independent sites at once.',
-      points: ['Chat & presence', 'Live attendance', 'Ticket notifications', 'Shared multi-tenant backends'],
+      title: 'Real-Time Applications',
+      summary: 'Live features over WebSockets: chat, presence, live dashboards and instant notifications.',
+      points: ['WebSockets', 'Chat & presence', 'Live updates'],
       icon: 'radio-tower',
+      target: 'projects',
+    },
+    {
+      title: 'Hybrid Mobile Apps',
+      summary: 'Ionic and Angular apps for Android and iOS from one codebase, sharing your web app’s APIs.',
+      points: ['Ionic', 'Capacitor', 'Push notifications'],
+      icon: 'smartphone',
+      target: 'contact',
+    },
+    {
+      title: 'Deployment & DevOps',
+      summary: 'Dockerised builds, nginx and CI pipelines so releases are repeatable and boring.',
+      points: ['Docker', 'nginx', 'CI/CD'],
+      icon: 'container',
       target: 'contact',
     },
   ] satisfies ServiceItem[],

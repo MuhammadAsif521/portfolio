@@ -53,6 +53,7 @@
             ],
             "styles": [
               "node_modules/@fontsource-variable/urbanist/index.css",
+              "node_modules/@fontsource-variable/outfit/index.css",
               "projects/shared/src/lib/styles.scss",
               "node_modules/intl-tel-input/dist/css/intlTelInput.css"
             ],
@@ -69,6 +70,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/shared/src/lib/environment/environment.ts",
+                  "with": "projects/shared/src/lib/environment/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -147,6 +154,7 @@
             ],
             "styles": [
               "node_modules/@fontsource-variable/urbanist/index.css",
+              "node_modules/@fontsource-variable/outfit/index.css",
               "projects/shared/src/lib/styles.scss",
               "node_modules/intl-tel-input/dist/css/intlTelInput.css"
             ]
@@ -154,6 +162,12 @@
           "configurations": {
             "production": {
               "baseHref": "/cusadmin/",
+              "fileReplacements": [
+                {
+                  "replace": "projects/shared/src/lib/environment/environment.ts",
+                  "with": "projects/shared/src/lib/environment/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",

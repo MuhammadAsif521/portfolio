@@ -52,11 +52,11 @@
   --footer-bg: #272727;
   --glass-border: rgb(255 255 255 / 0.35);
 
-  // Typography (Figma): Lufga for everything (styles/_fonts.scss), Urbanist for the hero headline.
-  // Urbanist is self-hosted via @fontsource-variable/urbanist and is also Lufga's fallback.
+  // Typography: Outfit (free, OFL — the closest open match to the Figma's licensed Lufga) for everything,
+  // Urbanist for the hero headline. Both self-hosted variable fonts (@fontsource-variable, angular.json).
   --font-display: 'Urbanist Variable', 'Urbanist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
     sans-serif;
-  --font-heading: 'Lufga', var(--font-display);
+  --font-heading: 'Outfit Variable', 'Outfit', var(--font-display);
   --font-body: var(--font-heading);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 
@@ -69,6 +69,14 @@
   --text-3xl: 2rem;
   --text-4xl: 2.75rem;
   --text-display: clamp(2.75rem, 1.6rem + 5vw, 6rem); // hero "I'm Asif, …"
+
+  // Responsive type scale (phone → 1440 desktop). Sections use these instead of their own clamp()s.
+  --fs-display: clamp(2.375rem, 1.2rem + 4.4vw, 4.75rem); // hero headline (76px max)
+  --fs-h2: clamp(1.75rem, 1.25rem + 1.6vw, 2.5rem); // section titles (40px)
+  --fs-h3: clamp(1.25rem, 1.05rem + 0.7vw, 1.625rem); // card, timeline and project titles (26px)
+  --fs-h4: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem); // small titles, names (20px)
+  --fs-lead: clamp(0.9875rem, 0.93rem + 0.25vw, 1.125rem); // intros, bios (18px)
+  --fs-ui: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem); // nav, buttons, chips (16px)
 
   --leading-tight: 1.15;
   --leading-normal: 1.5;

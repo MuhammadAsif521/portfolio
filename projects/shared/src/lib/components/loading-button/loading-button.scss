@@ -1,42 +1,45 @@
-// Base button styles
+@use 'sass:list';
+
+// Shared button. Colours come from the design tokens (hex values), with tints made by color-mix(),
+// so every variant follows the admin's active theme. (The old rules used rgb(var(--x)) with RGB-triplet
+// tokens, which are invalid with hex tokens — that is why buttons rendered without a background.)
+
 .btn-base {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-family: var(--font-body, 'Manrope', sans-serif);
-  font-weight: 500;
+  font-family: var(--font-body);
+  font-weight: 600;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  transition: all var(--transition-normal, 0.3s ease);
+  transition:
+    background-color var(--transition-normal),
+    border-color var(--transition-normal),
+    color var(--transition-normal),
+    box-shadow var(--transition-normal),
+    transform var(--transition-fast);
   outline: none;
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px rgb(var(--primary-color) / 0.4);
+    box-shadow: var(--focus-ring);
   }
 
   &:disabled,
   &.btn-loading {
-    opacity: 0.6;
+    opacity: 0.7;
     cursor: not-allowed;
     pointer-events: none;
   }
 }
 
-// Icon layout
 .btn-icon {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
 
   &.icon-right {
     order: 2;
-  }
-
-  &.icon-left {
-    order: 0;
   }
 }
 
@@ -46,60 +49,42 @@
   align-items: center;
 }
 
-// Variant: Flat (solid background)
 .btn-flat {
-  border: none;
+  border: 1px solid transparent;
 
   &:hover:not(:disabled):not(.btn-loading) {
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
   }
-
-  &:active:not(:disabled):not(.btn-loading) {
-    transform: translateY(0);
-  }
 }
 
-// Variant: Stroked (outlined)
 .btn-stroked {
+  border: 1px solid currentColor;
   background-color: transparent;
-  border: 1px solid;
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    background-color: rgb(var(--primary-color) / 0.04);
-  }
-
-  &:active:not(:disabled):not(.btn-loading) {
-    transform: scale(0.98);
-  }
 }
 
-// Size variants
 .btn-small {
   padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .btn-medium {
   padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 .btn-large {
   padding: 1rem 2rem;
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
 }
 
-// Loading spinner
 .btn-spinner {
-  display: inline-block;
   width: 1rem;
   height: 1rem;
   border: 2px solid currentColor;
-  border-radius: 50%;
   border-top-color: transparent;
+  border-radius: 50%;
   animation: btn-spin 0.6s linear infinite;
-  order: 0;
 }
 
 @keyframes btn-spin {
@@ -108,128 +93,48 @@
   }
 }
 
-// ── Color variants for flat buttons ──
-.btn-flat.btn-color-primary {
-  background-color: rgb(var(--primary-color));
-  color: rgb(var(--text-on-primary));
+// ── Colours: [name, fill, text on fill] ──
+$colors: (
+  primary: (var(--primary), var(--on-primary)),
+  secondary: (var(--secondary), var(--on-secondary)),
+  accent: (var(--accent), var(--on-accent)),
+  warn: (var(--warning), #141414),
+  success: (var(--success), #fff),
+  error: (var(--error), #fff),
+);
 
-  &:hover:not(:disabled):not(.btn-loading) {
-    background-color: rgb(var(--primary-color-dark));
+@each $name, $pair in $colors {
+  $fill: list.nth($pair, 1);
+  $text: list.nth($pair, 2);
+
+  .btn-flat.btn-color-#{$name} {
+    background-color: $fill;
+    color: $text;
+
+    &:hover:not(:disabled):not(.btn-loading) {
+      background-color: color-mix(in srgb, #{$fill} 88%, #000);
+    }
+  }
+
+  .btn-stroked.btn-color-#{$name} {
+    color: $fill;
+
+    &:hover:not(:disabled):not(.btn-loading) {
+      background-color: color-mix(in srgb, #{$fill} 10%, transparent);
+    }
   }
 }
 
-.btn-flat.btn-color-secondary {
-  background-color: rgb(var(--secondary-color));
-  color: rgb(var(--text-on-primary));
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    background-color: rgb(var(--secondary-color-dark));
-  }
-}
-
-.btn-flat.btn-color-accent {
-  background-color: rgb(var(--accent-color));
-  color: rgb(var(--neutral-color)); // accent is gold, use dark text
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    background-color: rgb(var(--accent-color-dark));
-  }
-}
-
-.btn-flat.btn-color-warn {
-  background-color: rgb(var(--warning-color));
-  color: rgb(var(--neutral-color));
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    filter: brightness(0.92);
-  }
-}
-
-.btn-flat.btn-color-success {
-  background-color: rgb(var(--success-color));
-  color: rgb(var(--text-on-primary));
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    filter: brightness(0.92);
-  }
-}
-
-.btn-flat.btn-color-error {
-  background-color: rgb(var(--error-color));
-  color: rgb(var(--text-on-primary));
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    filter: brightness(0.92);
-  }
-}
-
-// ── Color variants for stroked buttons ──
-.btn-stroked.btn-color-primary {
-  color: rgb(var(--primary-color));
-  border-color: rgb(var(--primary-color));
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    background-color: rgb(var(--primary-color) / 0.08);
-  }
-}
-
-.btn-stroked.btn-color-secondary {
-  color: rgb(var(--secondary-color));
-  border-color: rgb(var(--secondary-color));
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    background-color: rgb(var(--secondary-color) / 0.08);
-  }
-}
-
-.btn-stroked.btn-color-accent {
-  color: rgb(var(--accent-color));
-  border-color: rgb(var(--accent-color));
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    background-color: rgb(var(--accent-color) / 0.08);
-  }
-}
-
-.btn-stroked.btn-color-warn {
-  color: rgb(var(--warning-color));
-  border-color: rgb(var(--warning-color));
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    background-color: rgb(var(--warning-color) / 0.08);
-  }
-}
-
-.btn-stroked.btn-color-success {
-  color: rgb(var(--success-color));
-  border-color: rgb(var(--success-color));
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    background-color: rgb(var(--success-color) / 0.08);
-  }
-}
-
-.btn-stroked.btn-color-error {
-  color: rgb(var(--error-color));
-  border-color: rgb(var(--error-color));
-
-  &:hover:not(:disabled):not(.btn-loading) {
-    background-color: rgb(var(--error-color) / 0.08);
-  }
-}
-
-// Full width helper (optional via customClass)
 .btn-full-width {
   width: 100%;
 }
 
-// Border radius variants
 .btn-radius-none {
   border-radius: 0;
 }
 
 .btn-radius-small {
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 
 .btn-radius-medium {
@@ -237,10 +142,9 @@
 }
 
 .btn-radius-large {
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
 }
 
-// Disabled state for anchor-based buttons (no native disabled attr on <a>)
 .disabled-link {
   opacity: 0.6;
   pointer-events: none;

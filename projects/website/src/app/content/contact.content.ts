@@ -41,6 +41,5 @@ export const CONTACT_CONTENT = {
     quickLabel: 'Your email address for a reply',
     email: 'm.asif340315@gmail.com',
     location: 'Pakpattan / Lahore, Pakistan',
-    builtWith: 'Built with Angular & Node.js',
   },
 } as const;

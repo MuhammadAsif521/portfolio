@@ -1,15 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 import { PublicApiService } from '@shared/services/public-api.service';
+import { DEMO_CONTENT } from './core/demo-content';
 import { of, throwError } from 'rxjs';
 import { MARQUEE_CONTENT } from './content/testimonials.content';
 import { Marquee } from './sections/marquee/marquee';
 import { Testimonials, initials } from './sections/testimonials/testimonials';
 
-function setup(api: Partial<PublicApiService> = {}) {
+function setup(api: Partial<PublicApiService> = {}, demo = false) {
   // Reduced motion: keeps GSAP from lazy-loading while the test environment tears down.
   window.matchMedia = ((query: string) =>
     ({ matches: query.includes('reduce'), media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList);
-  TestBed.configureTestingModule({ providers: [{ provide: PublicApiService, useValue: api }] });
+  TestBed.configureTestingModule({
+    providers: [
+      { provide: PublicApiService, useValue: api },
+      // Demo content is dev-only UI review data; these tests cover real API behaviour.
+      { provide: DEMO_CONTENT, useValue: demo },
+    ],
+  });
 }
 
 const quote = (name: string, overrides: Record<string, unknown> = {}) => ({
@@ -63,6 +70,16 @@ describe('Testimonials', () => {
     expect(source?.textContent).toContain('View on Fiverr');
     // No rating, role or link when the admin didn't enter them.
     expect(cards[1]?.querySelector('.quote-card__rating, .quote-card__role, .quote-card__source')).toBeNull();
+  });
+
+  it('shows clearly labelled demo cards in development when none are published', async () => {
+    setup({ getTestimonials: () => of([]) } as unknown as Partial<PublicApiService>, true);
+    const fixture = TestBed.createComponent(Testimonials);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    const roles = Array.from(el.querySelectorAll('.quote-card__role')).map((node) => node.textContent);
+    expect(roles.length).toBe(3);
+    expect(roles.every((role) => role?.includes('Demo data'))).toBe(true);
   });
 
   it('renders nothing when no testimonials are published or the API fails', async () => {

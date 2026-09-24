@@ -56,12 +56,13 @@ describe('App shell', () => {
     expect(el.querySelector('main#main')).toBeTruthy();
   });
 
-  it('shows the site name, "MA" mark and the resume link from settings', async () => {
+  it('shows the "AP" mark (named after the site for screen readers), the hover credit and the resume link', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.site-nav__name')?.textContent?.trim()).toBe('Muhammad Asif');
-    expect(el.querySelector('.site-nav__mark')?.textContent?.trim()).toBe('MA');
+    expect(el.querySelector('.site-nav__mark')?.textContent?.trim()).toBe('AP');
+    expect(el.querySelector('.site-nav__brand')?.getAttribute('aria-label')).toBe('Muhammad Asif, home');
+    expect(el.querySelector('.site-nav__made')?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Made by Asif');
     expect(el.querySelector<HTMLAnchorElement>('.site-nav__resume')?.href).toBe('https://cdn.test/resume/a.pdf');
   });
 

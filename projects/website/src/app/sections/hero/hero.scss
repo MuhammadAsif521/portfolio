@@ -58,7 +58,7 @@
   border: 1px solid var(--ink);
   border-radius: var(--radius-pill);
   color: var(--ink);
-  font-size: var(--text-xl);
+  font-size: var(--fs-lead);
   font-weight: 500;
 }
 
@@ -93,7 +93,7 @@
   display: grid;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.75rem, 1.2rem + 6.2vw, 6rem);
+  font-size: var(--fs-display);
   font-weight: 600;
   line-height: 0.98;
   letter-spacing: -0.035em;
@@ -166,7 +166,7 @@
     max-width: 21rem;
     margin: 8.5rem 0 0;
     text-align: left;
-    font-size: var(--text-xl);
+    font-size: var(--fs-lead);
   }
 
   p {
@@ -209,7 +209,7 @@
 
 .hero__stat-value {
   margin-top: 0.75rem !important;
-  font-size: clamp(2.25rem, 1.8rem + 1.2vw, 2.9rem);
+  font-size: var(--fs-h2);
   font-weight: 600;
   line-height: 1.1;
   color: var(--ink);
@@ -220,7 +220,7 @@
   font-size: var(--text-lg);
 
   @include m.up(lg) {
-    font-size: var(--text-xl);
+    font-size: var(--fs-lead);
   }
 }
 
@@ -301,7 +301,7 @@
   padding-inline: 1.75rem;
   border-radius: var(--radius-pill);
   color: #fff;
-  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+  font-size: var(--fs-lead);
   font-weight: 400;
   white-space: nowrap;
   text-decoration: none;

@@ -5,6 +5,7 @@ import { Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { provideMockStore } from '@ngrx/store/testing';
 import { PublicApiService } from '@shared/services/public-api.service';
+import { DEMO_CONTENT } from './core/demo-content';
 import { of, throwError } from 'rxjs';
 import { PROJECTS_CONTENT } from './content/projects.content';
 import { ProjectDetailPage } from './pages/project-detail/project-detail';
@@ -15,7 +16,7 @@ const initialState = {
   ui: { activeSection: 'home', menuOpen: false },
 };
 
-function setup(api: Partial<PublicApiService>, responseInit?: ResponseInit) {
+function setup(api: Partial<PublicApiService>, responseInit?: ResponseInit, demo = false) {
   // Reduced motion: these tests are about content, and it keeps GSAP from lazy-loading mid-teardown.
   window.matchMedia = ((query: string) =>
     ({ matches: query.includes('reduce'), media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList);
@@ -24,6 +25,8 @@ function setup(api: Partial<PublicApiService>, responseInit?: ResponseInit) {
       provideRouter([]),
       provideMockStore({ initialState }),
       { provide: PublicApiService, useValue: api },
+      // Demo content is dev-only UI review data; these tests cover real API behaviour.
+      { provide: DEMO_CONTENT, useValue: demo },
       ...(responseInit ? [{ provide: RESPONSE_INIT, useValue: responseInit }] : []),
     ],
   });
@@ -83,6 +86,17 @@ describe('Projects section', () => {
     expect(details.querySelector('.projects__name span')?.textContent).toBe('Project flagship');
     expect(details.querySelector('.projects__go')?.getAttribute('href')).toBe('/projects/flagship');
     expect(details.querySelector('.projects__summary')?.textContent).toBe('Summary of flagship');
+  });
+
+  it('falls back to the demo projects in development (and only then)', async () => {
+    setup({ listProjects: () => of(page([])) } as unknown as Partial<PublicApiService>, undefined, true);
+    const fixture = TestBed.createComponent(Projects);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    const titles = Array.from(el.querySelectorAll('app-project-card h3')).map((node) => node.textContent);
+    expect(titles[0]).toBe('City of New Britain Digital Ecosystem');
+    expect(titles.length).toBe(7);
+    expect(el.querySelector('.projects__empty')).toBeNull();
   });
 
   it('shows the empty state when nothing is published', async () => {

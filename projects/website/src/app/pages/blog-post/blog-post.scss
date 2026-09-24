@@ -78,7 +78,7 @@
 
 .post__title {
   margin: 0;
-  font-size: clamp(2.25rem, 1.5rem + 3vw, 3.25rem);
+  font-size: clamp(2rem, 1.4rem + 2vw, 3rem);
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -88,7 +88,7 @@
 .post__lead {
   margin: 1.25rem 0 0;
   color: var(--text-muted);
-  font-size: var(--text-xl);
+  font-size: var(--fs-lead);
   line-height: var(--leading-relaxed);
 }
 
@@ -166,7 +166,7 @@
 
 .post__cta-title {
   margin: 0;
-  font-size: var(--text-3xl);
+  font-size: var(--fs-h3);
   font-weight: 600;
   color: var(--band-dark-text);
 }

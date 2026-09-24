@@ -63,7 +63,7 @@
   background: transparent;
   color: var(--quick-text);
   font: inherit;
-  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+  font-size: var(--fs-lead);
 
   &::placeholder {
     color: var(--quick-muted);
@@ -83,7 +83,7 @@
   background: var(--primary);
   color: var(--on-primary);
   font: inherit;
-  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+  font-size: var(--fs-lead);
   font-weight: 500;
   cursor: pointer;
   transition: background-color var(--transition-normal);

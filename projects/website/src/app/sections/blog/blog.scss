@@ -24,7 +24,7 @@
 .blog__title {
   max-width: 8ch;
   margin: 0;
-  font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3rem);
+  font-size: var(--fs-h2);
   font-weight: 700;
   line-height: 1.3;
   letter-spacing: -0.02em;
@@ -42,7 +42,7 @@
   border-radius: var(--radius-pill);
   background: var(--primary);
   color: var(--on-primary);
-  font-size: var(--text-xl);
+  font-size: var(--fs-lead);
   font-weight: 600;
   text-decoration: none;
 
@@ -91,7 +91,7 @@
 
 .blog__upcoming-title {
   margin: 0;
-  font-size: var(--text-xl);
+  font-size: var(--fs-lead);
   font-weight: 500;
   line-height: 1.3;
   color: var(--heading);

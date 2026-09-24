@@ -15,6 +15,7 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 import { filter } from 'rxjs';
+import { BRAND_CONTENT } from '../../content/brand.content';
 import { siteFeature } from '../../core/store/site.feature';
 import { UiActions, uiFeature } from '../../core/store/ui.feature';
 import { ThemeToggle } from '../theme-toggle/theme-toggle';
@@ -47,15 +48,8 @@ export class SiteHeader {
   protected readonly activeSection = this.store.selectSignal(uiFeature.selectActiveSection);
   protected readonly menuOpen = this.store.selectSignal(uiFeature.selectMenuOpen);
 
-  /** "MA" mark from the site name (brief: "MA" mark + "Muhammad Asif"). */
-  protected readonly initials = computed(() =>
-    this.siteName()
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((word) => word[0]?.toUpperCase() ?? '')
-      .join(''),
-  );
+  /** "AP" mark; hover/focus reveals "Made by Asif". */
+  protected readonly brand = BRAND_CONTENT;
 
   private readonly currentUrl = signal(this.router.url);
   private readonly onHome = computed(() => this.currentUrl().split(/[?#]/)[0] === '/');

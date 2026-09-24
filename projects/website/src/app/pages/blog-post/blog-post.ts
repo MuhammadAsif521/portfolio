@@ -9,6 +9,7 @@ import { PublicApiService } from '@shared/services/public-api.service';
 import { SeoService } from '@shared/services/seo.service';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { BLOG_CONTENT } from '../../content/blog.content';
+import { DEMO_CONTENT, DEMO_POSTS } from '../../core/demo-content';
 import { dayMonthYear } from '../../core/dates';
 import { siteFeature } from '../../core/store/site.feature';
 
@@ -35,6 +36,7 @@ export class BlogPostPage {
   private readonly api = inject(PublicApiService);
   private readonly seo = inject(SeoService);
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
+  private readonly demo = inject(DEMO_CONTENT);
 
   protected readonly content = BLOG_CONTENT.post;
   protected readonly author = inject(Store).selectSignal(siteFeature.selectSiteName);
@@ -44,11 +46,14 @@ export class BlogPostPage {
       switchMap((slug) =>
         this.api.getPost(slug).pipe(
           map((post): PostState => ({ status: 'loaded', post })),
-          catchError((err: unknown) =>
-            of<PostState>(
+          catchError((err: unknown) => {
+            // Development only: demo posts open their own (demo) page.
+            const demo = this.demo ? DEMO_POSTS.find((item) => item.slug === slug) : undefined;
+            if (demo) return of<PostState>({ status: 'loaded', post: demo });
+            return of<PostState>(
               err instanceof HttpErrorResponse && err.status === 404 ? { status: 'not-found' } : { status: 'error' },
-            ),
-          ),
+            );
+          }),
           startWith<PostState>({ status: 'loading' }),
         ),
       ),

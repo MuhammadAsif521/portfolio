@@ -1,15 +1,4 @@
 <div class="marquee" [class.is-still]="still()">
-  @if (animated()) {
-    <button
-      type="button"
-      class="marquee__toggle"
-      [attr.aria-label]="playing() ? 'Pause scrolling skills' : 'Play scrolling skills'"
-      [attr.aria-pressed]="!playing()"
-      (click)="toggle()"
-    >
-      <i-lucide [name]="playing() ? 'pause' : 'play'" [size]="14" aria-hidden="true" />
-    </button>
-  }
   <div
     class="marquee__band"
     (pointerenter)="holdPause()"

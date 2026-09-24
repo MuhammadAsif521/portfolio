@@ -5,6 +5,7 @@ import type { BlogPostCard } from '@shared/interfaces/public-api.interface';
 import { PublicApiService } from '@shared/services/public-api.service';
 import { catchError, map, of } from 'rxjs';
 import { BLOG_CONTENT } from '../../content/blog.content';
+import { DEMO_CONTENT, DEMO_POSTS, orDemo } from '../../core/demo-content';
 import { disposeWith, revealOnScroll } from '../../core/motion';
 import { PostCard } from '../../ui/post-card/post-card';
 
@@ -32,6 +33,7 @@ export class Blog {
       .pipe(
         map((page) => page.data),
         catchError(() => of([] as BlogPostCard[])),
+        orDemo<BlogPostCard>(DEMO_POSTS, inject(DEMO_CONTENT)),
       ),
     { initialValue: null },
   );

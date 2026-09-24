@@ -77,3 +77,9 @@
     }
   }
 }
+
+// reCAPTCHA v3 badge: hidden. Google allows this only when the reCAPTCHA notice is shown in the page
+// flow instead (the website footer carries it).
+.grecaptcha-badge {
+  visibility: hidden !important;
+}

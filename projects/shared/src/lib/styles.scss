@@ -4,7 +4,6 @@
 // dynamically built class names), then Tailwind. Base element styles in _overrides live in
 // `@layer base`, which Tailwind places right after preflight.
 
-@use './styles/fonts';
 @use './styles/variables';
 @use './styles/form-control';
 @use './styles/overrides';

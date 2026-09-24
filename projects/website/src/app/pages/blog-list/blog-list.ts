@@ -8,6 +8,7 @@ import { PublicApiService } from '@shared/services/public-api.service';
 import { SeoService } from '@shared/services/seo.service';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { BLOG_CONTENT } from '../../content/blog.content';
+import { DEMO_CONTENT, DEMO_POSTS } from '../../core/demo-content';
 import { PostCard } from '../../ui/post-card/post-card';
 
 type ListState =
@@ -46,6 +47,7 @@ export class BlogListPage {
   private readonly api = inject(PublicApiService);
   private readonly seo = inject(SeoService);
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
+  private readonly demo = inject(DEMO_CONTENT);
 
   protected readonly content = BLOG_CONTENT.list;
   protected readonly currentPage = computed(() => pageNumber(this.page()));
@@ -56,8 +58,14 @@ export class BlogListPage {
     toObservable(this.query).pipe(
       switchMap(({ page, tag }) =>
         this.api.listPosts({ page, limit: BLOG_CONTENT.list.pageSize, ...(tag ? { tag: [tag] } : {}) }).pipe(
-          map((result): ListState => ({ status: 'loaded', result })),
-          catchError(() => of<ListState>({ status: 'error' })),
+          map((result): ListState =>
+            result.data.length || page > 1 || !this.demo
+              ? { status: 'loaded', result }
+              : { status: 'loaded', result: this.demoPage(tag) },
+          ),
+          catchError(() =>
+            of<ListState>(this.demo && page === 1 ? { status: 'loaded', result: this.demoPage(tag) } : { status: 'error' }),
+          ),
           startWith<ListState>({ status: 'loading' }),
         ),
       ),
@@ -113,6 +121,12 @@ export class BlogListPage {
         ],
       });
     });
+  }
+
+  /** Development only: the demo posts as a one-page result (optionally filtered by tag). */
+  private demoPage(tag: string | null): PaginatedResponse<BlogPostCard> {
+    const data = DEMO_POSTS.filter((post) => !tag || post.tags.includes(tag));
+    return { data, total: data.length, limit: BLOG_CONTENT.list.pageSize, page: 1, pages: data.length ? 1 : 0 };
   }
 
   /** Query params for a page link; page 1 and "no tag" are omitted so URLs stay canonical. */

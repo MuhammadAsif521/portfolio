@@ -1,8 +1,7 @@
-import { HERO_CONTENT } from './hero.content';
 
 /**
  * "Why Hire Me" (brief, Part 6). Figures must stay real and defensible (brief, Part 10: confirm before
- * launch). The portrait is the hero cut-out, reused.
+ * launch).
  */
 export const ABOUT_CONTENT = {
   title: 'Why',
@@ -15,5 +14,6 @@ export const ABOUT_CONTENT = {
     { value: '7', suffix: '+', label: 'Production applications delivered' },
     { value: '4', suffix: '', label: 'Public sites on one multi-tenant backend' },
   ],
-  portrait: { ...HERO_CONTENT.portrait, alt: 'Portrait of Muhammad Asif' },
+  /** Its own waist-up image (the hero uses the full-length cut-out). Replace the file to use another photo. */
+  portrait: { src: '/assets/images/about-portrait.webp', alt: 'Portrait of Muhammad Asif', width: 493, height: 640 },
 } as const;

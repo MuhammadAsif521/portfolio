@@ -5,6 +5,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { provideMockStore } from '@ngrx/store/testing';
 import { PublicApiService } from '@shared/services/public-api.service';
+import { DEMO_CONTENT } from './core/demo-content';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { BLOG_CONTENT } from './content/blog.content';
@@ -13,7 +14,7 @@ import { BlogListPage, pageNumber, tagFilter } from './pages/blog-list/blog-list
 import { BlogPostPage } from './pages/blog-post/blog-post';
 import { Blog } from './sections/blog/blog';
 
-function setup(api: Record<string, unknown>, responseInit?: ResponseInit) {
+function setup(api: Record<string, unknown>, responseInit?: ResponseInit, demo = false) {
   // Reduced motion: keeps GSAP from lazy-loading while the test environment tears down.
   window.matchMedia = ((query: string) =>
     ({ matches: query.includes('reduce'), media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList);
@@ -27,6 +28,8 @@ function setup(api: Record<string, unknown>, responseInit?: ResponseInit) {
         },
       }),
       { provide: PublicApiService, useValue: api },
+      // Demo content is dev-only UI review data; these tests cover real API behaviour.
+      { provide: DEMO_CONTENT, useValue: demo },
       ...(responseInit ? [{ provide: RESPONSE_INIT, useValue: responseInit }] : []),
     ],
   });
@@ -96,6 +99,15 @@ describe('Blog section (home)', () => {
     ]);
     expect(cards[0]?.querySelector('time')?.getAttribute('datetime')).toBe('2026-09-01');
     expect(el.querySelector('.blog__all')?.getAttribute('href')).toBe('/blog');
+  });
+
+  it('shows the demo posts as real-looking cards in development when none are published', async () => {
+    setup({ listPosts: () => of(page([])) }, undefined, true);
+    const fixture = TestBed.createComponent(Blog);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelectorAll('app-post-card').length).toBe(3);
+    expect(el.querySelector('app-post-card h3 a')?.getAttribute('href')).toBe('/blog/building-a-multi-tenant-backend');
   });
 
   it('lists the planned topics as "Coming soon" (not links) until a post is published', async () => {

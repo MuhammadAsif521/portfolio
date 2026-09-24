@@ -16,6 +16,7 @@ import { PublicApiService } from '@shared/services/public-api.service';
 import { SeoService } from '@shared/services/seo.service';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { PROJECTS_CONTENT } from '../../content/projects.content';
+import { DEMO_CONTENT, DEMO_PROJECTS } from '../../core/demo-content';
 
 type ProjectState =
   | { status: 'loading' }
@@ -41,6 +42,7 @@ export class ProjectDetailPage {
   private readonly api = inject(PublicApiService);
   private readonly seo = inject(SeoService);
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
+  private readonly demo = inject(DEMO_CONTENT);
 
   protected readonly content = PROJECTS_CONTENT.detail;
 
@@ -49,11 +51,14 @@ export class ProjectDetailPage {
       switchMap((slug) =>
         this.api.getProject(slug).pipe(
           map((project): ProjectState => ({ status: 'loaded', project })),
-          catchError((err: unknown) =>
-            of<ProjectState>(
+          catchError((err: unknown) => {
+            // Development only: demo projects open their own (demo) case study.
+            const demo = this.demo ? DEMO_PROJECTS.find((item) => item.slug === slug) : undefined;
+            if (demo) return of<ProjectState>({ status: 'loaded', project: demo });
+            return of<ProjectState>(
               err instanceof HttpErrorResponse && err.status === 404 ? { status: 'not-found' } : { status: 'error' },
-            ),
-          ),
+            );
+          }),
           startWith<ProjectState>({ status: 'loading' }),
         ),
       ),

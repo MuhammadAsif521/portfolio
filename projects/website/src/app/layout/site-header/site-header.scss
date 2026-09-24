@@ -77,6 +77,11 @@
     flex: 1;
   }
 
+  // Equal flex basis on both sides keeps the brand in the true centre of the bar.
+  @include m.up(lg) {
+    flex: 1 1 0;
+  }
+
   &--right {
     justify-content: flex-end;
   }
@@ -112,27 +117,52 @@
 
 .site-nav__brand {
   display: inline-flex;
+  flex: none;
   align-items: center;
-  gap: 0.625rem;
   margin-right: auto;
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem;
   border-radius: var(--radius-pill);
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: var(--text-lg);
-  letter-spacing: -0.01em;
   color: var(--band-dark-text);
+  white-space: nowrap;
 
+  // Desktop: centred between the two equal-width link groups.
   @include m.up(lg) {
     margin-inline: 1rem;
+  }
+
+  @include m.focus-ring;
+}
+
+// "Made by Asif" slides out beside the mark on hover / keyboard focus.
+.site-nav__made {
+  display: inline-block;
+  max-width: 0;
+  overflow: hidden;
+  color: var(--band-dark-muted);
+  font-size: var(--text-sm);
+  opacity: 0;
+  transition:
+    max-width var(--transition-normal),
+    margin var(--transition-normal),
+    opacity var(--transition-normal);
+
+  strong {
+    color: var(--band-dark-text);
+    font-weight: 600;
+  }
+
+  .site-nav__brand:is(:hover, :focus-visible) & {
+    max-width: 9rem;
+    margin-left: 0.625rem;
+    opacity: 1;
   }
 }
 
 .site-nav__mark {
   display: inline-grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: var(--radius-pill);
   background: var(--primary);
   color: var(--on-primary);
@@ -147,11 +177,15 @@
   object-fit: contain;
 }
 
-.site-nav__name {
-  white-space: nowrap;
+.site-nav__end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto;
 
-  @include m.down(sm) {
-    @include m.sr-only;
+  @include m.up(lg) {
+    flex: 1 1 0;
+    margin-left: 0;
   }
 }
 
@@ -269,24 +303,24 @@
   }
 }
 
-// ── Figma sizes on wide screens (1440 frame: 84px bar, 66px pills, 20px items, 46px logo mark) ──
+// ── Wide screens: compact Figma-style bar (68px bar, 52px pills, 16px items) ──
 @include m.up(xl) {
   .site-nav__bar {
-    min-height: 5.25rem;
-    padding: 0.5625rem;
-    background: var(--band-dark); // Figma #171717; stays dark in dark mode too
+    min-height: 4.25rem;
+    padding: 0.5rem;
+    background: var(--band-dark); // #171717; stays dark in dark mode too
   }
 
   .site-nav__indicator {
-    height: 4.125rem;
-    margin-top: -2.0625rem;
+    height: 3.25rem;
+    margin-top: -1.625rem;
   }
 
   .site-nav__link {
-    height: 4.125rem;
-    padding-inline: 1.25rem;
+    height: 3.25rem;
+    padding-inline: 1.125rem;
     color: #fff;
-    font-size: var(--text-xl);
+    font-size: var(--fs-ui);
     font-weight: 400;
     transition:
       color var(--transition-fast),
@@ -302,24 +336,13 @@
     }
   }
 
-  .site-nav__brand {
-    gap: 0.75rem;
-    font-size: var(--text-2xl);
-  }
-
   .site-nav__mark,
   .site-nav__logo-img {
-    width: 2.875rem;
-    height: 2.875rem;
+    width: 2.625rem;
+    height: 2.625rem;
   }
 
   .site-nav__mark {
-    font-size: 1rem;
-  }
-
-  .site-nav__resume {
-    height: 3.25rem;
-    padding-inline: 1.25rem;
-    font-size: var(--text-base);
+    font-size: 0.9375rem;
   }
 }

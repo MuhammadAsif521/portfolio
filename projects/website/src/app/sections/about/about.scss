@@ -1,23 +1,26 @@
 @use 'styles/mixins' as m;
 
-// Figma "Why Hire me?": light-gray band, cut-out portrait rising out of an orange rounded block (left),
-// heading, bio, two stats and an outlined "Hire me" pill (right).
+// Figma "Why Hire me?": light-grey rounded band; portrait breaking out of a peach capsule (408×469,
+// fully rounded) on the left; heading, grey bio, two stats and an outlined "Hire me" button on the
+// right. Hover (recording): the button fills black with white text.
 
 .about {
-  padding: clamp(3rem, 2rem + 4vw, 5.5rem) var(--container-gutter);
+  padding: clamp(3rem, 2rem + 4vw, 7rem) var(--container-gutter);
+  border-radius: var(--radius-band);
   background: var(--band-b);
   scroll-margin-top: var(--header-height);
 }
 
 .about__inner {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(2.5rem, 1.5rem + 3vw, 4rem);
   align-items: center;
   max-width: var(--container-max);
   margin-inline: auto;
 
   @include m.up(lg) {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr); // Figma: copy column from ~673
   }
 }
 
@@ -28,35 +31,41 @@
   display: grid;
   justify-items: center;
   align-items: end;
-  width: min(100%, 30rem);
-  aspect-ratio: 1;
+  width: min(100%, 25.5rem);
+  aspect-ratio: 408 / 590; // capsule 408×469 + room for the head to break out
   margin-inline: auto;
+
+  @include m.up(lg) {
+    margin-inline: clamp(0rem, -2rem + 6vw, 5rem) 0;
+  }
 }
 
-// The block is shorter than the frame so the head rises above it, as in the Figma.
 .about__backdrop {
   position: absolute;
-  inset: 22% 0 0;
-  border-radius: var(--radius-band);
-  background: var(--brand-gradient);
+  inset: auto 0 0;
+  height: 79.5%; // 469 / 590
+  border-radius: 999px;
+  background: var(--accent);
 }
 
 .about__image {
   position: relative;
-  width: 88%;
-  height: auto;
-  max-height: 100%;
+  width: auto;
+  height: 100%;
+  min-width: 0;
+  max-width: 100%;
   object-fit: contain;
   object-position: bottom;
-  border-radius: 0 0 var(--radius-band) var(--radius-band);
+  // The capsule's rounded bottom clips the figure, like the Figma.
+  border-radius: 0 0 999px 999px;
 }
 
 // ── Copy ──
 
 .about__title {
-  margin: 0 0 1.25rem;
-  font-size: var(--text-4xl);
-  font-weight: 600;
+  margin: 0 0 1.75rem;
+  font-size: clamp(2.5rem, 1.8rem + 2.4vw, 3.75rem);
+  font-weight: 700;
   line-height: var(--leading-tight);
   letter-spacing: -0.02em;
   color: var(--heading);
@@ -67,55 +76,58 @@
 }
 
 .about__bio {
+  max-width: 27.5rem;
   margin: 0 0 1rem;
-  max-width: 38rem;
-  color: var(--text-muted);
+  color: var(--text-subtle);
   font-size: var(--text-lg);
-  line-height: var(--leading-relaxed);
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .about__stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem clamp(2rem, 1rem + 4vw, 4rem);
-  margin: 2rem 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 2rem;
+  max-width: 34rem;
+  margin: 2.5rem 0 3.25rem;
 }
 
 // Label follows the value visually; the DOM keeps "label: value" order for screen readers.
 .about__stat {
   display: flex;
   flex-direction: column-reverse;
-  max-width: 14rem;
 }
 
 .about__stat-value {
   margin: 0;
-  font-size: var(--text-4xl);
+  font-size: clamp(1.875rem, 1.5rem + 1vw, 2.25rem);
   font-weight: 600;
   line-height: 1.1;
-  color: var(--heading);
+  color: var(--ink);
 }
 
 .about__stat-suffix {
-  color: var(--primary);
+  color: inherit;
 }
 
 .about__stat-label {
-  margin-top: 0.25rem;
+  margin-top: 1rem;
   color: var(--text-muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-lg);
+  line-height: 1.35;
 }
 
 .about__actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1rem 1.5rem;
+  gap: 1rem 2rem;
 }
 
 .about__cta {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   font-weight: 600;
   text-decoration: none;
@@ -126,21 +138,26 @@
 
   @include m.focus-ring;
 
+  // Figma: 232×107 rounded rectangle, 1px ink border, 26px text.
   &--outline {
-    padding: 0.875rem 2rem;
-    border: 1.5px solid var(--heading);
-    border-radius: var(--radius-pill);
-    color: var(--heading);
+    min-width: clamp(10rem, 4rem + 12vw, 14.5rem);
+    min-height: clamp(4.5rem, 1rem + 6.5vw, 6.7rem);
+    padding: 0 2rem;
+    border: 1px solid var(--ink);
+    border-radius: 1.5rem;
+    color: var(--ink);
+    font-size: clamp(1.375rem, 1rem + 1vw, 1.875rem);
+    font-weight: 700;
 
     &:hover {
-      border-color: var(--primary);
-      background: var(--primary);
-      color: var(--on-primary);
+      background: var(--ink);
+      color: var(--band-a);
     }
   }
 
   &--link {
     color: var(--heading);
+    font-size: var(--text-lg);
 
     &:hover {
       color: var(--primary);

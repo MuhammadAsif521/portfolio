@@ -82,16 +82,19 @@ describe('Blog section (home)', () => {
     return fixture.nativeElement as HTMLElement;
   }
 
-  it('shows the latest posts as linked cards with author, date and reading time', async () => {
+  it('shows the latest posts as linked cards with author and date', async () => {
     const listPosts = vi.fn(() => of(page([card('one'), card('two')])));
     const el = await render(listPosts);
     expect(listPosts).toHaveBeenCalledWith({ limit: BLOG_CONTENT.home.limit });
     const cards = el.querySelectorAll('app-post-card');
     expect(cards.length).toBe(2);
     expect(cards[0]?.querySelector('h3 a')?.getAttribute('href')).toBe('/blog/one');
-    expect(cards[0]?.querySelector('.post-card__meta')?.textContent?.replace(/\s*·\s*/g, ' · ').trim()).toBe(
-      'Muhammad Asif · Sep 1, 2026 · 6 min read',
-    );
+    // Figma meta: orange-dot author and date (reading time is on the post page only).
+    expect(Array.from(cards[0]!.querySelectorAll('.post-card__dot')).map((node) => node.textContent?.trim())).toEqual([
+      'Muhammad Asif',
+      'Sep 1, 2026',
+    ]);
+    expect(cards[0]?.querySelector('time')?.getAttribute('datetime')).toBe('2026-09-01');
     expect(el.querySelector('.blog__all')?.getAttribute('href')).toBe('/blog');
   });
 

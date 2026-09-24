@@ -1,9 +1,8 @@
 /** Blog section, /blog and /blog/:slug (brief, Parts 4/6). Posts themselves come from cusadmin. */
 export const BLOG_CONTENT = {
   home: {
-    title: 'From my',
-    accent: 'blog',
-    seeAll: 'See all posts',
+    title: 'From my blog post',
+    seeAll: 'See All',
     limit: 3,
     /**
      * Shown only while no post is published, clearly marked as upcoming (brief: "Placeholder until

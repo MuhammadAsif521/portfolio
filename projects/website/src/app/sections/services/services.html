@@ -1,4 +1,9 @@
 <section id="services" class="services" appSpySection aria-labelledby="services-title">
+  <!-- Figma: 3D orange blobs floating over the textured band (decorative). -->
+  <img class="services__blob services__blob--left" src="/assets/images/blob.webp" alt="" width="640" height="639" loading="lazy" decoding="async" aria-hidden="true" />
+  <img class="services__blob services__blob--top" src="/assets/images/blob.webp" alt="" width="640" height="639" loading="lazy" decoding="async" aria-hidden="true" />
+  <img class="services__blob services__blob--right" src="/assets/images/blob.webp" alt="" width="640" height="639" loading="lazy" decoding="async" aria-hidden="true" />
+
   <div class="services__inner">
     <header class="services__heading">
       <h2 id="services-title" class="services__title" data-reveal>
@@ -15,43 +20,47 @@
 
 <ng-template #card let-item>
   <article class="service-card">
+    <h3 class="service-card__title">{{ item.title }}</h3>
+
     <div class="service-card__media">
-      @if (item.image; as image) {
-        <img
-          class="service-card__image"
-          [src]="image.src"
-          [alt]="image.alt"
-          [width]="image.width"
-          [height]="image.height"
-          loading="lazy"
-          decoding="async"
-          draggable="false"
-        />
-      } @else {
-        <span class="service-card__icon" aria-hidden="true">
-          <i-lucide [name]="item.icon" [size]="32" />
-        </span>
-      }
-    </div>
+      <span class="service-card__layer service-card__layer--back" aria-hidden="true"></span>
+      <span class="service-card__layer service-card__layer--mid" aria-hidden="true"></span>
 
-    <div class="service-card__body">
-      <h3 class="service-card__title">{{ item.title }}</h3>
-      <p class="service-card__summary">{{ item.summary }}</p>
-      <ul class="service-card__points" aria-label="Includes">
-        @for (point of item.points; track point) {
-          <li class="service-card__chip">{{ point }}</li>
+      <div class="service-card__screen">
+        @if (item.image; as image) {
+          <img
+            class="service-card__image"
+            [src]="image.src"
+            [alt]="image.alt"
+            [width]="image.width"
+            [height]="image.height"
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+          />
+        } @else {
+          <!-- UI-style panel built from the service's own content until artwork exists. -->
+          <div class="service-card__ui">
+            <span class="service-card__icon" aria-hidden="true"><i-lucide [name]="item.icon" [size]="26" /></span>
+            <p class="service-card__summary">{{ item.summary }}</p>
+            <ul class="service-card__points" aria-label="Includes">
+              @for (point of item.points; track point) {
+                <li class="service-card__chip">{{ point }}</li>
+              }
+            </ul>
+          </div>
         }
-      </ul>
-    </div>
+      </div>
 
-    <a
-      class="service-card__link"
-      routerLink="/"
-      [fragment]="item.target"
-      [attr.aria-label]="(item.target === 'contact' ? 'Discuss ' : 'See projects for ') + item.title"
-      draggable="false"
-    >
-      <i-lucide name="arrow-up-right" [size]="22" aria-hidden="true" />
-    </a>
+      <a
+        class="service-card__link"
+        routerLink="/"
+        [fragment]="item.target"
+        [attr.aria-label]="(item.target === 'contact' ? 'Discuss ' : 'See projects for ') + item.title"
+        draggable="false"
+      >
+        <i-lucide name="arrow-up-right" [size]="40" [stroke]="2.5" aria-hidden="true" />
+      </a>
+    </div>
   </article>
 </ng-template>

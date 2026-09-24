@@ -13,5 +13,5 @@ export const HERO_CONTENT = {
     'Building scalable, production Angular & Node systems — from multi-tenant platforms to e-commerce and real-time apps.',
   stat: { value: '7+', label: 'Production Apps Shipped', rating: 5 },
   /** Transparent cut-out portrait (WebP/PNG). Leave the file out and the orange arc shows alone. */
-  portrait: { src: '/images/hero-portrait.webp', alt: 'Muhammad Asif', width: 560, height: 640 },
+  portrait: { src: '/assets/images/portrait.webp', alt: 'Muhammad Asif', width: 433, height: 865 },
 } as const;

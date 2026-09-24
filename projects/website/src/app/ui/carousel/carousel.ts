@@ -10,6 +10,7 @@ import {
   computed,
   inject,
   input,
+  model,
   signal,
   viewChild,
 } from '@angular/core';
@@ -43,12 +44,15 @@ export class Carousel<T> {
   readonly label = input.required<string>();
   /** Dot colours for dark bands (the default suits light backgrounds). */
   readonly onDark = input(false);
+  /** Centre the slide in view (partial neighbours on both sides, Figma testimonials). */
+  readonly centered = input(false);
 
   private readonly track = viewChild.required<ElementRef<HTMLElement>>('track');
   private readonly destroyRef = inject(DestroyRef);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  protected readonly active = signal(0);
+  /** Index of the slide in view; two-way bindable (`[(active)]`) so a parent can show its details. */
+  readonly active = model(0);
   /** false until measured in the browser, so SSR and wide screens don't show pointless dots. */
   protected readonly overflowing = signal(false);
   protected readonly dragging = signal(false);
@@ -64,7 +68,7 @@ export class Carousel<T> {
     const slide = track.children.item(index) as HTMLElement | null;
     if (!slide) return;
     const reduce = matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    track.scrollTo({ left: slide.offsetLeft - track.offsetLeft, behavior: reduce ? 'auto' : 'smooth' });
+    track.scrollTo({ left: this.slideLeft(track, slide), behavior: reduce ? 'auto' : 'smooth' });
     this.active.set(index);
   }
 
@@ -87,6 +91,12 @@ export class Carousel<T> {
     const resize = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
     resize?.observe(track);
     measure();
+    // Centred carousels open on the second slide so there is a neighbour on each side.
+    if (this.centered() && this.count() > 2) {
+      const second = track.children.item(1) as HTMLElement | null;
+      if (second) track.scrollLeft = this.slideLeft(track, second);
+      this.active.set(1);
+    }
 
     // Mouse drag (touch and pens already scroll natively).
     let startX = 0;
@@ -137,13 +147,23 @@ export class Carousel<T> {
   private nearestIndex(track: HTMLElement): number {
     const slides = Array.from(track.children) as HTMLElement[];
     if (!slides.length) return 0;
+    const scrollable = track.scrollWidth - track.clientWidth > 2;
+    if (!scrollable) return 0; // everything fits: the first slide is the one "in view"
     // At the far right edge the last slide is the active one even if it isn't at the start.
     if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 2) return slides.length - 1;
-    const left = track.scrollLeft + track.offsetLeft;
     let best = 0;
     slides.forEach((slide, index) => {
-      if (Math.abs(slide.offsetLeft - left) < Math.abs((slides[best]?.offsetLeft ?? 0) - left)) best = index;
+      const distance = Math.abs(this.slideLeft(track, slide) - track.scrollLeft);
+      const bestDistance = Math.abs(this.slideLeft(track, slides[best] as HTMLElement) - track.scrollLeft);
+      if (distance < bestDistance) best = index;
     });
     return best;
+  }
+
+  /** scrollLeft that brings `slide` into its snap position (start, or centre when `centered`). */
+  private slideLeft(track: HTMLElement, slide: HTMLElement): number {
+    // From rects (not offsetLeft, which depends on the offset parent), in the track's scroll coordinates.
+    const start = track.scrollLeft + slide.getBoundingClientRect().left - track.getBoundingClientRect().left;
+    return this.centered() ? start - (track.clientWidth - slide.offsetWidth) / 2 : start;
   }
 }

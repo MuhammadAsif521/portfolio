@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { IconComponent } from '@shared/components/icon-component/icon-component';
 import type { BlogPostCard } from '@shared/interfaces/public-api.interface';
 import { PublicApiService } from '@shared/services/public-api.service';
 import { catchError, map, of } from 'rxjs';
@@ -15,7 +14,7 @@ import { PostCard } from '../../ui/post-card/post-card';
  */
 @Component({
   selector: 'app-blog',
-  imports: [RouterLink, IconComponent, PostCard],
+  imports: [RouterLink, PostCard],
   templateUrl: './blog.html',
   styleUrl: './blog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

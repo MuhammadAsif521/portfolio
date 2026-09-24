@@ -1,22 +1,25 @@
 @let p = post();
 <article class="post-card">
   <div class="post-card__media">
-    @if (p.coverImage; as cover) {
-      <img
-        class="post-card__image"
-        [src]="cover.url"
-        [alt]="cover.alt"
-        [attr.width]="cover.width ?? 800"
-        [attr.height]="cover.height ?? 600"
-        loading="lazy"
-        decoding="async"
-      />
-    } @else {
-      <div class="post-card__placeholder" aria-hidden="true">
-        <i-lucide name="pen-line" [size]="40" />
-      </div>
-    }
-    <span class="post-card__arrow" aria-hidden="true"><i-lucide name="arrow-up-right" [size]="22" /></span>
+    <div class="post-card__frame">
+      @if (p.coverImage; as cover) {
+        <img
+          class="post-card__image"
+          [src]="cover.url"
+          [alt]="cover.alt"
+          [attr.width]="cover.width ?? 832"
+          [attr.height]="cover.height ?? 862"
+          loading="lazy"
+          decoding="async"
+        />
+      } @else {
+        <div class="post-card__placeholder" aria-hidden="true">
+          <i-lucide name="pen-line" [size]="44" />
+        </div>
+      }
+    </div>
+    <!-- Navy circle in the notch (Figma); the card's title link is the real target. -->
+    <span class="post-card__arrow" aria-hidden="true"><i-lucide name="arrow-up-right" [size]="40" [stroke]="2.5" /></span>
   </div>
 
   <div class="post-card__body">
@@ -24,14 +27,9 @@
       <p class="post-card__tag">{{ t }}</p>
     }
     <p class="post-card__meta">
-      <span>{{ author() }}</span>
+      <span class="post-card__dot">{{ author() }}</span>
       @if (date(); as d) {
-        <span aria-hidden="true">·</span>
-        <time [attr.datetime]="d.iso">{{ d.label }}</time>
-      }
-      @if (p.readingTime) {
-        <span aria-hidden="true">·</span>
-        <span>{{ p.readingTime }} {{ minutes }}</span>
+        <time class="post-card__dot" [attr.datetime]="d.iso">{{ d.label }}</time>
       }
     </p>
     @if (headingLevel() === 2) {
@@ -39,6 +37,5 @@
     } @else {
       <h3 class="post-card__title"><a class="post-card__link" [routerLink]="link()">{{ p.title }}</a></h3>
     }
-    <p class="post-card__excerpt">{{ p.excerpt }}</p>
   </div>
 </article>

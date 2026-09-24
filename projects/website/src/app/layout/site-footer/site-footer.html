@@ -69,7 +69,14 @@
       <div class="footer__col footer__col--quick">
         <h2 class="footer__col-title">{{ content.quickTitle }}</h2>
         <p class="footer__meta">{{ content.quickText }}</p>
-        <app-quick-contact source="footer" tone="dark" [label]="content.quickLabel" buttonText="Send" />
+        <app-quick-contact
+          source="footer"
+          tone="dark"
+          variant="field"
+          [label]="content.quickLabel"
+          [placeholder]="content.quickPlaceholder"
+          buttonText="Send"
+        />
       </div>
     </div>
 

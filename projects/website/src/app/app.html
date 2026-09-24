@@ -6,4 +6,7 @@
 <main id="main" tabindex="-1">
   <router-outlet />
 </main>
-<app-site-footer />
+<!-- Server-rendered for SEO; its code (reactive forms, quick contact) loads when it scrolls near. -->
+@defer (hydrate on viewport) {
+  <app-site-footer />
+}

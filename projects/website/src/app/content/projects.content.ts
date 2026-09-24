@@ -1,11 +1,10 @@
 /** "Projects" (brief, Part 6) and the case-study page. Project data itself comes from cusadmin. */
 export const PROJECTS_CONTENT = {
   title: "Let's have a look at my",
-  accent: 'Projects',
-  featuredLabel: 'Featured case study',
-  moreLabel: 'More projects',
-  /** Chips shown on a card before collapsing the rest into "+N". */
-  maxChips: 5,
+  accent: 'Portfolio',
+  /** Tech chips shown under the carousel for the active project. */
+  maxChips: 6,
+  readCase: 'Read the case study',
   /** How many projects the home page asks for (featured first, then the admin's order). */
   homeLimit: 12,
   empty: {

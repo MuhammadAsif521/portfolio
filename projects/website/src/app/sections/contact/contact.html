@@ -3,7 +3,6 @@
     <h2 id="contact-title" class="contact__title" data-reveal>
       {{ content.title }} <span class="contact__accent">{{ content.accent }}</span>
     </h2>
-    <p class="contact__text" data-reveal>{{ content.text }}</p>
 
     <div class="contact__quick" data-reveal>
       <app-quick-contact
@@ -18,7 +17,7 @@
     <ul class="contact__badges" data-reveal>
       @for (badge of content.badges; track badge.label) {
         <li class="contact__badge">
-          <i-lucide [name]="badge.icon" [size]="18" aria-hidden="true" />
+          <i-lucide [name]="badge.icon" [size]="20" fill="currentColor" [stroke]="1.5" aria-hidden="true" />
           {{ badge.label }}
         </li>
       }

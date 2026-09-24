@@ -54,25 +54,35 @@ describe('Projects section', () => {
     return fixture.nativeElement as HTMLElement;
   }
 
-  it('shows the featured project large and the rest as linked carousel slides', async () => {
-    const items = [
-      projectCard('a'),
-      projectCard('flagship', { featured: true, client: 'City of New Britain' }),
-      projectCard('b'),
-    ];
+  it('shows every project as a linked slide, in API order (featured first from the backend)', async () => {
+    const items = [projectCard('flagship', { featured: true }), projectCard('a'), projectCard('b')];
     const el = await render(() => of(page(items)));
 
-    const featured = el.querySelector('app-project-card.is-featured')!;
-    expect(featured.querySelector('h3')?.textContent).toBe('Project flagship');
-    expect(featured.querySelector('.project-card__client')?.textContent).toBe('City of New Britain');
-    expect(featured.querySelector('a')?.getAttribute('href')).toBe('/projects/flagship');
+    const slides = Array.from(el.querySelectorAll('[aria-roledescription="slide"] app-project-card'));
+    expect(slides.map((card) => card.querySelector('h3')?.textContent)).toEqual([
+      'Project flagship',
+      'Project a',
+      'Project b',
+    ]);
+    expect(slides[0]?.querySelector('a')?.getAttribute('href')).toBe('/projects/flagship');
+    expect(slides[0]?.querySelector('a .sr-only')?.textContent).toBe('Read the Project flagship case study');
+    expect(slides[0]?.querySelector('.project-card__summary')?.textContent).toBe('Summary of flagship');
+  });
 
-    const slides = el.querySelectorAll('[aria-roledescription="slide"] app-project-card');
-    expect(Array.from(slides).map((card) => card.querySelector('h4')?.textContent)).toEqual(['Project a', 'Project b']);
-
-    // Seven technologies: five chips, then "+2".
-    const chips = Array.from(featured.querySelectorAll('.project-card__chip')).map((chip) => chip.textContent);
-    expect(chips).toEqual(['Angular', 'Node.js', 'MongoDB', 'NgRx', 'Docker', '+2']);
+  it("shows the active project's tech chips (max six), title link and summary below the carousel", async () => {
+    const el = await render(() => of(page([projectCard('flagship', { featured: true }), projectCard('a')])));
+    const details = el.querySelector('.projects__details')!;
+    expect(Array.from(details.querySelectorAll('.projects__chip')).map((chip) => chip.textContent)).toEqual([
+      'Angular',
+      'Node.js',
+      'MongoDB',
+      'NgRx',
+      'Docker',
+      'nginx',
+    ]);
+    expect(details.querySelector('.projects__name span')?.textContent).toBe('Project flagship');
+    expect(details.querySelector('.projects__go')?.getAttribute('href')).toBe('/projects/flagship');
+    expect(details.querySelector('.projects__summary')?.textContent).toBe('Summary of flagship');
   });
 
   it('shows the empty state when nothing is published', async () => {

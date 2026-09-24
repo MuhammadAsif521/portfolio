@@ -4,15 +4,28 @@
       {{ content.title }} <span class="projects__accent">{{ content.accent }}</span>
     </h2>
 
-    @if (featured(); as project) {
-      <div class="projects__featured" data-reveal>
-        <app-project-card [project]="project" [featured]="true" />
+    @if (projects().length) {
+      <div class="projects__carousel" data-reveal>
+        <app-carousel [items]="projects()" [slide]="card" label="Projects" [(active)]="active" />
       </div>
 
-      @if (others().length) {
-        <div class="projects__more" data-reveal>
-          <h3 class="projects__subtitle">{{ content.moreLabel }}</h3>
-          <app-carousel [items]="others()" [slide]="card" label="More projects" />
+      <!-- Details of the project in view (Figma: chips, title + orange arrow, summary). -->
+      @if (current(); as p) {
+        <div class="projects__details" aria-live="polite" data-reveal>
+          @if (chips().length) {
+            <ul class="projects__chips" aria-label="Tech stack">
+              @for (tech of chips(); track tech) {
+                <li class="projects__chip">{{ tech }}</li>
+              }
+            </ul>
+          }
+          <p class="projects__name">
+            <span>{{ p.title }}</span>
+            <a class="projects__go" [routerLink]="['/projects', p.slug]" [attr.aria-label]="content.readCase + ': ' + p.title">
+              <i-lucide name="arrow-up-right" [size]="26" aria-hidden="true" />
+            </a>
+          </p>
+          <p class="projects__summary">{{ p.summary }}</p>
         </div>
       }
     } @else if (!loading()) {
@@ -25,6 +38,6 @@
   </div>
 </section>
 
-<ng-template #card let-project>
-  <app-project-card [project]="project" [headingLevel]="4" />
+<ng-template #card let-project let-i="index">
+  <app-project-card [project]="project" [headingLevel]="3" [eager]="i === 0" />
 </ng-template>

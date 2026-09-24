@@ -19,13 +19,13 @@
 // ── Brand layer + everything that doesn't change between modes ──────────────
 :root {
   // Brand (Default theme — overwritten at runtime by ThemeService)
-  --primary: #ff7a3d;
+  --primary: #fd853a;
   --secondary: #141414;
-  --accent: #ff9a5c;
+  --accent: #feb173; // Figma peach: hero arc, portrait capsule
 
   // Text drawn on brand colours: whichever of #FFFFFF / #141414 contrasts better. ThemeService
   // recomputes these for every admin palette (color.util readableTextOn); the defaults below are its
-  // result for the Default theme — the orange #FF7A3D gets near-black (~7:1; white would be 2.6:1).
+  // result for the Default theme — the orange #FD853A gets near-black (~8:1; white would be 2.4:1).
   --on-primary: #141414;
   --on-secondary: #ffffff;
   --on-accent: #141414;
@@ -46,9 +46,17 @@
   --band-dark-muted: #98a2b3;
   --band-dark-border: #2e2e2e;
 
-  // Typography — Urbanist (self-hosted via @fontsource-variable/urbanist)
-  --font-heading: 'Urbanist Variable', 'Urbanist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+  // Figma fixed colours (not part of the admin palette)
+  --navy: #1d2939; // circular arrow buttons on cards
+  --marquee: #fb6514; // marquee band
+  --footer-bg: #272727;
+  --glass-border: rgb(255 255 255 / 0.35);
+
+  // Typography (Figma): Lufga for everything (styles/_fonts.scss), Urbanist for the hero headline.
+  // Urbanist is self-hosted via @fontsource-variable/urbanist and is also Lufga's fallback.
+  --font-display: 'Urbanist Variable', 'Urbanist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
     sans-serif;
+  --font-heading: 'Lufga', var(--font-display);
   --font-body: var(--font-heading);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 
@@ -108,14 +116,15 @@
   // Page and bands — brief: white / #FAFAFA alternating
   --body-bg: #ffffff;
   --band-a: #ffffff;
-  --band-b: #fafafa;
+  --band-b: #f2f4f7; // Figma "Why Hire me" band
   --surface: #ffffff;
   --surface-muted: #f2f4f7;
   --card-bg: #ffffff;
   --overlay: rgb(16 24 40 / 0.55);
 
   // Text
-  --heading: #171717;
+  --heading: #344054; // Figma section headings (slate)
+  --ink: #171717; // hero headline, nav bar
   --text: #344054;
   --text-muted: #667085;
   --text-subtle: #98a2b3;
@@ -181,6 +190,7 @@
   --band-dark-border: #333333;
 
   --heading: #fafafa;
+  --ink: #fafafa;
   --text: #e4e7ec;
   --text-muted: #98a2b3;
   --text-subtle: #667085;

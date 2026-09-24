@@ -155,7 +155,7 @@ describe('Contact section', () => {
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('section#contact h2')?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
-      "Have a project idea? Let's discuss",
+      `${CONTACT_CONTENT.cta.title} ${CONTACT_CONTENT.cta.accent}`,
     );
     expect(Array.from(el.querySelectorAll('.contact__badge')).map((b) => b.textContent?.trim())).toEqual(
       CONTACT_CONTENT.cta.badges.map((badge) => badge.label),

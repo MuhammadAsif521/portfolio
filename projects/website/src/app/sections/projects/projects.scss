@@ -1,9 +1,10 @@
 @use 'styles/mixins' as m;
 
-// Figma "Lets have a look at my Portfolio": heading, large project cards, dot pagination.
+// Figma "Lets have a look at my Portfolio": two-line heading, two 633×371 cards per view, dots, then
+// the active project's chips (#F2F4F7 pills), title with an orange arrow button and centred summary.
 
 .projects {
-  padding: clamp(3rem, 2rem + 4vw, 5.5rem) var(--container-gutter);
+  padding: clamp(3.5rem, 2rem + 5vw, 6.5rem) var(--container-gutter);
   background: var(--band-a);
   scroll-margin-top: var(--header-height);
 }
@@ -14,11 +15,11 @@
 }
 
 .projects__title {
-  max-width: 20ch;
-  margin: 0 0 clamp(2rem, 1.5rem + 2vw, 3rem);
-  font-size: var(--text-4xl);
-  font-weight: 600;
-  line-height: var(--leading-tight);
+  max-width: 12ch;
+  margin: 0 0 clamp(2rem, 1.5rem + 2vw, 3.25rem);
+  font-size: clamp(2.5rem, 1.8rem + 2.4vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.3;
   letter-spacing: -0.02em;
   color: var(--heading);
 }
@@ -27,16 +28,89 @@
   color: var(--primary);
 }
 
-.projects__more {
-  margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+// Two cards per view from md (Figma), one on phones.
+.projects__carousel app-carousel {
+  --carousel-slide: 88%;
+
+  @include m.up(md) {
+    --carousel-slide: calc((100% - var(--carousel-gap)) / 2);
+  }
 }
 
-.projects__subtitle {
-  margin: 0 0 1.25rem;
-  font-size: var(--text-xl);
-  font-weight: 600;
-  color: var(--heading);
+// ── Active project details ──
+
+.projects__details {
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+  margin-top: clamp(1.5rem, 0.5rem + 3vw, 3.1rem);
+  text-align: center;
 }
+
+.projects__chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.875rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.projects__chip {
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface-muted);
+  color: var(--ink);
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+}
+
+.projects__name {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 1.25rem;
+  margin: 0.5rem 0 0;
+  color: var(--heading);
+  font-size: clamp(1.75rem, 1.2rem + 1.8vw, 3rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.projects__go {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: clamp(3rem, 2.5rem + 1vw, 3.6rem);
+  height: clamp(3rem, 2.5rem + 1vw, 3.6rem);
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--on-primary);
+  transition: transform var(--transition-normal);
+
+  @include m.motion-safe {
+    &:hover {
+      transform: rotate(45deg);
+    }
+  }
+
+  @include m.focus-ring;
+}
+
+.projects__summary {
+  max-width: 45rem;
+  margin: 0;
+  color: var(--heading);
+  font-size: var(--text-lg);
+  line-height: 1.45;
+
+  @include m.up(lg) {
+    font-size: var(--text-xl);
+  }
+}
+
+// ── Empty state ──
 
 .projects__empty {
   display: grid;

@@ -2,11 +2,11 @@
   <div class="blog__inner">
     <header class="blog__heading">
       <h2 id="blog-title" class="blog__title" data-reveal>
-        {{ content.title }} <span class="blog__accent">{{ content.accent }}</span>
+        {{ content.title }}
       </h2>
       @if (items().length) {
-        <a class="blog__all" routerLink="/blog" data-reveal>
-          {{ content.seeAll }} <i-lucide name="arrow-up-right" [size]="18" aria-hidden="true" />
+        <a class="blog__all" routerLink="/blog" aria-label="See all blog posts" data-reveal>
+          {{ content.seeAll }}
         </a>
       }
     </header>

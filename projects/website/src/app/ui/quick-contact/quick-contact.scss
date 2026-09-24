@@ -1,28 +1,30 @@
 @use 'styles/mixins' as m;
 
+// Two Figma looks:
+//  pill  (CTA)    — 832×86 white pill, 1px #EAECF0 border, peach 64px icon circle, orange "Send" pill.
+//  field (footer) — white field with an orange square send button attached on the right.
+
 :host {
-  --quick-bg: var(--surface);
-  --quick-border: var(--border-strong);
-  --quick-text: var(--heading);
-  --quick-muted: var(--text-subtle);
+  --quick-bg: #fff;
+  --quick-border: #eaecf0;
+  --quick-text: var(--ink);
+  --quick-muted: #344054;
 
   display: block;
   width: 100%;
-  max-width: 34rem;
+  max-width: 52rem;
 }
 
 :host(.is-dark) {
-  --quick-bg: var(--band-dark-raised);
-  --quick-border: var(--band-dark-border);
-  --quick-text: var(--band-dark-text);
-  --quick-muted: var(--band-dark-muted);
+  --quick-text: #141414;
+  --quick-muted: #475467;
 }
 
 .quick__pill {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.375rem 0.375rem 1.125rem;
+  gap: 1rem;
+  padding: 0.625rem;
   border: 1px solid var(--quick-border);
   border-radius: var(--radius-pill);
   background: var(--quick-bg);
@@ -41,22 +43,31 @@
 }
 
 .quick__icon {
+  display: grid;
   flex: none;
+  place-items: center;
+  width: clamp(2.75rem, 0.5rem + 4vw, 4rem); // Figma: 64px
+  height: clamp(2.75rem, 0.5rem + 4vw, 4rem);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--primary) 22%, #fff);
   color: var(--primary);
 }
 
 .quick__input {
   flex: 1;
   min-width: 0;
-  padding: 0.625rem 0;
+  width: 0; // flex decides the width; no intrinsic input width leaking into parent grids
+  padding: 0.75rem 0;
   border: 0;
   outline: none;
   background: transparent;
   color: var(--quick-text);
   font: inherit;
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
 
   &::placeholder {
     color: var(--quick-muted);
+    opacity: 1;
   }
 }
 
@@ -64,14 +75,16 @@
   display: inline-grid;
   flex: none;
   place-items: center;
-  min-width: 5.5rem;
-  padding: 0.75rem 1.5rem;
+  min-width: clamp(5.5rem, 1rem + 8vw, 7.9rem); // Figma: 126×64
+  min-height: clamp(2.75rem, 0.5rem + 4vw, 4rem);
+  padding: 0 1.5rem;
   border: 0;
   border-radius: var(--radius-pill);
   background: var(--primary);
   color: var(--on-primary);
   font: inherit;
-  font-weight: 600;
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+  font-weight: 500;
   cursor: pointer;
   transition: background-color var(--transition-normal);
 
@@ -85,6 +98,37 @@
   }
 
   @include m.focus-ring;
+}
+
+// ── Footer field variant ──
+
+:host(.is-field) {
+  max-width: 19rem;
+
+  .quick__pill {
+    gap: 0;
+    padding: 0 0 0 0.875rem;
+    overflow: hidden;
+    border-color: transparent;
+    border-radius: 0.5rem;
+  }
+
+  .quick__input {
+    padding-block: 0.8rem;
+    font-size: var(--text-base);
+  }
+
+  .quick__button {
+    align-self: stretch;
+    min-width: 2.75rem;
+    min-height: 3.1rem;
+    padding: 0 0.75rem;
+    border-radius: 0;
+  }
+
+  .quick__msg {
+    margin-left: 0;
+  }
 }
 
 .quick__spinner {
@@ -109,6 +153,7 @@
   font-size: var(--text-sm);
 
   &:empty {
+    min-height: 0;
     margin-top: 0;
   }
 }
@@ -121,7 +166,7 @@
   padding: 0.875rem 1.25rem;
   border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--success) 14%, transparent);
-  color: var(--quick-text);
+  color: inherit;
   font-weight: 500;
 
   i-lucide {

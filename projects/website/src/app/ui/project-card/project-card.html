@@ -1,28 +1,22 @@
 @let p = project();
 <article class="project-card" [attr.aria-labelledby]="'project-' + p.slug">
-  <div class="project-card__media">
-    @if (p.coverImage; as cover) {
-      <img
-        class="project-card__image"
-        [src]="cover.url"
-        [alt]="cover.alt"
-        [attr.width]="cover.width ?? 1200"
-        [attr.height]="cover.height ?? 750"
-        [attr.loading]="featured() ? null : 'lazy'"
-        decoding="async"
-        draggable="false"
-      />
-    } @else {
-      <div class="project-card__placeholder" aria-hidden="true">
-        <span>{{ p.title.charAt(0) }}</span>
-      </div>
-    }
-  </div>
+  @if (p.coverImage; as cover) {
+    <img
+      class="project-card__image"
+      [src]="cover.url"
+      [alt]="cover.alt"
+      [attr.width]="cover.width ?? 1266"
+      [attr.height]="cover.height ?? 742"
+      [attr.loading]="eager() ? null : 'lazy'"
+      decoding="async"
+      draggable="false"
+    />
+  } @else {
+    <div class="project-card__placeholder" aria-hidden="true"></div>
+  }
 
-  <div class="project-card__body">
-    @if (featured()) {
-      <p class="project-card__eyebrow">{{ label }}</p>
-    }
+  <!-- Default: title over the image. Hover/focus: frosted panel with the summary. -->
+  <div class="project-card__panel">
     @switch (headingLevel()) {
       @case (2) {
         <h2 class="project-card__title" [id]="'project-' + p.slug">{{ p.title }}</h2>
@@ -34,26 +28,12 @@
         <h3 class="project-card__title" [id]="'project-' + p.slug">{{ p.title }}</h3>
       }
     }
-    @if (p.client) {
-      <p class="project-card__client">{{ p.client }}</p>
-    }
     <p class="project-card__summary">{{ p.summary }}</p>
-
-    @if (chips().length) {
-      <ul class="project-card__chips" aria-label="Tech stack">
-        @for (tech of chips(); track tech) {
-          <li class="project-card__chip">{{ tech }}</li>
-        }
-        @if (hiddenChips()) {
-          <li class="project-card__chip project-card__chip--more">+{{ hiddenChips() }}</li>
-        }
-      </ul>
-    }
   </div>
 
   <!-- One link covering the card (stretched via ::after) keeps a single tab stop per project. -->
   <a class="project-card__link" [routerLink]="link()" draggable="false">
     <span class="sr-only">Read the {{ p.title }} case study</span>
-    <span class="project-card__arrow" aria-hidden="true"><i-lucide name="arrow-up-right" [size]="22" /></span>
+    <span class="project-card__arrow" aria-hidden="true"><i-lucide name="arrow-right" [size]="28" /></span>
   </a>
 </article>

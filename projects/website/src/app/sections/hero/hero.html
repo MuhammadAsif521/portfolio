@@ -3,9 +3,9 @@
     <div class="hero__heading">
       <p class="hero__badge" data-hero-anim>
         {{ content.greeting }}
-        <!-- Figma doodle beside the "Hello!" pill -->
-        <svg class="hero__doodle" viewBox="0 0 32 32" aria-hidden="true">
-          <path d="M8 22 L4 30 M15 18 L14 28 M22 22 L28 28" />
+        <!-- Figma: orange strokes beside the "Hello!" pill -->
+        <svg class="hero__doodle hero__doodle--hello" viewBox="0 0 36 36" aria-hidden="true">
+          <path d="M8 20 L3 4 M16 22 L22 3 M22 27 L33 19" />
         </svg>
       </p>
 
@@ -15,47 +15,56 @@
           <!-- Screen readers get the stable first role; the typewriter is visual only -->
           <span class="sr-only">{{ content.roles[0] }}</span>
           <span aria-hidden="true">{{ role() }}<span class="hero__caret" [class.hero__caret--typing]="typing()"></span></span>
+          <!-- Figma: orange burst to the left of the second line -->
+          <svg class="hero__doodle hero__doodle--burst" viewBox="0 0 80 90" aria-hidden="true">
+            <path d="M52 6 C38 4 24 8 10 14 M56 26 C40 34 26 48 14 66 M76 38 C70 52 67 68 66 84" />
+          </svg>
         </span>
       </h1>
     </div>
 
-    <div class="hero__stage">
-      <blockquote class="hero__quote" data-hero-anim>
-        <i-lucide name="quote" [size]="28" class="hero__quote-mark" aria-hidden="true" />
-        <p>{{ tagline() }}</p>
-      </blockquote>
+    <blockquote class="hero__quote" data-hero-anim>
+      <svg class="hero__quote-mark" viewBox="0 0 34 26" aria-hidden="true">
+        <path
+          d="M0 26V15.2C0 6.9 4.3 1.8 12.6 0l1.5 3.5C9.6 5 7.4 8 7.2 12H14v14H0Zm19.8 0V15.2C19.8 6.9 24.1 1.8 32.4 0L34 3.5C29.4 5 27.2 8 27 12h6.8v14h-14Z"
+        />
+      </svg>
+      <p>{{ tagline() }}</p>
+    </blockquote>
 
-      <div class="hero__portrait">
-        <div class="hero__arc" aria-hidden="true"></div>
-        @if (portraitVisible()) {
-          <img
-            class="hero__image"
-            [src]="content.portrait.src"
-            [alt]="content.portrait.alt"
-            [width]="content.portrait.width"
-            [height]="content.portrait.height"
-            fetchpriority="high"
-            decoding="async"
-            (error)="onPortraitError()"
-          />
+    <div class="hero__stat" data-hero-anim>
+      <p class="hero__stars" [attr.aria-label]="content.stat.rating + ' out of 5 stars'">
+        @for (star of stars; track $index) {
+          <i-lucide name="star" [size]="26" fill="currentColor" [stroke]="0" aria-hidden="true" />
         }
+      </p>
+      <p class="hero__stat-value">{{ content.stat.value }}</p>
+      <p class="hero__stat-label">{{ content.stat.label }}</p>
+    </div>
 
-        <div class="hero__actions" data-hero-anim>
-          <a class="hero__cta hero__cta--primary" routerLink="/" fragment="projects">
-            Projects <i-lucide name="arrow-up-right" [size]="18" />
-          </a>
-          <a class="hero__cta hero__cta--ghost" routerLink="/" fragment="contact">Hire me</a>
-        </div>
-      </div>
+    <div class="hero__visual">
+      <div class="hero__arc" aria-hidden="true"></div>
+      @if (portraitVisible()) {
+        <img
+          class="hero__image"
+          [src]="content.portrait.src"
+          [alt]="content.portrait.alt"
+          [width]="content.portrait.width"
+          [height]="content.portrait.height"
+          fetchpriority="high"
+          decoding="async"
+          (error)="onPortraitError()"
+        />
+      }
 
-      <div class="hero__stat" data-hero-anim>
-        <p class="hero__stars" [attr.aria-label]="content.stat.rating + ' out of 5 stars'">
-          @for (star of stars; track $index) {
-            <i-lucide name="star" [size]="18" fill="currentColor" aria-hidden="true" />
-          }
-        </p>
-        <p class="hero__stat-value">{{ content.stat.value }}</p>
-        <p class="hero__stat-label">{{ content.stat.label }}</p>
+      <!-- Figma: glass pill; the orange highlight moves to whichever button is hovered/focused. -->
+      <div class="hero__actions" data-hero-anim>
+        <a class="hero__cta hero__cta--primary" routerLink="/" fragment="projects">
+          Projects <i-lucide class="hero__cta-icon" name="arrow-up-right" [size]="24" aria-hidden="true" />
+        </a>
+        <a class="hero__cta hero__cta--ghost" routerLink="/" fragment="contact">
+          Hire me <i-lucide class="hero__cta-icon" name="arrow-up-right" [size]="24" aria-hidden="true" />
+        </a>
       </div>
     </div>
   </div>

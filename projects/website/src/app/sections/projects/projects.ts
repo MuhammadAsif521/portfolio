@@ -1,6 +1,16 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { IconComponent } from '@shared/components/icon-component/icon-component';
 import type { ProjectCard as ProjectCardData } from '@shared/interfaces/public-api.interface';
 import { PublicApiService } from '@shared/services/public-api.service';
 import { catchError, map, of } from 'rxjs';
@@ -11,13 +21,13 @@ import { Carousel } from '../../ui/carousel/carousel';
 import { ProjectCard } from '../../ui/project-card/project-card';
 
 /**
- * "Projects" (brief, Part 6): the featured flagship as a large card, the rest in a swipeable carousel.
- * Loaded during SSR (featured first, then the admin's order); an empty state stands in until projects
- * are published, so the #projects anchor always has somewhere to land.
+ * "Lets have a look at my Portfolio" (brief, Part 6; Figma): projects in a two-up carousel (featured
+ * first, from the API during SSR) with the active project's tech chips, title and summary below. An
+ * empty state stands in until projects are published, so the #projects anchor always has a target.
  */
 @Component({
   selector: 'app-projects',
-  imports: [RouterLink, ScrollSpyDirective, Carousel, ProjectCard],
+  imports: [RouterLink, IconComponent, ScrollSpyDirective, Carousel, ProjectCard],
   templateUrl: './projects.html',
   styleUrl: './projects.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,11 +50,11 @@ export class Projects {
   );
 
   protected readonly loading = computed(() => this.items() === null);
-  protected readonly featured = computed(() => {
-    const items = this.items() ?? [];
-    return items.find((project) => project.featured) ?? items[0] ?? null;
-  });
-  protected readonly others = computed(() => (this.items() ?? []).filter((project) => project !== this.featured()));
+  protected readonly projects = computed(() => this.items() ?? []);
+  /** Slide in view, bound two-way to the carousel. */
+  protected readonly active = signal(0);
+  protected readonly current = computed(() => this.projects()[this.active()] ?? this.projects()[0] ?? null);
+  protected readonly chips = computed(() => (this.current()?.techStack ?? []).slice(0, PROJECTS_CONTENT.maxChips));
 
   constructor() {
     afterNextRender(() => {

@@ -1,36 +1,86 @@
 @use 'styles/mixins' as m;
 
-// Figma "Testimonials That Speak to My Results": dark band (dark in both modes), centred heading,
-// quote cards with person, stars and a large quote mark.
+// Figma "Testimonials That Speak to My Results": textured dark band (rounded), centred white heading
+// with a doodle and sparkles, 784×265 grey cards centred with partial neighbours. Hover (recording):
+// a thin light border appears on the hovered card.
 
 .testimonials {
-  padding: clamp(3rem, 2rem + 4vw, 5.5rem) var(--container-gutter);
-  border-radius: var(--radius-band) var(--radius-band) 0 0;
-  background: var(--band-dark);
-  color: var(--band-dark-text);
+  position: relative;
+  overflow: hidden;
+  padding: clamp(3.5rem, 2rem + 5vw, 7.5rem) 0 clamp(3.5rem, 2rem + 5vw, 10rem);
+  border-radius: var(--radius-band);
+  background:
+    linear-gradient(rgb(17 17 17 / 0.45), rgb(17 17 17 / 0.45)),
+    #121212 url('/assets/images/band-texture.webp') center / cover no-repeat;
+  color: #fff;
+
+  @include m.down(md) {
+    background-image:
+      linear-gradient(rgb(17 17 17 / 0.45), rgb(17 17 17 / 0.45)),
+      url('/assets/images/band-texture-sm.webp');
+  }
 }
 
-.testimonials__inner {
-  max-width: var(--container-max);
-  margin-inline: auto;
+.testimonials__sparkle {
+  position: absolute;
+  width: 1.75rem;
+  height: 1.75rem;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+
+  &--left {
+    top: 35%;
+    left: 24%;
+    transform: rotate(-12deg);
+  }
+
+  &--right {
+    top: 25%;
+    right: 21%;
+    transform: rotate(18deg);
+  }
+
+  @include m.down(md) {
+    display: none;
+  }
 }
 
 .testimonials__heading {
   display: grid;
   justify-items: center;
-  gap: 0.75rem;
-  margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  gap: 1rem;
+  max-width: 46rem;
+  margin: 0 auto clamp(2.5rem, 2rem + 3vw, 5.5rem);
+  padding-inline: var(--container-gutter);
   text-align: center;
 }
 
 .testimonials__title {
-  max-width: 18ch;
+  display: grid;
   margin: 0;
-  font-size: var(--text-4xl);
+  font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3rem);
   font-weight: 600;
-  line-height: var(--leading-tight);
+  line-height: 1.3;
   letter-spacing: -0.02em;
-  color: var(--band-dark-text);
+  color: #fff;
+}
+
+.testimonials__line {
+  position: relative;
+}
+
+.testimonials__doodle {
+  position: absolute;
+  top: -1.25rem;
+  right: -2.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
 }
 
 .testimonials__accent {
@@ -39,8 +89,23 @@
 
 .testimonials__intro {
   margin: 0;
-  color: var(--band-dark-muted);
+  color: #fff;
   font-size: var(--text-lg);
+  line-height: 1.35;
+
+  @include m.up(lg) {
+    font-size: var(--text-xl);
+  }
+}
+
+// Figma: 784px cards centred in the 1440 frame, neighbours cut by the band edges.
+.testimonials__carousel app-carousel {
+  --carousel-slide: 86%;
+  --carousel-gap: 1.5rem;
+
+  @include m.up(md) {
+    --carousel-slide: min(54.5%, 49rem);
+  }
 }
 
 // ── Card ──
@@ -52,28 +117,48 @@
   gap: 1rem;
   height: 100%;
   margin: 0;
-  padding: 1.75rem;
-  border: 1px solid var(--band-dark-border);
-  border-radius: var(--radius-2xl);
-  background: var(--band-dark-raised);
+  padding: 1.375rem 1.375rem 1.75rem;
+  border: 1px solid transparent;
+  border-radius: 1.25rem;
+  // Figma: translucent white over the texture (the band shows through), blurred.
+  background: rgb(255 255 255 / 0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: border-color var(--transition-normal);
+
+  &:hover,
+  &:focus-within {
+    border-color: rgb(255 255 255 / 0.45);
+  }
+}
+
+// Figma: large grey quote glyph top-right.
+.quote-card__mark {
+  position: absolute;
+  top: 1.75rem;
+  right: 1.5rem;
+  width: clamp(4rem, 2rem + 6vw, 8.6rem); // Figma: ~110px tall glyph
+  height: auto;
+  fill: rgb(20 20 20 / 0.35);
+  pointer-events: none;
 }
 
 .quote-card__person {
   display: flex;
   align-items: center;
   gap: 0.875rem;
-  padding-right: 3rem; // clear of the quote mark
+  padding-right: 7rem; // clear of the quote mark
 }
 
 .quote-card__avatar {
   display: grid;
   flex: none;
   place-items: center;
-  width: 3rem;
-  height: 3rem;
+  width: 3.4rem;
+  height: 3.4rem;
   border-radius: 50%;
-  background: var(--brand-gradient);
-  color: var(--on-primary);
+  background: #98d8ff;
+  color: #1d2939;
   font-weight: 700;
 }
 
@@ -82,38 +167,34 @@
 }
 
 .quote-card__name {
+  color: #fff;
+  font-size: clamp(1.125rem, 0.9rem + 0.7vw, 1.5rem);
   font-weight: 600;
-  color: var(--band-dark-text);
+  line-height: 1.2;
 }
 
 .quote-card__role {
-  color: var(--band-dark-muted);
-  font-size: var(--text-sm);
+  color: rgb(255 255 255 / 0.85);
+  font-size: var(--text-base);
 }
 
 .quote-card__rating {
   display: flex;
   align-items: center;
-  gap: 0.125rem;
+  gap: 0.25rem;
   margin: 0;
   color: var(--primary);
 
   .is-off {
-    color: var(--band-dark-muted);
+    color: rgb(255 255 255 / 0.35);
   }
 }
 
 .quote-card__score {
   margin-left: 0.5rem;
-  color: var(--band-dark-text);
-  font-weight: 600;
-}
-
-.quote-card__mark {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  color: var(--band-dark-border);
+  color: #fff;
+  font-size: var(--text-2xl);
+  font-weight: 500;
 }
 
 .quote-card__quote {
@@ -122,8 +203,9 @@
 
   p {
     margin: 0;
-    color: var(--band-dark-text);
-    line-height: var(--leading-relaxed);
+    color: #fff;
+    font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+    line-height: 1.4;
   }
 }
 
@@ -132,7 +214,7 @@
   align-items: center;
   gap: 0.25rem;
   align-self: flex-start;
-  color: var(--band-dark-muted);
+  color: rgb(255 255 255 / 0.75);
   font-size: var(--text-sm);
   text-decoration: none;
 

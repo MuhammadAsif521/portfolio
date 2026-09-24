@@ -16,7 +16,7 @@ let nextId = 0;
   templateUrl: './quick-contact.html',
   styleUrl: './quick-contact.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.is-dark]': "tone() === 'dark'" },
+  host: { '[class.is-dark]': "tone() === 'dark'", '[class.is-field]': "variant() === 'field'" },
 })
 export class QuickContact {
   readonly source = input.required<Extract<ContactSource, 'cta' | 'footer'>>();
@@ -26,6 +26,8 @@ export class QuickContact {
   readonly buttonText = input('Send');
   readonly sentText = input("Thanks! I'll be in touch.");
   readonly tone = input<'light' | 'dark'>('light');
+  /** Figma: rounded pill with icon (CTA), or a flat field with a square send button (footer). */
+  readonly variant = input<'pill' | 'field'>('pill');
 
   protected readonly id = `quick-contact-${nextId++}`;
   protected readonly sender = new ContactSender();

@@ -6,7 +6,9 @@
 } @else {
   <form class="quick" [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <div class="quick__pill" [class.is-invalid]="emailInvalid">
-      <i-lucide name="mail" [size]="20" class="quick__icon" aria-hidden="true" />
+      @if (variant() === 'pill') {
+        <span class="quick__icon" aria-hidden="true"><i-lucide name="mail" [size]="24" /></span>
+      }
       <label class="sr-only" [for]="id">{{ label() }}</label>
       <input
         class="quick__input"
@@ -21,10 +23,18 @@
         [attr.aria-invalid]="emailInvalid || null"
         [attr.aria-describedby]="emailInvalid || sender.error() ? id + '-msg' : null"
       />
-      <button class="quick__button" type="submit" [disabled]="sending()" [attr.aria-busy]="sending() || null">
+      <button
+        class="quick__button"
+        type="submit"
+        [disabled]="sending()"
+        [attr.aria-busy]="sending() || null"
+        [attr.aria-label]="variant() === 'field' ? buttonText() : null"
+      >
         @if (sending()) {
           <span class="quick__spinner" aria-hidden="true"></span>
           <span class="sr-only">Sending…</span>
+        } @else if (variant() === 'field') {
+          <i-lucide name="send-horizontal" [size]="22" aria-hidden="true" />
         } @else {
           {{ buttonText() }}
         }

@@ -138,8 +138,8 @@ export class PublicSessionService {
     return new Promise<string | null>((resolve) => {
       const timer = setTimeout(() => resolve(null), RECAPTCHA_TIMEOUT_MS);
       grecaptcha.ready(() => {
-        grecaptcha
-          .execute(environment.SITE_KEY, { action: RECAPTCHA_ACTION })
+        // grecaptcha returns a Closure "thenable", not a real Promise (no .catch/.finally), so wrap it.
+        Promise.resolve(grecaptcha.execute(environment.SITE_KEY, { action: RECAPTCHA_ACTION }))
           .then((token) => resolve(token))
           .catch((err: unknown) => {
             console.error('[PublicSessionService] grecaptcha.execute failed (is the site key registered for this domain?)', err);

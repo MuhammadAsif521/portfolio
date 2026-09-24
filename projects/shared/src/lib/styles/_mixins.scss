@@ -66,3 +66,43 @@ $breakpoints: (
   white-space: nowrap;
   border: 0;
 }
+
+/// Figma "notch": the card image's bottom-right corner is cut away around a circular button, with an
+/// even gap and rounded (filleted) tips where the cut meets the edges. Pure CSS mask, so it works over
+/// any background (textured bands included). Masks children too, so put the button in a *sibling*
+/// (`notch-button`) sharing the same bottom-right corner. Without `$size` it uses an inherited --notch
+/// (default 160px). `$size` is the corner piece; the button is 71.25% of it (Figma: 114px in 160px).
+///
+/// Corner piece geometry (viewBox 160): button centre (103, 103), cut radius 72 (button 57 + gap 15),
+/// 24px fillets tangent to the right/bottom edges.
+$-notch-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cpath d='M0 0H160V12.85A24 24 0 0 1 127.75 35.4A72 72 0 0 0 35.4 127.75A24 24 0 0 1 12.85 160H0Z'/%3E%3C/svg%3E";
+
+@mixin notch($size: null) {
+  @if $size {
+    --notch: #{$size};
+  }
+  $layers: url('#{$-notch-svg}'), linear-gradient(#000, #000), linear-gradient(#000, #000);
+  // The two rectangles overlap the corner piece by 1px so no anti-aliased seam shows between layers.
+  $sizes: var(--notch, 160px) var(--notch, 160px), calc(100% - var(--notch, 160px) + 1px) 100%,
+    100% calc(100% - var(--notch, 160px) + 1px);
+  -webkit-mask-image: $layers;
+  mask-image: $layers;
+  -webkit-mask-size: $sizes;
+  mask-size: $sizes;
+  -webkit-mask-position: right bottom, left top, left top;
+  mask-position: right bottom, left top, left top;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/// The circular button sitting in a `notch` corner (same positioned parent, `--notch` inherited).
+@mixin notch-button {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: calc(var(--notch, 160px) * 0.7125);
+  height: calc(var(--notch, 160px) * 0.7125);
+  border-radius: 50%;
+}

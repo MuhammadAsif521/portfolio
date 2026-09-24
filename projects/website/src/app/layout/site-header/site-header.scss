@@ -148,6 +148,8 @@
 }
 
 .site-nav__name {
+  white-space: nowrap;
+
   @include m.down(sm) {
     @include m.sr-only;
   }
@@ -264,5 +266,60 @@
   from {
     opacity: 0;
     transform: translateY(-0.5rem);
+  }
+}
+
+// ── Figma sizes on wide screens (1440 frame: 84px bar, 66px pills, 20px items, 46px logo mark) ──
+@include m.up(xl) {
+  .site-nav__bar {
+    min-height: 5.25rem;
+    padding: 0.5625rem;
+    background: var(--band-dark); // Figma #171717; stays dark in dark mode too
+  }
+
+  .site-nav__indicator {
+    height: 4.125rem;
+    margin-top: -2.0625rem;
+  }
+
+  .site-nav__link {
+    height: 4.125rem;
+    padding-inline: 1.25rem;
+    color: #fff;
+    font-size: var(--text-xl);
+    font-weight: 400;
+    transition:
+      color var(--transition-fast),
+      background-color var(--transition-fast);
+
+    // Figma hover pill (#535353); the active one keeps the orange indicator.
+    &:hover:not(.is-active) {
+      background: #535353;
+    }
+
+    &.is-active {
+      font-weight: 600;
+    }
+  }
+
+  .site-nav__brand {
+    gap: 0.75rem;
+    font-size: var(--text-2xl);
+  }
+
+  .site-nav__mark,
+  .site-nav__logo-img {
+    width: 2.875rem;
+    height: 2.875rem;
+  }
+
+  .site-nav__mark {
+    font-size: 1rem;
+  }
+
+  .site-nav__resume {
+    height: 3.25rem;
+    padding-inline: 1.25rem;
+    font-size: var(--text-base);
   }
 }

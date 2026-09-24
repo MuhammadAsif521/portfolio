@@ -1,23 +1,23 @@
 @use 'styles/mixins' as m;
 
-// Figma "My Work Experience": company + dates left, dashed line with nodes centre, role + text right.
-// Phones: the line moves to the left edge and each entry stacks beside it.
+// Figma "My Work Experince": company + dates left, dotted axis with dashed-ring nodes (orange / navy)
+// centre, role + description right. Phones: the axis moves to the left edge, entries stack beside it.
 
 .experience {
-  padding: clamp(3rem, 2rem + 4vw, 5.5rem) var(--container-gutter);
+  padding: clamp(3.5rem, 2rem + 5vw, 6.5rem) var(--container-gutter);
   background: var(--band-a);
   scroll-margin-top: var(--header-height);
 }
 
 .experience__inner {
-  max-width: 64rem;
+  max-width: var(--container-max);
   margin-inline: auto;
 }
 
 .experience__title {
-  margin: 0 0 clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  margin: 0 0 clamp(2.5rem, 2rem + 3vw, 5rem);
   text-align: center;
-  font-size: var(--text-4xl);
+  font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.75rem);
   font-weight: 600;
   line-height: var(--leading-tight);
   letter-spacing: -0.02em;
@@ -31,10 +31,10 @@
 // ── Timeline ──
 
 .timeline {
-  // Node geometry, shared by the line, the nodes and the cover below the last node.
-  --node: 1.5rem;
+  // Node geometry, shared by the axis, the nodes and the cover below the last node.
+  --node: 3rem;
   --node-top: 0.25rem;
-  --axis: calc(var(--node) / 2); // line x-position (phones)
+  --axis: calc(var(--node) / 2); // phones: left edge
 
   position: relative;
 
@@ -53,13 +53,15 @@
   margin-left: -1px;
 }
 
+// Undrawn part of the axis (faint) …
 .timeline__track {
-  background: repeating-linear-gradient(to bottom, var(--border-strong) 0 6px, transparent 6px 12px);
+  background: repeating-linear-gradient(to bottom, var(--border-strong) 0 4px, transparent 4px 9px);
 }
 
-// Filled by drawTimeline() as you scroll; fully drawn without JS or with reduced motion.
+// … and the Figma dotted slate axis, drawn in by drawTimeline() as you scroll (fully drawn without JS or
+// with reduced motion, so the resting state matches the design).
 .timeline__line {
-  background: var(--primary);
+  background: repeating-linear-gradient(to bottom, var(--heading) 0 4px, transparent 4px 9px);
   transform-origin: top center;
 }
 
@@ -78,15 +80,15 @@
     'node detail';
   column-gap: 1.25rem;
   row-gap: 0.75rem;
-  padding-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  padding-bottom: clamp(2.5rem, 2rem + 3vw, 5.5rem);
 
   @include m.up(md) {
     grid-template-columns: minmax(0, 1fr) var(--node) minmax(0, 1fr);
     grid-template-areas: 'meta node detail';
-    column-gap: clamp(2rem, 1rem + 3vw, 4rem);
+    column-gap: clamp(2rem, -4rem + 15vw, 9.75rem); // Figma: axis at ~745, roles from ~925
   }
 
-  // The line runs to the bottom of the list; hide the part below the last node.
+  // The axis runs to the bottom of the list; hide the part below the last node.
   &:last-child {
     padding-bottom: 0;
 
@@ -96,8 +98,8 @@
       top: calc(var(--node-top) + var(--node));
       bottom: 0;
       left: var(--axis);
-      width: 4px;
-      margin-left: -2px;
+      width: 6px;
+      margin-left: -3px;
       background: var(--band-a);
     }
   }
@@ -109,19 +111,19 @@
 
 .timeline__company {
   margin: 0;
-  font-size: var(--text-2xl);
-  font-weight: 600;
-  line-height: var(--leading-tight);
+  font-size: clamp(1.5rem, 1.1rem + 1.3vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.2;
   color: var(--heading);
 }
 
 .timeline__dates {
-  margin: 0.375rem 0 0;
+  margin: 0.625rem 0 0;
   color: var(--text-subtle);
-  font-size: var(--text-sm);
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
 }
 
-// Ring + dot; alternating orange / dark as in the Figma, current job always orange.
+// Figma node: dashed ring with a solid dot; alternating orange / navy, current job always orange.
 .timeline__node {
   --node-color: var(--primary);
 
@@ -131,13 +133,13 @@
   width: var(--node);
   height: var(--node);
   margin-top: var(--node-top);
-  border: 2px dashed var(--node-color);
+  border: 2px dashed var(--heading);
   border-radius: 50%;
-  background: radial-gradient(circle, var(--node-color) 0 32%, var(--band-a) 36%);
+  background: radial-gradient(circle, var(--node-color) 0 58%, var(--band-a) 60%);
   transition: transform var(--transition-normal);
 
   .timeline__item:nth-child(even):not(.timeline__item--current) & {
-    --node-color: var(--heading);
+    --node-color: var(--navy);
   }
 
   &::after {
@@ -150,7 +152,7 @@
   }
 
   .is-active & {
-    transform: scale(1.12);
+    transform: scale(1.08);
   }
 
   @include m.motion-safe {
@@ -166,7 +168,7 @@
     opacity: 0.6;
   }
   100% {
-    transform: scale(2.1);
+    transform: scale(1.9);
     opacity: 0;
   }
 }
@@ -177,20 +179,19 @@
 
 .timeline__role {
   margin: 0;
-  font-size: var(--text-xl);
-  font-weight: 600;
-  line-height: var(--leading-tight);
+  font-size: clamp(1.5rem, 1.1rem + 1.3vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.2;
   color: var(--heading);
-
-  @include m.up(md) {
-    font-size: var(--text-2xl);
-  }
 }
 
 .timeline__summary {
-  margin: 0.5rem 0 0;
-  color: var(--text-muted);
-  line-height: var(--leading-relaxed);
+  max-width: 27.5rem;
+  margin: 0.75rem 0 0;
+  color: var(--text-subtle);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  line-height: 1.45;
 }
 
 .timeline__highlights {
@@ -198,7 +199,7 @@
   gap: 0.375rem;
   margin: 0.75rem 0 0;
   padding-left: 1.1rem;
-  color: var(--text-muted);
+  color: var(--text-subtle);
   line-height: var(--leading-normal);
 
   li::marker {
@@ -216,11 +217,9 @@
 }
 
 .timeline__chip {
-  padding: 0.2rem 0.625rem;
-  border: 1px solid var(--border);
+  padding: 0.2rem 0.75rem;
   border-radius: var(--radius-pill);
   background: var(--surface-muted);
   color: var(--text);
-  font-size: var(--text-xs);
-  font-weight: 500;
+  font-size: var(--text-sm);
 }

@@ -1,6 +1,10 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
+import {
+  provideClientHydration,
+  withHttpTransferCacheOptions,
+  withIncrementalHydration,
+} from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideEffects } from '@ngrx/effects';
 import { provideState, provideStore } from '@ngrx/store';
@@ -29,6 +33,8 @@ export const appConfig: ApplicationConfig = {
     // SSR requests carry only X-SSR-Key (no visitor cookies), so every cached response is public data.
     provideClientHydration(
       withHttpTransferCacheOptions({ includePostRequests: false, includeRequestsWithCredentials: true }),
+      // @defer (hydrate on …) blocks are server-rendered but load their code only when needed (footer).
+      withIncrementalHydration(),
     ),
 
     // NgRx (brief): site settings + UI state (scroll-spy section, mobile menu).

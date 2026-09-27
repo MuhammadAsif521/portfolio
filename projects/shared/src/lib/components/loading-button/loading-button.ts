@@ -22,6 +22,8 @@ export class LoadingButtonComponent {
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() disabled: boolean = false;
   @Input() customClass: string = '';
+  /** Accessible name for icon-only buttons (buttonText=""). */
+  @Input() ariaLabel?: string;
   @Input() variant: ButtonVariant = 'flat';
   @Input() size: ButtonSize = 'medium';
   @Input() color: ButtonColor = 'secondary';

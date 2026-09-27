@@ -1,0 +1,35 @@
+<div class="layout-container" [attr.data-layout]="layoutMode()">
+  <!-- FLOAT MODE -->
+  @if (layoutMode() === 'float') {
+  <app-sidebar [navItems]="Items" [pageTitle]="pageTitle" [showBackButton]="showBackButton" (onBackClick)="goBack()"
+    (sidebarCollapsed)="onSidebarCollapsed($event)" [layoutMode]="layoutMode()"></app-sidebar>
+  <div class="content-wrapper float-mode" [class.isHome]="isDashboard"
+    [class.sidebar-collapsed]="isSidebarCollapsed && isLargeScreen">
+    @if (currentTabs.length > 0) {
+    <app-custom-tabs [tabs]="currentTabs" [(activeTab)]="activeTab" (activeTabChange)="onActiveTabChange($event)">
+      <router-outlet></router-outlet>
+    </app-custom-tabs>
+    }@else {
+    <router-outlet></router-outlet>
+    }
+  </div>
+  }
+
+  <!-- DEFAULT MODE -->
+  @else {
+  <app-sidebar [navItems]="Items" [pageTitle]="pageTitle" [showBackButton]="showBackButton" (onBackClick)="goBack()"
+    (sidebarCollapsed)="onSidebarCollapsed($event)" [layoutMode]="layoutMode()"></app-sidebar>
+  <div class="content-wrapper default-mode" [class.isHome]="isDashboard" 
+    [class.sidebar-collapsed]="isSidebarCollapsed && isLargeScreen" [class.dashboard]="isDashboard">
+    @if (currentTabs.length > 0) {
+    <app-custom-tabs [tabs]="currentTabs" [(activeTab)]="activeTab" (activeTabChange)="onActiveTabChange($event)">
+      <router-outlet></router-outlet>
+    </app-custom-tabs>
+    }@else {
+    <router-outlet></router-outlet>
+    }
+  </div>
+  }
+
+  <app-layout-switcher></app-layout-switcher>
+</div>

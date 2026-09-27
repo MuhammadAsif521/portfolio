@@ -3,9 +3,9 @@ import { HttpClient, HttpContext, HttpContextToken, HttpErrorResponse, HttpHeade
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL } from '@shared/config/api.tokens';
-import { environment } from '@shared/environment/environment';
 import type { ApiResponse } from '@shared/interfaces/auth.interface';
 import type { VerifySessionData } from '@shared/interfaces/public-api.interface';
+import { RecaptchaService } from './recaptcha.service';
 
 /** Marks the session service's own requests so the interceptor doesn't try to authorise them. */
 export const SKIP_PUBLIC_SESSION = new HttpContextToken<boolean>(() => false);
@@ -18,8 +18,6 @@ export const PUBLIC_SESSION_ERROR_CODES = new Set([
 ]);
 
 const RECAPTCHA_ACTION = 'public_session';
-const RECAPTCHA_SRC = 'https://www.google.com/recaptcha/api.js?render=';
-const RECAPTCHA_TIMEOUT_MS = 8_000;
 /** Refresh a little before expiry so an in-flight request never carries a dead token. */
 const EXPIRY_MARGIN_MS = 30_000;
 /**
@@ -27,17 +25,6 @@ const EXPIRY_MARGIN_MS = 30_000;
  * valid, so a returning visitor re-uses it without running reCAPTCHA. The token itself stays in memory.
  */
 const EXPIRY_HINT_KEY = 'public-session-expires-at';
-
-interface Grecaptcha {
-  ready(callback: () => void): void;
-  execute(siteKey: string, options: { action: string }): Promise<string>;
-}
-
-declare global {
-  interface Window {
-    grecaptcha?: Grecaptcha;
-  }
-}
 
 /**
  * Public API session for the website (same flow as nb-recovers, adapted to portfolio-node):
@@ -61,7 +48,7 @@ export class PublicSessionService {
   private token: string | null = null;
   private expiresAt = 0;
   private pending: Promise<string | null> | null = null;
-  private recaptchaLoader: Promise<Grecaptcha | null> | null = null;
+  private readonly recaptcha = inject(RecaptchaService);
 
   /** A usable session token, establishing one if needed. Always null during SSR. */
   getToken(): Promise<string | null> {
@@ -97,7 +84,7 @@ export class PublicSessionService {
 
     // 3. No usable session: run reCAPTCHA (retry once — the first call can race a cold script load).
     for (let attempt = 1; attempt <= 2; attempt++) {
-      const recaptchaToken = await this.executeRecaptcha();
+      const recaptchaToken = await this.recaptcha.execute(RECAPTCHA_ACTION);
       if (!recaptchaToken) continue;
       const token = await this.verify(recaptchaToken).catch((err: unknown) => {
         console.error('[PublicSessionService] verify-session failed', err);
@@ -130,44 +117,6 @@ export class PublicSessionService {
       if (!recaptchaToken && err instanceof HttpErrorResponse && err.status < 500) return null;
       throw err;
     }
-  }
-
-  private async executeRecaptcha(): Promise<string | null> {
-    const grecaptcha = await this.loadRecaptcha();
-    if (!grecaptcha) return null;
-    return new Promise<string | null>((resolve) => {
-      const timer = setTimeout(() => resolve(null), RECAPTCHA_TIMEOUT_MS);
-      grecaptcha.ready(() => {
-        // grecaptcha returns a Closure "thenable", not a real Promise (no .catch/.finally), so wrap it.
-        Promise.resolve(grecaptcha.execute(environment.SITE_KEY, { action: RECAPTCHA_ACTION }))
-          .then((token) => resolve(token))
-          .catch((err: unknown) => {
-            console.error('[PublicSessionService] grecaptcha.execute failed (is the site key registered for this domain?)', err);
-            resolve(null);
-          })
-          .finally(() => clearTimeout(timer));
-      });
-    });
-  }
-
-  /** Loads Google's script only when a reCAPTCHA check is actually needed (not on every page view). */
-  private loadRecaptcha(): Promise<Grecaptcha | null> {
-    const view = this.document.defaultView;
-    if (view?.grecaptcha) return Promise.resolve(view.grecaptcha);
-    this.recaptchaLoader ??= new Promise<Grecaptcha | null>((resolve) => {
-      const script = this.document.createElement('script');
-      script.src = RECAPTCHA_SRC + encodeURIComponent(environment.SITE_KEY);
-      script.async = true;
-      script.defer = true;
-      script.onload = () => resolve(view?.grecaptcha ?? null);
-      script.onerror = () => {
-        console.error('[PublicSessionService] reCAPTCHA script failed to load (network, ad-blocker or CSP?)');
-        this.recaptchaLoader = null; // allow a later retry
-        resolve(null);
-      };
-      this.document.head.appendChild(script);
-    });
-    return this.recaptchaLoader;
   }
 
   private readHint(): number {

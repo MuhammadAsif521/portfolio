@@ -3,7 +3,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals", "@types/google.maps"]
   },
   "include": ["src/**/*.d.ts", "src/**/*.spec.ts"]
 }

@@ -1,12 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { TOASTER_OPTIONS } from '@shared/constants/const';
+import { NgxSonnerToaster } from 'ngx-sonner';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.scss',
+  imports: [RouterOutlet, NgxSonnerToaster],
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('cusadmin');
+  protected readonly toaster = TOASTER_OPTIONS;
 }

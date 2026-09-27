@@ -4,6 +4,7 @@
   [queryParams]="queryParams"
   [class]="'btn-base btn-' + variant + ' btn-' + size + ' btn-color-' + color + ' btn-radius-' + radius + ' ' + customClass"
   [class.btn-loading]="loading"
+  [attr.aria-label]="ariaLabel || null"
   [class.disabled-link]="disabled || loading"
 >
   @if (loading) {
@@ -29,6 +30,7 @@
   [disabled]="disabled || loading"
   [class]="'btn-base btn-' + variant + ' btn-' + size + ' btn-color-' + color + ' btn-radius-' + radius + ' ' + customClass"
   [class.btn-loading]="loading"
+  [attr.aria-label]="ariaLabel || null"
   (click)="handleClick($event)"
 >
   @if (loading) {

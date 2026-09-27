@@ -1,0 +1,130 @@
+<header class="topbar" [class.collapsed]="isSidebarCollapsed" [attr.data-layout]="layoutMode">
+  <div class="flex items-center gap-2">
+    @if (isLargeScreen) {
+    <button class="topbar-btn" type="button" (click)="toggleSidebar()"
+      [matTooltip]="isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+      <i-lucide [name]="isSidebarCollapsed ? 'panel-right-close' : 'panel-right-open'" [size]="20"></i-lucide>
+    </button>
+    } @else {
+    <button class="topbar-btn" type="button" (click)="toggleMobileSidebar()"><i-lucide name="menu"
+        [size]="20"></i-lucide></button>
+    }
+
+    @if (showBackButton) {
+    <button class="topbar-btn" type="button" (click)="onBackClick.emit()"><i-lucide name="chevron-left"
+        [size]="20"></i-lucide></button>
+    }
+
+    @if (currentRoute !== '/') {
+    <h1 class="text-base font-semibold text-text md:text-lg">{{ pageTitle }}</h1>
+    }
+  </div>
+
+  <div class="flex items-center gap-2">
+    <app-loading-button buttonText="" ariaLabel="Toggle theme" color="primary" radius="large"
+      [icon]="themeSer.isDark() ? 'sun' : 'moon-star'" [iconSize]="18" customClass="!h-10 !w-10 !p-0"
+      (click)="themeSer.toggle()" />
+
+    <button class="profile-chip" type="button" [matMenuTriggerFor]="profileMenu" aria-label="Account menu">
+      <span>{{ getUserInitials(userData()) }}</span>
+    </button>
+
+    <mat-menu #profileMenu="matMenu" xPosition="before" class="admin-profile-menu">
+      <div class="profile-menu-wrap" (click)="$event.stopPropagation()">
+        <div class="profile-menu-header">
+          <span class="profile-menu-avatar">{{ getUserInitials(userData()) }}</span>
+          <div class="profile-menu-user">
+            <strong>{{ getFullName(userData()) }}</strong>
+            <small>{{ getRoleName() }}</small>
+          </div>
+        </div>
+
+        <a class="profile-menu-item" [href]="siteUrl" target="_blank" rel="noopener">
+          <i-lucide name="external-link" [size]="20" color="primary"></i-lucide>
+          <span>View website</span>
+        </a>
+
+        <button type="button" class="profile-menu-item danger" (click)="openLogoutDialog()">
+          <i-lucide name="log-out" [size]="20" color="error"></i-lucide>
+          <span>Logout</span>
+        </button>
+      </div>
+    </mat-menu>
+  </div>
+</header>
+
+@if (mobileOpen) {
+<button class="sidebar-backdrop" type="button" aria-label="Close sidebar" (click)="toggleMobileSidebar()"></button>
+}
+
+<aside class="sidebar" [class.collapsed]="isSidebarCollapsed" [class.mobile-open]="mobileOpen"
+  [attr.data-layout]="layoutMode">
+  <a class="brand-row" routerLink="/" [attr.aria-label]="brandName + ' admin, dashboard'">
+    <span class="brand-mark" aria-hidden="true">{{ brandMark }}</span>
+    @if (!(isSidebarCollapsed && isLargeScreen)) {
+      <span class="brand-name">{{ brandName }}<small>Admin</small></span>
+    }
+  </a>
+
+  <nav class="sidebar-nav mt-6 no-scrollbar">
+    @for (group of navGroups; track group.cap) {
+
+    @if (group.cap) {
+    @if (!(isSidebarCollapsed && isLargeScreen)) {
+    <button type="button" class="nav-caption-btn" (click)="toggleGroup(group.cap)">
+      <span class="nav-caption">{{ group.cap }}</span>
+      <i-lucide name="chevron-down" [size]="14" class="nav-caption-chevron"
+        [class.is-collapsed]="!isGroupExpanded(group.cap)"></i-lucide>
+    </button>
+    }
+    }
+
+    @if (isGroupExpanded(group.cap)) {
+    @for (item of group.items; track item.displayName) {
+    <a [routerLink]="item.route" class="nav-link" [class.active]="isActive(item.route)" (click)="onMenuItemClick()"
+      [matTooltip]="isSidebarCollapsed && isLargeScreen ? item.displayName || '' : ''" matTooltipPosition="right">
+      <i-lucide [name]="item.icon || 'circle'" [size]="18"></i-lucide>
+      @if (!(isSidebarCollapsed && isLargeScreen)) {
+      <span>{{ item.displayName }}</span>
+      }
+    </a>
+    }
+    }
+    }
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="user-card" [class.collapsed]="isSidebarCollapsed" type="button"
+      [matMenuTriggerFor]="sidebarProfileMenu">
+      <span class="avatar">{{ getUserInitials(userData()) }}</span>
+      @if (!(isSidebarCollapsed && isLargeScreen)) {
+      <span class="min-w-0 flex-1 text-left">
+        <strong>{{ getFullName(userData()) }}</strong>
+        <small>{{ getRoleName() }}</small></span>
+      }
+    </button>
+
+    <mat-menu #sidebarProfileMenu="matMenu" xPosition="after" class="admin-profile-menu">
+      <div class="profile-menu-wrap" (click)="$event.stopPropagation()">
+        <div class="profile-menu-header">
+          <span class="profile-menu-avatar">{{ getUserInitials(userData()) }}</span>
+
+          <div class="profile-menu-user">
+            <strong>{{ getFullName(userData()) }}</strong>
+            <small>{{ getRoleName() }}</small>
+          </div>
+        </div>
+
+        <a class="profile-menu-item" [href]="siteUrl" target="_blank" rel="noopener">
+          <i-lucide name="external-link" [size]="20" color="primary"></i-lucide>
+          <span>View website</span>
+        </a>
+
+        <button type="button" class="profile-menu-item danger" (click)="openLogoutDialog()">
+          <i-lucide name="log-out" [size]="20" color="error"></i-lucide>
+          <span>Logout</span>
+        </button>
+      </div>
+    </mat-menu>
+  </div>
+</aside>

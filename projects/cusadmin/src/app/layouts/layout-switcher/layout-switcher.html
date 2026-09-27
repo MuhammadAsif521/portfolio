@@ -1,0 +1,55 @@
+<div class="layout-switcher-wrapper font-body">
+    <!-- Spinning Gear Trigger -->
+    <button type="button" class="gear-btn" [class.open]="panelOpen" (click)="togglePanel()" aria-label="Layout style" [attr.aria-expanded]="panelOpen">
+        <i-lucide name="settings" class="gear-icon"></i-lucide>
+    </button>
+
+    <!-- Slide-in Panel -->
+    @if (panelOpen) {
+    <div class="layout-panel" @slideIn>
+        <div class="panel-header">
+            <span class="panel-title">Layout Style</span>
+            <button type="button" class="close-panel-btn" (click)="panelOpen = false" aria-label="Close">
+                <i-lucide name="x" class="close-icon"></i-lucide>
+            </button>
+        </div>
+
+        <div class="layout-options">
+            @for (config of layouts; track config.mode) {
+            <button class="layout-option" [class.active]="activeLayout() === config.mode"
+                (click)="selectLayout(config.mode)" [attr.aria-pressed]="activeLayout() === config.mode">
+                <div class="option-preview" [attr.data-layout]="config.mode">
+                    @switch (config.mode) {
+                    <!-- default preview -->
+                    @case ('default') {
+                    <div class="preview-sidebar"></div>
+                    <div class="preview-content">
+                        <div class="preview-topbar"></div>
+                        <div class="preview-body"></div>
+                    </div>
+                    }
+                    <!-- float preview -->
+                    @case ('float') {
+                    <div class="preview-content float-layout">
+                        <div class="preview-sidebar floating"></div>
+                        <div class="preview-inner">
+                            <div class="preview-topbar floating"></div>
+                            <div class="preview-body"></div>
+                        </div>
+                    </div>
+                    }
+                    }
+                </div>
+                <div class="option-info">
+                    <span class="option-label">{{ config.label }}</span>
+                    <span class="option-desc">{{ config.description }}</span>
+                </div>
+                @if (activeLayout() === config.mode) {
+                <i-lucide name="check" class="option-check"></i-lucide>
+                }
+            </button>
+            }
+        </div>
+    </div>
+    }
+</div>

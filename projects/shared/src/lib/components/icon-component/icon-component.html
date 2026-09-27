@@ -1,3 +1,10 @@
-<span class="lucide-icon" [ngClass]="sizeClass" [ngStyle]="{
-    color: resolvedColor
-  }" [innerHTML]="svgIcon"></span>
+<span
+  class="lucide-icon"
+  [ngClass]="sizeClass"
+  [ngStyle]="{
+    color: resolvedColor,
+    width: pixelSize ? pixelSize + 'px' : null,
+    height: pixelSize ? pixelSize + 'px' : null
+  }"
+  [innerHTML]="svgIcon"
+></span>

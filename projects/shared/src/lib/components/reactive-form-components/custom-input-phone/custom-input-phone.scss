@@ -6,22 +6,22 @@
 .iti-wrapper {
     display: flex;
     align-items: center;
-    border: 1px solid rgb(var(--form-control-border));
+    border: 1px solid var(--form-control-border);
     border-radius: 0.75rem; 
-    background: rgb(var(--background-color) / 0.5); 
+    background: color-mix(in srgb, var(--body-bg) 50%, transparent); 
     transition: border-color var(--transition-normal);
     overflow: visible;
     position: relative;
 }
 
 .iti-wrapper.is-focused {
-    border-color: rgb(var(--form-control-border-active));
-    background: rgb(var(--background-color) / 0.8); 
+    border-color: var(--form-control-border-active);
+    background: color-mix(in srgb, var(--body-bg) 80%, transparent); 
     box-shadow: var(--form-focus-shadow);
 }
 
 .iti-wrapper.is-error {
-    border-color: rgb(var(--error-color)) !important;
+    border-color: var(--error) !important;
 }
 
 .phone-native-input {
@@ -34,12 +34,12 @@
     font-size: 13px;
     /* matches form-controls */
     font-weight: 500;
-    color: rgb(var(--form-control-text));
+    color: var(--form-control-text);
     font-family: var(--font-body);
 }
 
 .phone-native-input::placeholder {
-    color: rgb(var(--form-control-placeholder));
+    color: var(--form-control-placeholder);
 }
  
 :host ::ng-deep .iti {
@@ -47,8 +47,8 @@
 }
 
 :host ::ng-deep .iti__country-selector {
-    background-color: rgb(var(--form-control-bg-active));
-    border: 1px solid rgb(var(--form-control-border));
+    background-color: var(--form-control-bg-active);
+    border: 1px solid var(--form-control-border);
     border-radius: 0.75rem;
     box-shadow: var(--shadow-md);
 }
@@ -64,16 +64,16 @@
 :host ::ng-deep .iti__selected-dial-code {
     font-size: 13px;
     font-weight: 600;
-    color: rgb(var(--form-control-text));
+    color: var(--form-control-text);
 }
 
 :host ::ng-deep .iti__arrow {
-    border-top-color: rgb(var(--form-control-icon));
+    border-top-color: var(--form-control-icon);
 }
 
 :host ::ng-deep .iti__country-list {
-    background: rgb(var(--form-control-bg-active));
-    color: rgb(var(--form-control-text));
+    background: var(--form-control-bg-active);
+    color: var(--form-control-text);
     font-family: var(--font-body);
     font-size: 13px;
     z-index: 9999;
@@ -81,18 +81,18 @@
 
 :host ::ng-deep .iti__country:hover,
 :host ::ng-deep .iti__country.iti__highlight {
-    background: rgb(var(--form-control-hover-bg));
+    background: var(--form-control-hover-bg);
 }
 
 :host ::ng-deep .iti__dial-code {
-    color: rgb(var(--form-control-icon));
+    color: var(--form-control-icon);
     font-weight: 600;
 }
 
 :host ::ng-deep .iti__search-input {
-    background: rgb(var(--form-control-bg-active));
-    color: rgb(var(--form-control-text));
-    border-color: rgb(var(--form-control-border));
+    background: var(--form-control-bg-active);
+    color: var(--form-control-text);
+    border-color: var(--form-control-border);
     font-family: var(--font-body);
     font-size: 13px;
 }

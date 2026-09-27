@@ -24,20 +24,37 @@ export class IconComponent implements OnChanges {
     @Input() color = 'currentColor';
     @Input() stroke: number | string = 2;
     @Input() fill: string = 'none';
-    @Input() size: number = 16;
+    /** Pixels (e.g. [size]="20") or a named size: 'xs' | 'sm' | 'md' | 'lg' | 'xl'. */
+    @Input() size: number | 'xs' | 'sm' | 'md' | 'lg' | 'xl' = 16;
 
     svgIcon: SafeHtml = '';
 
     resolvedColor = 'currentColor';
-    sizeClass = 'icon-md';
+    sizeClass = '';
+    /** Numeric sizes are applied inline so the box always matches the SVG. */
+    pixelSize: number | null = 16;
 
+    /** Theme names accepted by `color` (e.g. color="primary"), resolved to the design tokens. */
     private readonly themeColorMap: Record<string, string> = {
-        
+        primary: 'var(--primary)',
+        secondary: 'var(--secondary)',
+        accent: 'var(--accent)',
+        'on-primary': 'var(--on-primary)',
+        heading: 'var(--heading)',
+        text: 'var(--text)',
+        muted: 'var(--text-muted)',
+        subtle: 'var(--text-subtle)',
+        error: 'var(--error)',
+        warning: 'var(--warning)',
+        success: 'var(--success)',
+        info: 'var(--info)',
+        white: '#ffffff',
     };
 
     ngOnChanges(): void {
         this.resolvedColor = this.resolveThemeColor(this.color);
         this.sizeClass = this.resolveSizeClass(this.size);
+        this.pixelSize = typeof this.size === 'number' ? this.size : null;
 
         if (!this.name) {
             this.svgIcon = '';
@@ -60,7 +77,7 @@ export class IconComponent implements OnChanges {
         return this.themeColorMap[normalizedColor] ?? normalizedColor;
     }
 
-    private resolveSizeClass(size: number): string {
+    private resolveSizeClass(size: IconComponent['size']): string {
         if (typeof size === 'number') {
             return '';
         }

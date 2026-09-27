@@ -17,7 +17,7 @@ export const EXPERIENCE_CONTENT = {
     {
       company: 'ICTGE',
       location: 'Lahore',
-      role: 'Angular Developer',
+      role: 'MEAN Stack Developer',
       startDate: '2025-10-01',
       current: true,
       summary:
@@ -28,7 +28,8 @@ export const EXPERIENCE_CONTENT = {
     {
       company: 'Learn2Earn Tech',
       location: 'Pakpattan',
-      role: 'MEAN Stack Developer (Intern → Top Rated)',
+      role: 'Ionic Angular Developer',
+      summary : 'Learn Coding and then did my internship and works with team to deliver clients projects.',
       startDate: '2024-03-01',
       endDate: '2025-09-30',
       current: false,

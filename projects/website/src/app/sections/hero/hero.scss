@@ -183,7 +183,7 @@
 .hero__stat {
   grid-area: stat;
   z-index: 1;
-  margin-top: 1.5rem;
+  margin: 1.5rem 0;
   text-align: center;
 
   @include m.up(lg) {

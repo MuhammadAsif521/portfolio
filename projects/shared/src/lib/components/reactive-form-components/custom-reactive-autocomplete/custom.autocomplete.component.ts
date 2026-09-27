@@ -38,7 +38,7 @@ let autocompleteUid = 0;
           class="mb-1.5 block text-[0.875rem] font-[600] uppercase text-muted" >
           {{ label }}
           @if (hasRequiredValidator) {
-            <span class="ml-0.5" style="color: rgb(var(--error-color))">*</span>
+            <span class="ml-0.5" style="color: var(--error)">*</span>
           }
         </label>
       }
@@ -48,10 +48,10 @@ let autocompleteUid = 0;
         <div class="relative">
           <div
             class="flex w-full items-center justify-between gap-2 rounded-xl border outline-none transition-all duration-200 px-4"
-            [style.background]="(isFocused || showPanel) ? 'rgb(var(--form-control-bg-active))' : 'rgb(var(--form-control-bg))'"
+            [style.background]="(isFocused || showPanel) ? 'var(--form-control-bg-active)' : 'var(--form-control-bg)'"
             [style.borderColor]="control.invalid && (control.dirty || control.touched)
-              ? 'rgb(var(--error-color))'
-              : ((isFocused || showPanel) ? 'rgb(var(--form-control-border-active))' : 'rgb(var(--form-control-border))')"
+              ? 'var(--error)'
+              : ((isFocused || showPanel) ? 'var(--form-control-border-active)' : 'var(--form-control-border)')"
             [style.boxShadow]="(isFocused || showPanel) ? 'var(--form-focus-shadow)' : 'none'">
             <input
               #triggerInput
@@ -63,9 +63,9 @@ let autocompleteUid = 0;
               (blur)="isFocused = false"
               autocomplete="off"
               class="w-full bg-transparent py-3.5 text-[13px] font-medium outline-none disabled:cursor-not-allowed disabled:opacity-50"
-              style="color: rgb(var(--form-control-text))"
+              style="color: var(--form-control-text)"
             />
-            <span class="pointer-events-none shrink-0" style="color: rgb(var(--form-control-icon))">
+            <span class="pointer-events-none shrink-0" style="color: var(--form-control-icon)">
               <i-lucide name="search" [size]="16" />
             </span>
           </div>
@@ -78,15 +78,15 @@ let autocompleteUid = 0;
               [style.left.px]="panelLeft"
               [style.width.px]="panelWidth"
               [style.maxHeight.px]="240"
-              style="background: rgb(var(--form-control-bg-active)); border-color: rgb(var(--form-control-border)); box-shadow: var(--shadow-lg)">
+              style="background: var(--form-control-bg-active); border-color: var(--form-control-border); box-shadow: var(--shadow-lg)">
               @for (option of filteredUsers; track option.id) {
                 <div
                   (click)="onSingleSelected(option)"
                   (mouseenter)="hoveredOptionId = option.id"
                   (mouseleave)="hoveredOptionId = null"
                   class="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-[13px] font-medium transition-colors duration-150"
-                  [style.background]="isSelected(option.id) ? 'rgb(var(--primary-color))' : (hoveredOptionId === option.id ? 'rgb(var(--form-control-hover-bg))' : 'transparent')"
-                  [style.color]="isSelected(option.id) ? 'rgb(var(--text-on-primary))' : 'rgb(var(--form-control-text))'">
+                  [style.background]="isSelected(option.id) ? 'var(--primary)' : (hoveredOptionId === option.id ? 'var(--form-control-hover-bg)' : 'transparent')"
+                  [style.color]="isSelected(option.id) ? 'var(--on-primary)' : 'var(--form-control-text)'">
                   <span>{{ option.name }}</span>
                   @if (isSelected(option.id)) {
                     <i-lucide name="check" [size]="15" />
@@ -102,10 +102,10 @@ let autocompleteUid = 0;
       @if (multiple) {
         <div
           class="rounded-xl border transition-all duration-200"
-          [style.background]="(isFocused || showPanel) ? 'rgb(var(--form-control-bg-active))' : 'rgb(var(--form-control-bg))'"
+          [style.background]="(isFocused || showPanel) ? 'var(--form-control-bg-active)' : 'var(--form-control-bg)'"
           [style.borderColor]="control.invalid && (control.dirty || control.touched)
-            ? 'rgb(var(--error-color))'
-            : ((isFocused || showPanel) ? 'rgb(var(--form-control-border-active))' : 'rgb(var(--form-control-border))')"
+            ? 'var(--error)'
+            : ((isFocused || showPanel) ? 'var(--form-control-border-active)' : 'var(--form-control-border)')"
           [style.boxShadow]="(isFocused || showPanel) ? 'var(--form-focus-shadow)' : 'none'">
 
           <!-- Chips -->
@@ -114,12 +114,12 @@ let autocompleteUid = 0;
               @for (user of visibleSelectedUsers; track user.id) {
                 <span
                   class="inline-flex max-w-full items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold"
-                  style="background: rgb(var(--form-chip-bg)); border-color: rgb(var(--form-chip-border)); color: rgb(var(--form-chip-text))">
+                  style="background: var(--form-chip-bg); border-color: var(--form-chip-border); color: var(--form-chip-text)">
                   <span class="truncate">{{ user.name }}</span>
                   @if (!disable) {
                     <button type="button" (click)="remove(user)"
                       class="flex h-3.5 w-3.5 items-center justify-center rounded-full"
-                      style="color: rgb(var(--form-chip-text))">
+                      style="color: var(--form-chip-text)">
                      <i-lucide name="x" [size]="16" color="coral" />
                     </button>
                   }
@@ -128,7 +128,7 @@ let autocompleteUid = 0;
               @if (selectedUsers.length > 3) {
                 <span
                   class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
-                  style="background: rgb(var(--form-chip-summary-bg)); color: rgb(var(--form-chip-summary-text))">
+                  style="background: var(--form-chip-summary-bg); color: var(--form-chip-summary-text)">
                   {{ selectedUsers.length }} selected
                 </span>
               }
@@ -147,9 +147,9 @@ let autocompleteUid = 0;
               (blur)="isFocused = false"
               autocomplete="off"
               class="w-full bg-transparent pr-8 text-[13px] font-medium outline-none"
-              style="color: rgb(var(--form-control-text))"
+              style="color: var(--form-control-text)"
             />
-            <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" style="color: rgb(var(--form-control-icon))">
+            <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" style="color: var(--form-control-icon)">
               <i-lucide name="search" [size]="16" />
             </span>
           </div>
@@ -163,19 +163,19 @@ let autocompleteUid = 0;
             [style.left.px]="panelLeft"
             [style.width.px]="panelWidth"
             [style.maxHeight.px]="240"
-            style="background: rgb(var(--form-control-bg-active)); border-color: rgb(var(--form-control-border)); box-shadow: var(--shadow-lg)">
+            style="background: var(--form-control-bg-active); border-color: var(--form-control-border); box-shadow: var(--shadow-lg)">
             @for (option of filteredUsers; track option.id) {
               <div
                 (click)="toggleSelection(option); $event.stopPropagation()"
                 (mouseenter)="hoveredOptionId = option.id"
                 (mouseleave)="hoveredOptionId = null"
                 class="flex cursor-pointer items-center gap-3 px-4 py-3 text-[13px] font-medium transition-colors duration-150"
-                [style.background]="isSelected(option.id) ? 'rgb(var(--form-control-bg-active))' : (hoveredOptionId === option.id ? 'rgb(var(--form-control-hover-bg))' : 'transparent')"
-                style="color: rgb(var(--form-control-text))">
+                [style.background]="isSelected(option.id) ? 'var(--form-control-bg-active)' : (hoveredOptionId === option.id ? 'var(--form-control-hover-bg)' : 'transparent')"
+                style="color: var(--form-control-text)">
                 <span
                   class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border transition-colors"
-                  [style.background]="isSelected(option.id) ? 'rgb(var(--primary-color))' : 'transparent'"
-                  [style.borderColor]="isSelected(option.id) ? 'rgb(var(--primary-color))' : (hoveredOptionId === option.id ? 'rgb(var(--form-control-border-active))' : 'rgb(var(--form-control-border))')">
+                  [style.background]="isSelected(option.id) ? 'var(--primary)' : 'transparent'"
+                  [style.borderColor]="isSelected(option.id) ? 'var(--primary)' : (hoveredOptionId === option.id ? 'var(--form-control-border-active)' : 'var(--form-control-border)')">
                   @if (isSelected(option.id)) {
                     <i-lucide name="check" [size]="10" />
                   }
@@ -188,7 +188,7 @@ let autocompleteUid = 0;
       }
 
       @if (showHints && control.invalid && (control.dirty || control.touched)) {
-        <p class="mt-1.5 text-xs" style="color: rgb(var(--error-color))">
+        <p class="mt-1.5 text-xs" style="color: var(--error)">
           @if (control.hasError('required')) { {{ label }} is required. }
         </p>
       }

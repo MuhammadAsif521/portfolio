@@ -52,8 +52,6 @@
               }
             ],
             "styles": [
-              "node_modules/@fontsource-variable/urbanist/index.css",
-              "node_modules/@fontsource-variable/outfit/index.css",
               "projects/shared/src/lib/styles.scss",
               "node_modules/intl-tel-input/dist/css/intlTelInput.css"
             ],
@@ -153,8 +151,6 @@
               }
             ],
             "styles": [
-              "node_modules/@fontsource-variable/urbanist/index.css",
-              "node_modules/@fontsource-variable/outfit/index.css",
               "projects/shared/src/lib/styles.scss",
               "node_modules/intl-tel-input/dist/css/intlTelInput.css"
             ]

@@ -36,7 +36,7 @@ import { IconComponent } from "@shared/components/icon-component/icon-component"
               (change)="onCheckboxChange($any($event.target).checked, option.id)"
             />
 
-            <span class="text-[13px] font-medium" style="color: rgb(var(--form-control-text))">
+            <span class="text-[13px] font-medium" style="color: var(--form-control-text)">
               {{ option.name }}
             </span>
           </label>

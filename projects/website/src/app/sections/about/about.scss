@@ -75,8 +75,7 @@
   color: var(--primary);
 }
 
-.about__bio {
-  max-width: 27.5rem;
+.about__bio { 
   margin: 0 0 1rem;
   color: var(--text-subtle);
   font-size: var(--text-lg);
@@ -140,8 +139,8 @@
 
   // Figma shape (outlined rounded rectangle), scaled to the screen: ~176×72 at 1440, smaller on phones.
   &--outline {
-    min-width: clamp(8.5rem, 6rem + 5vw, 11rem);
-    min-height: clamp(3.25rem, 2.5rem + 2vw, 4.5rem);
+    min-width: clamp(8.5rem, 6rem + 5vw, 9rem);
+    min-height: clamp(3.25rem, 2.5rem + 2vw, 3.5rem);
     padding: 0 1.75rem;
     border: 1px solid var(--ink);
     border-radius: 1rem;

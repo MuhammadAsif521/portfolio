@@ -12,8 +12,8 @@ import { takeUntil } from 'rxjs/operators';
   <label
     class="fc-row-option border"
     [class.fc-row-option-active]="control.value"
-    [style.background]="'rgb(var(--background-color))'"
-    [style.borderColor]="control.invalid && control.touched ? 'rgb(var(--error-color))' : (control.value ? 'rgb(var(--form-control-border-active))' : 'rgb(var(--form-control-border))')"
+    [style.background]="'var(--body-bg)'"
+    [style.borderColor]="control.invalid && control.touched ? 'var(--error)' : (control.value ? 'var(--form-control-border-active)' : 'var(--form-control-border)')"
   >
     <span class="fc-check" [class.fc-check-active]="control.value">
       @if (control.value) {
@@ -29,7 +29,7 @@ import { takeUntil } from 'rxjs/operators';
       class="sr-only"
     />
 
-    <span class="text-[11px] font-semibold uppercase tracking-[0.16em]" style="color: rgb(var(--form-control-text))">
+    <span class="text-[11px] font-semibold uppercase tracking-[0.16em]" style="color: var(--form-control-text)">
       {{ label }}
       @if (hasRequiredValidator) {
         <span class="fc-required">*</span>

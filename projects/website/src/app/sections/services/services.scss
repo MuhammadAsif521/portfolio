@@ -1,8 +1,8 @@
 @use 'styles/mixins' as m;
 
 // Figma "My Services": dark band textured with section-bg (rounded corners), floating 3D blobs, glass
-// cards (416×508): title header + divider, stacked "screen" with a notched corner and a navy arrow
-// button. Hover (recording): header and arrow turn orange, the border disappears.
+// cards (416×508): frosted card with title header + divider, stacked "screen" with a notched corner and
+// a navy arrow button. Hover: the whole glass card turns primary, the border disappears.
 
 .services {
   position: relative;
@@ -147,88 +147,95 @@
   }
 }
 
-// ── Card ──
-
 .service-card {
   --card-radius: 1.5rem;
+  --card-glass: rgb(255 255 255 / 0.42);
+  --card-edge: rgb(255 255 255 / 0.5);
+  --stack-gap: 1.75rem;
+  --notch: clamp(7rem, 4rem + 4vw, 8.5rem); // moved up from media so ::before can use it
 
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   height: clamp(21rem, 17rem + 7vw, 25.5rem);
   overflow: hidden;
-  border: 1px solid rgb(255 255 255 / 0.45);
   border-radius: var(--card-radius);
-  background: transparent;
-  transition: border-color var(--transition-normal);
 
-  &:hover,
-  &:focus-within {
+  // ONE glass layer (no seam). It stops above the notch, so the notch only shows the band.
+  // Everything below its bottom edge is covered by the opaque screen anyway.
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0 0 calc(var(--notch) + var(--card-radius)) 0;
+    border: 1px solid var(--card-edge);
+    border-bottom: 0;
+    border-radius: var(--card-radius) var(--card-radius) 0 0;
+    background-color: var(--card-glass);
+    backdrop-filter: blur(18px) saturate(120%);
+    -webkit-backdrop-filter: blur(18px) saturate(120%);
+    pointer-events: none;
+    transition:
+      background-color var(--transition-normal),
+      border-color var(--transition-normal);
+  }
+
+  &:hover::before,
+  &:focus-within::before {
     border-color: transparent;
+    background-color: var(--primary);
   }
 }
 
-// Header strip (Figma: 107px, 1px divider) — turns orange on hover.
+// Header strip — transparent, sits on the card's glass. No divider.
 .service-card__title {
   display: flex;
   align-items: center;
-  border-radius: var(--card-radius);
   flex: none;
   min-height: clamp(4.25rem, 3.5rem + 2vw, 5.5rem);
   margin: 0;
   padding: 0 1.25rem 0 1.75rem;
-  border-bottom: 1px solid rgb(255 255 255 / 0.4);
-  background: rgb(255 255 255 / 0.08);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   color: #fff;
   font-size: var(--fs-h3);
   font-weight: 500;
   line-height: 1.15;
-  transition:
-    background-color var(--transition-normal),
-    color var(--transition-normal),
-    border-color var(--transition-normal);
+  transition: color var(--transition-normal);
 
   .service-card:hover &,
   .service-card:focus-within & {
-    border-color: transparent;
-    // background: var(--primary);
     color: var(--on-primary);
   }
 }
 
-// Stack: two ghost layers peeking above the front "screen" (Figma: back #5E5E5E, middle #9E9D9D).
 .service-card__media {
   position: relative;
   flex: 1;
-  margin-top: 1.75rem;
-  --notch: clamp(7rem, 4rem + 4vw, 8.5rem);
 }
 
 .service-card__layer {
   position: absolute;
-  top: 0;
+  top: var(--stack-gap);
   height: 2.5rem;
   border-radius: var(--card-radius) var(--card-radius) 0 0;
 
   &--back {
     right: 11%;
     left: 11%;
-    background: rgb(94 94 94 / 0.95);
+    background: rgb(94 94 94 / 0.7);
   }
 
   &--mid {
-    top: 1.1rem;
+    top: calc(var(--stack-gap) + 1.1rem);
     right: 5.5%;
     left: 5.5%;
-    background: rgb(158 157 157 / 0.95);
+    background: rgb(158 157 157 / 0.85);
   }
 }
 
 .service-card__screen {
   position: absolute;
-  inset: 2.2rem 0 0;
+  inset: calc(var(--stack-gap) + 2.2rem) 0 0;
   overflow: hidden;
   border-radius: var(--card-radius) var(--card-radius) 0 var(--card-radius);
   background: linear-gradient(160deg, #f4ede7 0%, #e6d9ce 100%);
@@ -299,19 +306,20 @@
   font-weight: 500;
 }
 
-// Navy circle in the notch (Figma: 114px, white ↗) — orange on hover.
+// Navy circle in the notch (Figma: 114px, white ↗).
 .service-card__link {
   @include m.notch-button;
 
   z-index: 1;
   background: var(--navy);
   color: #fff;
-  transition: background-color var(--transition-normal);
+  transition:
+    background-color var(--transition-normal),
+    transform var(--transition-normal);
 
   .service-card:hover &,
   &:focus-visible {
-    background: var(--primary);
-    color: var(--on-primary);
+    transform: rotate(45deg);
   }
 
   @include m.focus-ring;

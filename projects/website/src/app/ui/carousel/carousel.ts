@@ -1,4 +1,5 @@
 import { NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
+import { IconComponent } from '@shared/components/icon-component/icon-component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -32,7 +33,7 @@ export interface CarouselSlideContext<T> {
  */
 @Component({
   selector: 'app-carousel',
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './carousel.html',
   styleUrl: './carousel.scss',
@@ -56,6 +57,9 @@ export class Carousel<T> {
   /** false until measured in the browser, so SSR and wide screens don't show pointless dots. */
   protected readonly overflowing = signal(false);
   protected readonly dragging = signal(false);
+  /** Scroll position at either end (prev/next buttons disable there). */
+  protected readonly atStart = signal(true);
+  protected readonly atEnd = signal(false);
   protected readonly count = computed(() => this.items().length);
 
   constructor() {
@@ -72,19 +76,33 @@ export class Carousel<T> {
     this.active.set(index);
   }
 
+  /** Previous / next slide (the arrow buttons on large screens). */
+  step(delta: number): void {
+    this.goTo(Math.min(Math.max(this.active() + delta, 0), this.count() - 1));
+  }
+
+  private updateEnds(track: HTMLElement): void {
+    this.atStart.set(track.scrollLeft <= 2);
+    this.atEnd.set(track.scrollLeft + track.clientWidth >= track.scrollWidth - 2);
+  }
+
   private attach(): void {
     if (!this.isBrowser) return;
     const track = this.track().nativeElement;
 
     const measure = () => {
       this.overflowing.set(track.scrollWidth - track.clientWidth > 2);
+      this.updateEnds(track);
       this.active.set(this.nearestIndex(track));
     };
 
     let frame = 0;
     const onScroll = () => {
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => this.active.set(this.nearestIndex(track)));
+      frame = requestAnimationFrame(() => {
+        this.active.set(this.nearestIndex(track));
+        this.updateEnds(track);
+      });
     };
     track.addEventListener('scroll', onScroll, { passive: true });
 

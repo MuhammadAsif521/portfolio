@@ -1,3 +1,5 @@
+// Must stay first: fills process.env from .env before anything below reads it.
+import '../server-env';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
 import { mergeApplicationConfig, ApplicationConfig, type Provider } from '@angular/core';
 import { provideServerRendering, withRoutes } from '@angular/ssr';

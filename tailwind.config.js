@@ -2,8 +2,9 @@
 
 // Tailwind colours point at the CSS custom properties in projects/shared/src/lib/styles/_variables.scss,
 // so `bg-primary`, `text-heading`, `bg-band-dark`… follow the admin-selected Theme and light/dark mode.
-// Opacity modifiers (`bg-primary/20`) don't work with var() colours in Tailwind 3; use the *-soft tokens.
+// Colours go through color-mix() with Tailwind's <alpha-value>, so opacity modifiers work too (`bg-primary/10`).
 const token = (name) => `var(--${name})`;
+const color = (name) => `color-mix(in srgb, var(--${name}) calc(<alpha-value> * 100%), transparent)`;
 
 module.exports = {
     darkMode: ['selector', '[data-theme="dark"]'],
@@ -17,44 +18,75 @@ module.exports = {
         extend: {
             colors: {
                 primary: {
-                    DEFAULT: token('primary'),
-                    hover: token('primary-hover'),
-                    active: token('primary-active'),
+                    DEFAULT: color('primary'),
+                    hover: color('primary-hover'),
+                    active: color('primary-active'),
                     soft: token('primary-soft'),
                     muted: token('primary-muted'),
+                    container: token('primary-soft'),
                 },
-                secondary: { DEFAULT: token('secondary'), hover: token('secondary-hover') },
-                accent: token('accent'),
-                'on-primary': token('on-primary'),
-                'on-secondary': token('on-secondary'),
-                'on-accent': token('on-accent'),
+                secondary: { DEFAULT: color('secondary'), hover: color('secondary-hover') },
+                accent: color('accent'),
+                'on-primary': { DEFAULT: color('on-primary'), container: color('form-chip-text') },
+                'on-secondary': color('on-secondary'),
+                'on-accent': color('on-accent'),
+                'on-error': '#ffffff',
 
-                body: token('body-bg'),
-                'band-a': token('band-a'),
-                'band-b': token('band-b'),
+                body: color('body-bg'),
+                'band-a': color('band-a'),
+                'band-b': color('band-b'),
                 band: {
-                    dark: token('band-dark'),
-                    'dark-raised': token('band-dark-raised'),
-                    'dark-text': token('band-dark-text'),
-                    'dark-muted': token('band-dark-muted'),
-                    'dark-border': token('band-dark-border'),
+                    dark: color('band-dark'),
+                    'dark-raised': color('band-dark-raised'),
+                    'dark-text': color('band-dark-text'),
+                    'dark-muted': color('band-dark-muted'),
+                    'dark-border': color('band-dark-border'),
                 },
-                surface: { DEFAULT: token('surface'), muted: token('surface-muted') },
-                card: token('card-bg'),
+                surface: {
+                    DEFAULT: color('surface'),
+                    muted: color('surface-muted'),
+                    // Material-style names used by the shared components (stepper, cropper…)
+                    container: color('surface-muted'),
+                    'container-high': color('surface-muted'),
+                    'container-highest': color('border'),
+                },
+                card: color('card-bg'),
 
-                heading: token('heading'),
-                text: token('text'),
-                muted: token('text-muted'),
-                subtle: token('text-subtle'),
-                inverse: token('text-inverse'),
+                heading: color('heading'),
+                text: {
+                    DEFAULT: color('text'),
+                    muted: color('text-muted'),
+                    secondary: color('text-muted'),
+                },
+                muted: color('text-muted'),
+                subtle: color('text-subtle'),
+                inverse: color('text-inverse'),
 
-                border: { DEFAULT: token('border'), strong: token('border-strong') },
-                divider: token('divider'),
+                border: { DEFAULT: color('border'), strong: color('border-strong'), color: color('border') },
+                divider: color('divider'),
 
-                error: { DEFAULT: token('error'), soft: token('error-soft') },
-                warning: { DEFAULT: token('warning'), soft: token('warning-soft') },
-                success: { DEFAULT: token('success'), soft: token('success-soft') },
-                info: { DEFAULT: token('info'), soft: token('info-soft') },
+                error: { DEFAULT: color('error'), soft: token('error-soft') },
+                warning: { DEFAULT: color('warning'), soft: token('warning-soft') },
+                success: { DEFAULT: color('success'), soft: token('success-soft') },
+                info: { DEFAULT: color('info'), soft: token('info-soft') },
+                green: { DEFAULT: color('success') },
+                yellow: { DEFAULT: color('warning') },
+
+                // Legacy names still used in shared component templates, mapped onto the current tokens.
+                color: color('border'),
+                active: color('primary'),
+                editor: color('text'),
+                field: color('form-control-bg'),
+                background: color('surface-muted'),
+                bg: { muted: color('surface-muted'), surface: color('surface') },
+                'btn-primary': { DEFAULT: color('primary'), dark: color('primary-hover') },
+                'on-surface': { DEFAULT: color('heading'), variant: color('text-muted') },
+                'outline-variant': color('border'),
+            },
+            transitionDuration: {
+                base: token('duration-normal'),
+                fast: token('duration-fast'),
+                slow: token('duration-slow'),
             },
             fontFamily: {
                 sans: token('font-body'),

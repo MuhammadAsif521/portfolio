@@ -21,11 +21,7 @@ import { ScrollSpyDirective } from '../../core/scroll-spy.directive';
 import { Carousel } from '../../ui/carousel/carousel';
 import { ProjectCard } from '../../ui/project-card/project-card';
 
-/**
- * "Lets have a look at my Portfolio" (brief, Part 6; Figma): projects in a two-up carousel (featured
- * first, from the API during SSR) with the active project's tech chips, title and summary below. An
- * empty state stands in until projects are published, so the #projects anchor always has a target.
- */
+
 @Component({
   selector: 'app-projects',
   imports: [RouterLink, IconComponent, ScrollSpyDirective, Carousel, ProjectCard],
@@ -38,8 +34,7 @@ export class Projects {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly content = PROJECTS_CONTENT;
-
-  /** null while loading; [] when there are none or the API is unreachable. */
+ 
   private readonly items = toSignal(
     inject(PublicApiService)
       .listProjects({ limit: PROJECTS_CONTENT.homeLimit })
@@ -53,7 +48,6 @@ export class Projects {
 
   protected readonly loading = computed(() => this.items() === null);
   protected readonly projects = computed(() => this.items() ?? []);
-  /** Slide in view, bound two-way to the carousel. */
   protected readonly active = signal(0);
   protected readonly current = computed(() => this.projects()[this.active()] ?? this.projects()[0] ?? null);
   protected readonly chips = computed(() => (this.current()?.techStack ?? []).slice(0, PROJECTS_CONTENT.maxChips));

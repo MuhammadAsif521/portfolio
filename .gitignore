@@ -45,3 +45,8 @@ Thumbs.db
 portfolio-dev-brief-FINAL.md
 Components.png
 Desktop - 1.png
+
+# Local secrets (SSR server env). Never commit.
+.env
+.env.*
+!.env.example

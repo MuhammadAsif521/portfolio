@@ -107,11 +107,11 @@ export class CustomTableComponent {
 
     getActionClass(color?: string): string {
         const map: Record<string, string> = {
-            primary: 'text-primary hover:text-white hover:bg-primary',
+            primary: 'text-primary hover:text-on-primary hover:bg-primary',
             secondary: 'text-info hover:text-white hover:bg-info',
-            accent: 'text-accent hover:text-white hover:bg-accent',
-            error: 'text-secondary hover:text-white hover:bg-secondary',
-            muted: 'text-muted hover:text-white hover:bg-muted'
+            accent: 'text-accent hover:text-on-accent hover:bg-accent',
+            error: 'text-error hover:text-white hover:bg-error',
+            muted: 'text-muted hover:text-heading hover:bg-surface-muted'
         };
         return `${map[color ?? 'secondary']}`;
     }

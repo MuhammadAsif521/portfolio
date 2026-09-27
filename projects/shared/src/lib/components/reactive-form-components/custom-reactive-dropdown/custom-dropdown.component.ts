@@ -51,7 +51,7 @@ let dropdownUid = 0;
           } @else if (!multiple && singleSelectedOption) {
             <span class="truncate text-[13px] font-medium">{{ singleSelectedOption.name }}</span>
           } @else {
-            <span class="truncate text-[13px] font-medium" style="color: rgb(var(--form-control-placeholder))">
+            <span class="truncate text-[13px] font-medium" style="color: var(--form-control-placeholder)">
               {{ placeholder }}
             </span>
           }

@@ -57,14 +57,72 @@
 }
 
 // Figma: dots, the active one stretched into an orange pill.
+// Dots with previous / next arrows either side (arrows from lg; phones and trackpads swipe).
+.carousel__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: clamp(1.5rem, 1rem + 2vw, 3rem);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
 .carousel__dots {
   display: flex;
   justify-content: center;
   gap: 0.625rem;
-  margin-top: clamp(1.75rem, 1rem + 2.5vw, 3.5rem);
+}
 
-  &[hidden] {
-    display: none;
+.carousel__arrow {
+  display: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--heading);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-normal),
+    border-color var(--transition-normal),
+    color var(--transition-normal),
+    opacity var(--transition-normal);
+
+  @include m.up(lg) {
+    display: grid;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .carousel__nav--on-dark & {
+    border-color: rgb(255 255 255 / 0.4);
+    background: rgb(255 255 255 / 0.08);
+    color: #fff;
+  }
+
+  .carousel__nav--on-dark &:hover:not(:disabled) {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--on-primary);
   }
 }
 

@@ -31,8 +31,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
             >
                <defs>
                   <linearGradient id="e" x1="0" y1="0" x2="1" y2="1">
-                     <stop offset="0%" stop-color="#fdb515" />
-                     <stop offset="100%" stop-color="#f7941e" />
+                     <stop offset="0%" style="stop-color: var(--accent)" />
+                     <stop offset="100%" style="stop-color: var(--primary)" />
                   </linearGradient>
                   <linearGradient id="d" x1="0" y1="0" x2="0" y2="1">
                      <stop offset="0%" stop-color="#33342f" />
@@ -49,12 +49,12 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                   <radialGradient id="a" cx=".5" cy=".5" r=".5">
                      <stop
                         offset="0%"
-                        stop-color="#f7941e"
+                        style="stop-color: var(--primary)"
                         stop-opacity=".14"
                      />
                      <stop
                         offset="100%"
-                        stop-color="#f7941e"
+                        style="stop-color: var(--primary)"
                         stop-opacity="0"
                      />
                   </radialGradient>
@@ -69,17 +69,17 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                   stroke-dasharray="5 9"
                   opacity=".7"
                />
-               <circle cx="240" cy="67" r="4" fill="#f7941e" />
+               <circle cx="240" cy="67" r="4" style="fill: var(--primary)" />
                <circle cx="371" cy="252" r="3.5" fill="#5a5b54" />
                <circle cx="112" cy="266" r="3.5" fill="#5a5b54" />
                <path
                   d="m96 118 4.5 11 11 4.5-11 4.5-4.5 11-4.5-11-11-4.5 11-4.5z"
-                  fill="#fdb515"
+                  style="fill: var(--accent)"
                   opacity=".9"
                />
                <path
                   d="m392 138 3.4 8.2 8.2 3.4-8.2 3.4-3.4 8.2-3.4-8.2-8.2-3.4 8.2-3.4z"
-                  fill="#f7941e"
+                  style="fill: var(--primary)"
                   opacity=".55"
                />
                <path
@@ -169,14 +169,14 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                   width="120"
                   height="48"
                   rx="10"
-                  stroke="#f7941e"
+                  style="stroke: var(--primary)"
                   stroke-width="1.8"
                   stroke-dasharray="6 6"
                   opacity=".85"
                />
                <path
                   d="M256 266v20m-10-10h20"
-                  stroke="#f7941e"
+                  style="stroke: var(--primary)"
                   stroke-width="2.6"
                   stroke-linecap="round"
                />
@@ -218,7 +218,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                      stroke="#4c4d47"
                      stroke-width="1.4"
                   />
-                  <circle cx="276" cy="95" r="6" fill="#f7941e" />
+                  <circle cx="276" cy="95" r="6" style="fill: var(--primary)" />
                   <rect
                      x="290"
                      y="91"
@@ -232,10 +232,10 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                   <path
                      d="M104 196h22a6 6 0 0 1 6 6v10a6 6 0 0 1-1.8 4.3l-15 14.6a6 6 0 0 1-8.4 0l-11-11a6 6 0 0 1 0-8.5l14-13.7a6 6 0 0 1 4.2-1.7z"
                      fill="#2e2f2a"
-                     stroke="#f7941e"
+                     style="stroke: var(--primary)"
                      stroke-width="1.8"
                   />
-                  <circle cx="122" cy="207" r="3.4" fill="#f7941e" />
+                  <circle cx="122" cy="207" r="3.4" style="fill: var(--primary)" />
                </g>
                <ellipse
                   cx="240"

@@ -1,94 +1,155 @@
 <footer class="footer">
   <div class="footer__inner">
+
+    <!-- Connect -->
     <div class="footer__connect">
-      <h2 class="footer__connect-title">{{ content.connectTitle }}</h2>
+      <h2 class="footer__connect-title">
+        {{ content.connectTitle }}
+      </h2>
+
       <a class="footer__hire" routerLink="/" fragment="contact">
-        {{ content.connectButton }} <i-lucide name="arrow-up-right" [size]="18" aria-hidden="true" />
+        {{ content.connectButton }}
+
+        <i-lucide name="arrow-up-right" [size]="18" aria-hidden="true" />
       </a>
     </div>
 
-    <div class="footer__grid">
-      <div class="footer__brand">
+
+    <!-- Footer Content -->
+    <div class="footer__content">
+
+      <!-- Left Content -->
+      <div class="footer__main">
+
+        <!-- Logo + Name -->
         <a class="footer__logo" routerLink="/" fragment="home" [attr.aria-label]="siteName() + ', home'">
           @if (logo(); as image) {
-            <img class="footer__logo-img" [src]="image.url" alt="" width="32" height="32" loading="lazy" />
+          <img class="footer__logo-img" [src]="image.url" alt="" width="32" height="32" loading="lazy" />
           } @else {
-            <span class="footer__mark" aria-hidden="true">{{ mark }}</span>
+          <span class="footer__mark" aria-hidden="true">
+            {{ mark }}
+          </span>
           }
-          <span class="footer__name">{{ siteName() }}</span>
+
+          <span class="footer__name">
+            {{ siteName() }}
+          </span>
         </a>
-        @if (description(); as text) {
-          <p class="footer__description">{{ text }}</p>
+
+
+        <!-- Description -->
+        @if (tagline(); as text) {
+        <p class="footer__description">
+          {{ text }}
+        </p>
         }
+
+
+        <!-- Contact -->
+        <div class="footer__contact-section">
+          <address class="footer__contact">
+
+            <!-- Email -->
+            <a class="footer__link" [href]="'mailto:' + email()">
+              <i-lucide name="mail" [size]="16" aria-hidden="true" />
+
+              <span>{{ email() }}</span>
+            </a>
+
+
+            <!-- Phone -->
+            @if (phone(); as number) {
+            <a class="footer__link" [href]="telHref()">
+              <i-lucide name="phone" [size]="16" aria-hidden="true" />
+
+              <span>{{ number }}</span>
+            </a>
+            }
+
+
+            <!-- Location -->
+            <span class="footer__meta">
+              <i-lucide name="map-pin" [size]="16" aria-hidden="true" />
+
+              <span>{{ location() }}</span>
+            </span>
+
+          </address>
+        </div>
+
+
+        <!-- Social Icons -->
         @if (socials().length) {
+        <div class="footer__social-section">
+
+          <h2 class="footer__col-title">
+            Follow
+          </h2>
+
           <ul class="footer__socials" aria-label="Social profiles">
             @for (link of socials(); track link.value) {
-              <li>
-                <a class="footer__social" [href]="link.value" target="_blank" rel="noopener noreferrer me">
-                  <app-social-icon [label]="link.label" />
-                  <span class="sr-only">{{ link.label }} (opens in a new tab)</span>
-                </a>
-              </li>
+            <li>
+              <a class="footer__social" [href]="link.value" target="_blank" rel="noopener noreferrer me"
+                [attr.aria-label]="link.label">
+                <app-social-icon [label]="link.label" />
+
+                <span class="sr-only">
+                  {{ link.label }} (opens in a new tab)
+                </span>
+              </a>
+            </li>
             }
           </ul>
+
+        </div>
         }
+
       </div>
 
-      <nav class="footer__col" aria-labelledby="footer-nav-title">
-        <h2 id="footer-nav-title" class="footer__col-title">{{ content.navTitle }}</h2>
-        <ul class="footer__list">
-          @for (link of links; track link.label) {
-            <li>
-              @if (link.route) {
-                <a class="footer__link" [routerLink]="link.route">{{ link.label }}</a>
-              } @else {
-                <a class="footer__link" routerLink="/" [fragment]="link.section">{{ link.label }}</a>
-              }
-            </li>
-          }
-        </ul>
-      </nav>
 
-      <div class="footer__col">
-        <h2 class="footer__col-title">{{ content.contactTitle }}</h2>
-        <address class="footer__list footer__contact">
-          <a class="footer__link" [href]="'mailto:' + email()">
-            <i-lucide name="mail" [size]="16" aria-hidden="true" /> {{ email() }}
-          </a>
-          @if (phone(); as number) {
-            <a class="footer__link" [href]="telHref()">
-              <i-lucide name="phone" [size]="16" aria-hidden="true" /> {{ number }}
-            </a>
-          }
-          <span class="footer__meta">
-            <i-lucide name="map-pin" [size]="16" aria-hidden="true" /> {{ location() }}
-          </span>
-        </address>
-      </div>
-
+      <!-- Right: Quick Contact -->
       <div class="footer__col footer__col--quick">
-        <h2 class="footer__col-title">{{ content.quickTitle }}</h2>
-        <p class="footer__meta">{{ content.quickText }}</p>
-        <app-quick-contact
-          source="footer"
-          tone="dark"
-          variant="field"
-          [label]="content.quickLabel"
-          [placeholder]="content.quickPlaceholder"
-          buttonText="Send"
-        />
+
+        <h2 class="footer__col-title">
+          {{ content.quickTitle }}
+        </h2>
+
+        <p class="footer__meta footer__quick-text">
+          {{ content.quickText }}
+        </p>
+
+        <app-quick-contact source="footer" tone="dark" variant="field" [label]="content.quickLabel"
+          [placeholder]="content.quickPlaceholder" buttonText="Send" />
+
       </div>
+
     </div>
 
+
+    <!-- Bottom -->
     <div class="footer__bottom">
-      <p>© {{ year }} {{ siteName() }}. All rights reserved.</p>
+
+      <p>
+        © {{ year }} {{ siteName() }}. All rights reserved.
+      </p>
+
       <p class="footer__recaptcha">
         This site is protected by reCAPTCHA and the Google
-        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">
+          Privacy Policy
+        </a>
+
         and
-        <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+
+        <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">
+          Terms of Service
+        </a>
+
         apply.
       </p>
+
     </div>
+
   </div>
 </footer>

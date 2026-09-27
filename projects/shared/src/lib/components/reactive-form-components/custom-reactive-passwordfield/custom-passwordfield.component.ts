@@ -55,7 +55,7 @@ import { IconComponent } from "@shared/components/icon-component/icon-component"
               <span class="fc-dot" [class.fc-dot-error]="control.hasError(err.type)"></span>
               <span
                 class="text-[11px] font-medium"
-                [style.color]="control.hasError(err.type) ? 'rgb(var(--error-color))' : 'rgb(var(--primary-color))'"
+                [style.color]="control.hasError(err.type) ? 'var(--error)' : 'var(--primary)'"
               >
                 {{ err.message }}
               </span>

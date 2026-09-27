@@ -7,14 +7,10 @@ import { CONTACT_CONTENT } from '../../content/contact.content';
 import { siteFeature } from '../../core/store/site.feature';
 import { QuickContact } from '../../ui/quick-contact/quick-contact';
 import { SocialIcon } from '../../ui/social-icon/social-icon';
-import { NAV_ALL } from '../site-header/nav-links';
+import { HERO_CONTENT } from '@website/content/hero.content';
 
 const SAFE_LINK = /^(https?:|mailto:)/i;
 
-/**
- * Site footer (brief, Part 6; Figma "Lets Connect there"): dark in both modes. Contact details and
- * socials come from Site Settings, falling back to the brief's real details.
- */
 @Component({
   selector: 'app-site-footer',
   imports: [RouterLink, IconComponent, QuickContact, SocialIcon],
@@ -26,13 +22,14 @@ export class SiteFooter {
   private readonly store = inject(Store);
   private readonly settings = this.store.selectSignal(siteFeature.selectSettings);
 
-  protected readonly content = CONTACT_CONTENT.footer;
-  protected readonly links = NAV_ALL;
+  protected readonly content = CONTACT_CONTENT.footer; 
   protected readonly year = new Date().getFullYear();
 
   protected readonly siteName = this.store.selectSignal(siteFeature.selectSiteName);
   protected readonly logo = this.store.selectSignal(siteFeature.selectLogo);
-  protected readonly description = this.store.selectSignal(siteFeature.selectDescription);
+  private readonly description = this.store.selectSignal(siteFeature.selectDescription);
+  protected readonly tagline = computed(() => this.description() || HERO_CONTENT.tagline);
+
   protected readonly email = computed(() => this.settings()?.contactEmail || CONTACT_CONTENT.footer.email);
   protected readonly phone = computed(() => this.settings()?.phoneNumber ?? null);
   protected readonly telHref = computed(() => {

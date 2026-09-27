@@ -162,7 +162,7 @@
 
 @default {
 <div class="rounded-xl border px-4 py-3 text-xs"
-  style="border-color: var(--error-color); background: transparent; color: var(--error-color); font-family: var(--font-body)">
+  style="border-color: var(--error); background: transparent; color: var(--error); font-family: var(--font-body)">
   Unknown field type: <strong>{{ config.type }}</strong>
 </div>
 }
@@ -234,7 +234,7 @@
         @if (getFormArray().length > (config.arrayConfig?.minItems || 0) && !config.disabled) {
         <button type="button" (click)="removeArrayItem(i)"
           class="inline-flex items-center gap-1.5 rounded-[12px] border px-2.5 py-1.5 text-xs font-medium transition-opacity"
-          style="background: var(--field-bg); border-color: var(--error-color); color: var(--error-color)"
+          style="background: var(--form-control-bg); border-color: var(--error); color: var(--error)"
           aria-label="Remove item">
           <i-lucide name="trash" [size]="20" />
           Remove

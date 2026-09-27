@@ -1,7 +1,7 @@
 @use 'sass:list';
 
 // Shared button. Colours come from the design tokens (hex values), with tints made by color-mix(),
-// so every variant follows the admin's active theme. (The old rules used rgb(var(--x)) with RGB-triplet
+// so every variant follows the admin's active theme. (The old rules used var(--x) with RGB-triplet
 // tokens, which are invalid with hex tokens — that is why buttons rendered without a background.)
 
 .btn-base {
@@ -138,7 +138,7 @@ $colors: (
 }
 
 .btn-radius-medium {
-  border-radius: 1.75rem;
+  border-radius: 1rem;
 }
 
 .btn-radius-large {

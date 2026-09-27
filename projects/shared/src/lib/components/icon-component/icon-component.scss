@@ -1,18 +1,26 @@
-.lucide-icon { 
+// Icon box. The <svg> is injected with innerHTML, so it carries no encapsulation attribute: style it
+// through ::ng-deep (scoped to this component by :host).
+:host {
+  display: inline-flex;
+  flex-shrink: 0;
   line-height: 0;
-  color: currentColor;
-
-  svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    stroke: currentColor;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
+  vertical-align: middle;
 }
 
+.lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+}
+
+:host ::ng-deep .lucide-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// Named sizes (size="sm" etc.); numeric sizes set width/height inline.
 .icon-xs {
   width: 12px;
   height: 12px;

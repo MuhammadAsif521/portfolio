@@ -38,7 +38,7 @@ let colorfieldUid = 0;
         <span class="fc-swatch" [style.background]="control.value || defaultColor"></span>
 
         <span class="flex-1 text-left font-mono text-[13px]"
-              [style.color]="control.value ? 'rgb(var(--form-control-text))' : 'rgb(var(--text-secondary))'">
+              [style.color]="control.value ? 'var(--form-control-text)' : 'var(--text-muted)'">
           {{ control.value || placeholder || 'Pick a color' }}
         </span>
 
@@ -51,7 +51,7 @@ let colorfieldUid = 0;
 
           <!-- Native color input -->
           <div class="mb-3">
-            <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.18em]" style="color: rgb(var(--text-secondary))">
+            <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.18em]" style="color: var(--text-muted)">
               Custom Color
             </label>
             <div class="flex items-center gap-2">
@@ -60,14 +60,14 @@ let colorfieldUid = 0;
                 [value]="control.value || defaultColor"
                 (input)="onNativeColorChange($event)"
                 class="h-10 w-10 cursor-pointer rounded-lg border bg-transparent p-0.5"
-                style="border-color: rgb(var(--form-control-border))"
+                style="border-color: var(--form-control-border)"
               />
               <input
                 type="text"
                 [value]="control.value || ''"
                 (input)="onHexInput($event)"
                 (blur)="onHexBlur($event)"
-                placeholder="#1A2B1E"
+                placeholder="#FD853A"
                 maxlength="7"
                 class="fc-control flex-1 font-mono"
               />
@@ -76,7 +76,7 @@ let colorfieldUid = 0;
 
           <!-- Preset swatches -->
           <div>
-            <label class="mb-2 block text-[10px] font-semibold uppercase tracking-[0.18em]" style="color: rgb(var(--text-secondary))">
+            <label class="mb-2 block text-[10px] font-semibold uppercase tracking-[0.18em]" style="color: var(--text-muted)">
               Presets
             </label>
             <div class="grid grid-cols-6 gap-1.5">
@@ -86,7 +86,7 @@ let colorfieldUid = 0;
                   (click)="selectPreset(color)"
                   class="w-8 h-8 rounded-lg border-2 transition-all duration-150 hover:scale-110"
                   [style.background]="color"
-                  [style.borderColor]="control.value === color ? 'rgb(var(--primary-color))' : 'transparent'"
+                  [style.borderColor]="control.value === color ? 'var(--primary)' : 'transparent'"
                   [title]="color"
                 ></button>
               }
@@ -123,12 +123,12 @@ export class CustomReactiveColorfieldComponent implements OnInit, OnDestroy {
 
   label = '';
   showPicker = false;
-  defaultColor = '#1A2B1E';
+  defaultColor = '#FD853A';
 
   presetColors = [
-    '#F7F3ED', '#EDE6D9', '#1A2B1E', '#0F1913',
-    '#2E4A34', '#5A1E1E', '#401515', '#C89A4E',
-    '#DAB876', '#0D0D0D', '#4A4A4A', '#FFFFFF',
+    '#FD853A', '#FEB173', '#FB6514', '#141414',
+    '#1D2939', '#344054', '#12B76A', '#2E90FA',
+    '#7A5AF8', '#F04438', '#F2F4F7', '#FFFFFF',
   ];
 
   private destroy$ = new Subject<void>();

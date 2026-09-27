@@ -12,8 +12,6 @@
 .marquee {
   position: relative;
   display: grid;
-  // minmax(0, 1fr): the column must not grow to the scrolling track's full width — the strip would then
-  // rotate around a centre far to the right and sink towards the bottom of the band.
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
   min-height: clamp(5rem, 3rem + 5vw, 8rem);
@@ -34,9 +32,25 @@
   transform: rotate(-2.5deg);
 }
 
+// The list is rendered twice, so moving the track by half its width loops seamlessly. CSS-only: it
+// starts at first paint; the component only tunes --marquee-duration for a constant speed.
 .marquee__track {
   display: flex;
   width: max-content;
+
+  @include m.motion-safe {
+    animation: marquee-scroll var(--marquee-duration, 30s) linear infinite;
+  }
+
+  .marquee__band:hover & {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .marquee__list {
@@ -48,13 +62,11 @@
   list-style: none;
 
   // Reduced motion: one still line, centred and clipped by the band like the static Figma.
-  .marquee.is-still & {
+  @media (prefers-reduced-motion: reduce) {
     justify-content: center;
     width: 106vw;
-  }
 
-  &--copy {
-    .marquee.is-still & {
+    &--copy {
       display: none;
     }
   }

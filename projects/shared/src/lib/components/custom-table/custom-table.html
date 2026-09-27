@@ -5,7 +5,7 @@
 
       <!-- ALWAYS SHOW HEADER -->
       <thead>
-        <tr class="bg-[rgb(var(--breadcrumb-bg))]">
+        <tr class="bg-[var(--surface-muted)]">
           @for (col of columns; track col.key) {
           <th [class]="getHeaderClass(col)" (click)="col.sortable ? toggleSort(col.key) : null">
             <span class="flex items-center gap-1.5 text-[1rem] text-primary font-bold capitalize"

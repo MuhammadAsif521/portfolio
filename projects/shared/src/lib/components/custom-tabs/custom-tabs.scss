@@ -6,7 +6,7 @@ $transition: all 0.2s ease;
     width: fit-content;
     max-width: 100%;
     margin-bottom: 10px;
-    background: rgb(var(--surface-color));
+    background: var(--surface);
     border-radius: 12px;
     gap: 8px;
     position: relative;
@@ -50,27 +50,27 @@ $transition: all 0.2s ease;
     position: relative;
 
     &.active {
-        background: rgb(var(--primary-color));
+        background: var(--primary);
         color: white;
 
         .tab-badge {
-            background: rgb(var(--primary-color));
+            background: var(--primary);
             color: white;
         }
     }
 
     &:not(.active):hover {
-        background: rgb(var(--background-color-dark));
+        background: var(--band-dark);
     }
 
     &.disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        color: rgb(var(--text-muted));
+        color: var(--text-muted);
     }
 
     &:focus-visible {
-        outline: 2px solid var(--color-border);
+        outline: 2px solid var(--border);
         outline-offset: 2px;
     }
 }
@@ -82,7 +82,7 @@ $transition: all 0.2s ease;
 }
 
 .tab-badge {
-    background: rgb(var(--secondary-color));
+    background: var(--secondary);
     border-radius: 12px;
     padding: 0 6px;
     font-size: 0.7rem;

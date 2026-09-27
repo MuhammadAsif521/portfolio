@@ -7,16 +7,39 @@
     }
   </ul>
 
-  <div class="carousel__dots" [class.carousel__dots--on-dark]="onDark()" [hidden]="!overflowing()">
-    @for (item of items(); track $index; let i = $index) {
-      <button
-        type="button"
-        class="carousel__dot"
-        [class.is-active]="active() === i"
-        [attr.aria-label]="'Show slide ' + (i + 1) + ' of ' + count()"
-        [attr.aria-current]="active() === i ? 'true' : null"
-        (click)="goTo(i)"
-      ></button>
-    }
+  <div class="carousel__nav" [class.carousel__nav--on-dark]="onDark()" [hidden]="!overflowing()">
+    <!-- Arrows: large screens only (touch and trackpads swipe) -->
+    <button
+      type="button"
+      class="carousel__arrow"
+      aria-label="Previous slide"
+      [disabled]="atStart()"
+      (click)="step(-1)"
+    >
+      <i-lucide name="arrow-left" [size]="20" aria-hidden="true" />
+    </button>
+
+    <div class="carousel__dots" [class.carousel__dots--on-dark]="onDark()">
+      @for (item of items(); track $index; let i = $index) {
+        <button
+          type="button"
+          class="carousel__dot"
+          [class.is-active]="active() === i"
+          [attr.aria-label]="'Show slide ' + (i + 1) + ' of ' + count()"
+          [attr.aria-current]="active() === i ? 'true' : null"
+          (click)="goTo(i)"
+        ></button>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="carousel__arrow"
+      aria-label="Next slide"
+      [disabled]="atEnd()"
+      (click)="step(1)"
+    >
+      <i-lucide name="arrow-right" [size]="20" aria-hidden="true" />
+    </button>
   </div>
 </div>

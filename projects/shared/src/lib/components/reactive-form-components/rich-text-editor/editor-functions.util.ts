@@ -346,7 +346,7 @@ export function isRequiredPlaceholder(key: string, placeholders: RichTextPlaceho
 }
 
 export function flashChip(chip: HTMLElement): void {
-  chip.style.outline = '2px solid var(--error-color)';
+  chip.style.outline = '2px solid var(--error)';
   chip.style.background = 'rgba(var(--error-rgb), 0.1)';
   setTimeout(() => { chip.style.outline = ''; chip.style.background = ''; }, 600);
 }

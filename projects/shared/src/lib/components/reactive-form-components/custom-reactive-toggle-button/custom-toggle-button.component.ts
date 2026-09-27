@@ -30,12 +30,12 @@ import { Observable, Subject, takeUntil } from 'rxjs';
         @if (showLabel && (label || placeholder)) {
           <div>
             @if (label) {
-              <p class="text-[13px] font-medium leading-tight" style="color: rgb(var(--form-control-text))">
+              <p class="text-[13px] font-medium leading-tight" style="color: var(--form-control-text)">
                 {{ label }}
               </p>
             }
             @if (placeholder) {
-              <p class="mt-0.5 text-xs leading-tight" style="color: rgb(var(--text-secondary))">{{ placeholder }}</p>
+              <p class="mt-0.5 text-xs leading-tight" style="color: var(--text-muted)">{{ placeholder }}</p>
             }
           </div>
         }

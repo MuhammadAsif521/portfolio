@@ -1,11 +1,5 @@
-<div class="marquee" [class.is-still]="still()">
-  <div
-    class="marquee__band"
-    (pointerenter)="holdPause()"
-    (pointerleave)="releasePause()"
-    (focusin)="holdPause()"
-    (focusout)="releasePause()"
-  >
+<div class="marquee">
+  <div class="marquee__band">
     <div #track class="marquee__track">
       <ul class="marquee__list" [attr.aria-label]="content.label">
         @for (item of content.items; track item) {

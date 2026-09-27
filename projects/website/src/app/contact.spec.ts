@@ -200,7 +200,7 @@ describe('SiteFooter', () => {
 
     expect(el.querySelector('a[href^="mailto:"]')?.getAttribute('href')).toBe(`mailto:${CONTACT_CONTENT.footer.email}`);
     expect(el.querySelector('address')?.textContent).toContain(CONTACT_CONTENT.footer.location);
-    expect(el.querySelector('.footer__description')?.textContent).toBe('MEAN stack developer.');
+    expect(el.querySelector('.footer__description')?.textContent?.trim()).toBe('MEAN stack developer.');
     expect(el.querySelector('.footer__bottom')?.textContent).toContain(`© ${new Date().getFullYear()} Muhammad Asif`);
     expect(el.querySelector('app-quick-contact')).toBeTruthy();
   });

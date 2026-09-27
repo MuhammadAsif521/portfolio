@@ -35,7 +35,7 @@ let plainDropdownUid = 0;
             @if (selectedOption) {
             <span>{{ selectedOption.name }}</span>
             } @else {
-            <span style="color: rgb(var(--form-control-placeholder))">
+            <span style="color: var(--form-control-placeholder)">
                 {{ value || placeholder || 'Select an option' }}
             </span>
             }

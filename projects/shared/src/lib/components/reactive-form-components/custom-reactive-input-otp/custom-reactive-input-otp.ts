@@ -28,7 +28,7 @@ import { takeUntil } from 'rxjs/operators';
         >
           {{ label }}
           @if (required) {
-            <span class="ml-0.5" style="color: rgb(var(--error-color))">*</span>
+            <span class="ml-0.5" style="color: var(--error)">*</span>
           }
         </label>
       }
@@ -49,20 +49,20 @@ import { takeUntil } from 'rxjs/operators';
             (keydown)="onKeydown($event, $index)"
             (paste)="onPaste($event)"
             class="w-12 h-12 rounded-xl border text-center text-[15px] font-semibold outline-none transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-            [style.background]="focusedIndex === $index ? 'rgb(var(--form-control-bg-active))' : 'rgb(var(--form-control-bg))'"
+            [style.background]="focusedIndex === $index ? 'var(--form-control-bg-active)' : 'var(--form-control-bg)'"
             [style.borderColor]="
               (ctrl.invalid && (ctrl.dirty || ctrl.touched))
-                ? 'rgb(var(--error-color))'
-                : (focusedIndex === $index ? 'rgb(var(--form-control-border-active))' : 'rgb(var(--form-control-border))')
+                ? 'var(--error)'
+                : (focusedIndex === $index ? 'var(--form-control-border-active)' : 'var(--form-control-border)')
             "
             [style.boxShadow]="focusedIndex === $index ? 'var(--form-focus-shadow)' : 'none'"
-            [style.color]="'rgb(var(--form-control-text))'"
+            [style.color]="'var(--form-control-text)'"
           />
         }
       </div>
 
       @if (showHints && isInvalid()) {
-        <p class="mt-1.5 text-xs" style="color: rgb(var(--error-color))">
+        <p class="mt-1.5 text-xs" style="color: var(--error)">
           @if (otpLength === 0) { OTP is required. }
           @else if (currentValue().length < length) { Please enter all {{ length }} digits. }
         </p>

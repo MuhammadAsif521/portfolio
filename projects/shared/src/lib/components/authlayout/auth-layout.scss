@@ -3,17 +3,17 @@
    Shared by the public website and the cusadmin dashboard.
    ============================================================ */
 
-$brand: #250605;
-$brand-light: #250605d3;
-$ink: #1f2937;
-$muted: #6b7280;
+// Theme tokens (follow the active brand palette and light/dark mode).
+$brand: var(--band-dark);
+$ink: var(--heading);
+$muted: var(--text-muted);
 
 .auth-shell {
   display: grid;
   grid-template-columns: 1fr;
   min-height: 100vh;
   min-height: 100dvh;
-  background: #fbf7f2;
+  background: var(--body-bg);
 }
 
 /* ---------------- Brand panel ---------------- */
@@ -26,7 +26,8 @@ $muted: #6b7280;
   background:
     radial-gradient(120% 80% at 15% 15%, rgba(255, 255, 255, 0.14), transparent 55%),
     repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 16px),
-    linear-gradient(150deg, $brand 0%, #250605 48%, $brand-light 100%);
+    radial-gradient(90% 70% at 85% 90%, color-mix(in srgb, var(--primary) 35%, transparent), transparent 60%),
+    linear-gradient(150deg, $brand 0%, var(--band-dark-raised) 100%);
 }
 
 .auth-brand__inner {
@@ -155,7 +156,7 @@ $muted: #6b7280;
   color: $muted;
 
   a {
-    color: $brand;
+    color: var(--primary);
     text-decoration: underline;
   }
 }

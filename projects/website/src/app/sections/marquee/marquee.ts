@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, afterNextRender, viewChild } from '@angular/core';
 import { MARQUEE_CONTENT } from '../../content/testimonials.content';
-import { marqueeLoop, prefersReducedMotion, type LoopControls } from '../../core/motion';
 
 /**
- * Skills strip (brief, Parts 6/8; Figma): a white strip tilted across an orange band, scrolling
- * continuously. Pauses while hovered or while something inside has keyboard focus; with reduced motion
- * it stays still.
+ * Skills strip (brief, Parts 6/8; Figma): a white strip tilted across an orange band, scrolling right to
+ * left. Pure CSS animation, so it runs from first paint (no JS or hydration needed) and pauses on hover.
+ * The browser only fine-tunes the duration so the speed is MARQUEE_CONTENT.speed px/s at any width.
+ * With the OS "reduce motion" setting (Windows: Settings → Accessibility → Visual effects → Animation
+ * effects off) it deliberately stays still.
  */
 @Component({
   selector: 'app-marquee',
@@ -17,36 +18,14 @@ export class Marquee {
   private readonly track = viewChild.required<ElementRef<HTMLElement>>('track');
 
   protected readonly content = MARQUEE_CONTENT;
-  /** Reduced motion: the still, centred layout (SSR renders the strip layout). */
-  protected readonly still = signal(false);
-
-  private loop: LoopControls | null = null;
 
   constructor() {
-    const destroyRef = inject(DestroyRef);
-    let destroyed = false;
-    destroyRef.onDestroy(() => {
-      destroyed = true;
-      this.loop?.kill();
-    });
-
     afterNextRender(() => {
-      if (prefersReducedMotion()) {
-        this.still.set(true);
-        return;
+      const track = this.track().nativeElement;
+      const distance = track.scrollWidth / 2; // the list is rendered twice
+      if (distance > 0) {
+        track.style.setProperty('--marquee-duration', `${Math.max(distance / MARQUEE_CONTENT.speed, 8)}s`);
       }
-      void marqueeLoop(this.track().nativeElement, MARQUEE_CONTENT.speed).then((loop) => {
-        if (destroyed) return loop?.kill();
-        this.loop = loop;
-      });
     });
-  }
-
-  protected holdPause(): void {
-    this.loop?.pause();
-  }
-
-  protected releasePause(): void {
-    this.loop?.play();
   }
 }

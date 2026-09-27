@@ -35,7 +35,7 @@ import { takeUntil } from 'rxjs/operators';
               class="sr-only"
             />
 
-            <span class="text-[13px] font-medium" style="color: rgb(var(--form-control-text))">
+            <span class="text-[13px] font-medium" style="color: var(--form-control-text)">
               {{ option.name }}
             </span>
           </label>

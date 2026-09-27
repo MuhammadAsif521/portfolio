@@ -158,8 +158,13 @@ describe('Services', () => {
     const fixture = TestBed.createComponent(Services);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
-    const dots = el.querySelector<HTMLElement>('.carousel__dots')!;
-    expect(dots.hidden).toBe(true); // jsdom has no layout, so nothing overflows
+    // Dots and prev/next arrows share one row, hidden until the track is measured as overflowing.
+    const nav = el.querySelector<HTMLElement>('.carousel__nav')!;
+    expect(nav.hidden).toBe(true); // jsdom has no layout, so nothing overflows
+    expect(Array.from(nav.querySelectorAll('.carousel__arrow')).map((b) => b.getAttribute('aria-label'))).toEqual([
+      'Previous slide',
+      'Next slide',
+    ]);
     expect(el.querySelectorAll('.carousel__dot').length).toBe(SERVICES_CONTENT.items.length);
     expect(el.querySelector('.carousel__dot.is-active')?.getAttribute('aria-current')).toBe('true');
   });

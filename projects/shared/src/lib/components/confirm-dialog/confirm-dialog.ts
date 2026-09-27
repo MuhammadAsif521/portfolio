@@ -63,14 +63,14 @@ export class ConfirmDialogComponent {
         return 'bg-error/15 text-error';
 
       case 'success':
-        return 'bg-primary/15 text-primary';
+        return 'bg-success/15 text-success';
 
       case 'info':
         return 'bg-info/15 text-info';
 
       case 'warning':
       default:
-        return 'bg-yellow/15 text-yellow';
+        return 'bg-warning/15 text-warning';
     }
   }
 

@@ -29,10 +29,10 @@ import { FormsModule } from '@angular/forms';
           (focus)="isFocused = true"
           (blur)="isFocused = false"
           class="w-full rounded-xl border px-4 py-3.5 text-[13px] font-medium outline-none transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-          [style.background]="isFocused ? 'rgb(var(--form-control-bg-active))' : 'rgb(var(--form-control-bg))'"
-          [style.borderColor]="isFocused ? 'rgb(var(--form-control-border-active))' : 'rgb(var(--form-control-border))'"
+          [style.background]="isFocused ? 'var(--form-control-bg-active)' : 'var(--form-control-bg)'"
+          [style.borderColor]="isFocused ? 'var(--form-control-border-active)' : 'var(--form-control-border)'"
           [style.boxShadow]="isFocused ? 'var(--form-focus-shadow)' : 'none'"
-          [style.color]="'rgb(var(--form-control-text))'"
+          [style.color]="'var(--form-control-text)'"
           [class]="
             'w-full rounded-xl border px-4 py-3.5 text-[13px] font-medium outline-none transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 ' +
             fieldClass

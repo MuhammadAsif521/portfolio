@@ -106,12 +106,12 @@ describe('Marquee', () => {
     expect(lists[1]?.getAttribute('aria-hidden')).toBe('true');
   });
 
-  it('stays still, with no pause button, for reduced motion', async () => {
+  it('is a CSS-driven loop with no pause button (JS only tunes the speed)', async () => {
     setup();
     const fixture = TestBed.createComponent(Marquee);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.marquee')?.classList).toContain('is-still');
-    expect(el.querySelector('.marquee__toggle')).toBeNull();
+    expect(el.querySelector('.marquee__track')).toBeTruthy();
+    expect(el.querySelector('button')).toBeNull();
   });
 });

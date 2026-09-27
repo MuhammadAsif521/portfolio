@@ -1,0 +1,33 @@
+<div class="mb-3 flex flex-wrap items-center justify-end gap-3">
+  <app-loading-button buttonText="Add Experience" icon="plus" variant="flat" color="primary" size="small"
+    radius="small" (click)="add()" />
+</div>
+
+<app-custom-table [data]="rows()" [columns]="columns" [actions]="actions" [isLoading]="loading()"
+  [pagination]="pagination()" [cellTemplates]="cellTemplates" [emptyTitle]="'No experience yet'"
+  [emptyMessage]="'Add your first role to show it on the website timeline and the resume.'"
+  (sortChange)="onSort($event)" (actionClick)="onAction($event)" (pageChange)="onPage($event)"
+  (pageSizeChange)="onPageSize($event)" />
+
+<ng-template #companyTpl let-row="row">
+  <div class="flex flex-col">
+    <span class="font-medium text-heading">{{ row.company }}</span>
+    @if (row.location) {
+      <span class="text-xs text-muted">{{ row.location }}</span>
+    }
+  </div>
+</ng-template>
+
+<ng-template #datesTpl let-row="row">
+  <span class="text-muted">
+    {{ row.startDate ? (row.startDate | date: 'MMM y' : 'UTC') : '—' }} –
+    {{ row.current ? 'Present' : row.endDate ? (row.endDate | date: 'MMM y' : 'UTC') : '—' }}
+  </span>
+</ng-template>
+
+<ng-template #booleanTpl let-value="value">
+  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
+    [class]="value ? 'bg-success/15 text-success' : 'bg-surface-muted text-muted'">
+    {{ value ? 'Yes' : 'No' }}
+  </span>
+</ng-template>

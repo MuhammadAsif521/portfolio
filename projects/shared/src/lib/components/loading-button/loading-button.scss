@@ -101,6 +101,7 @@ $colors: (
   warn: (var(--warning), #141414),
   success: (var(--success), #fff),
   error: (var(--error), #fff),
+  neutral: (var(--surface-muted), var(--heading)),
 );
 
 @each $name, $pair in $colors {

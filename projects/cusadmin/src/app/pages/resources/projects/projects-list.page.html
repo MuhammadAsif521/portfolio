@@ -1,0 +1,29 @@
+<div class="mb-3 flex flex-wrap items-center gap-3">
+  <app-custom-input class="w-64 max-w-full" [showLabel]="false" [placeholder]="searchPlaceholder"
+    (onChange)="onSearch($event)" />
+  <app-loading-button buttonText="Create Project" icon="plus" variant="flat" color="primary" size="small"
+    radius="small" (click)="add()" />
+</div>
+
+<app-custom-table [data]="rows()" [columns]="columns" [actions]="actions" [isLoading]="loading()"
+  [pagination]="pagination()" [cellTemplates]="cellTemplates" [emptyTitle]="'No projects yet'"
+  [emptyMessage]="'Create your first case study to show it on the website.'" (sortChange)="onSort($event)"
+  (actionClick)="onAction($event)" (pageChange)="onPage($event)" (pageSizeChange)="onPageSize($event)" />
+
+<ng-template #dateTpl let-value="value">
+  <span class="text-muted">{{ value ? (value | date: 'MMM d, y') : '—' }}</span>
+</ng-template>
+
+<ng-template #booleanTpl let-value="value">
+  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
+    [class]="value ? 'bg-success/15 text-success' : 'bg-surface-muted text-muted'">
+    {{ value ? 'Yes' : 'No' }}
+  </span>
+</ng-template>
+
+<ng-template #statusTpl let-value="value">
+  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize"
+    [class]="value === 'published' ? 'bg-primary/15 text-primary' : 'bg-surface-muted text-muted'">
+    {{ value }}
+  </span>
+</ng-template>

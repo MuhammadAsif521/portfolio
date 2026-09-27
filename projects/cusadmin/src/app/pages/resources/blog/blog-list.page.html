@@ -1,0 +1,41 @@
+<div class="mb-3 flex flex-wrap items-center gap-3">
+  <app-custom-input class="w-64 max-w-full" [showLabel]="false" [placeholder]="searchPlaceholder"
+    (onChange)="onSearch($event)" />
+  <app-loading-button buttonText="Create Post" icon="plus" variant="flat" color="primary" size="small"
+    radius="small" (click)="add()" />
+</div>
+
+<app-custom-table [data]="rows()" [columns]="columns" [actions]="actions" [isLoading]="loading()"
+  [pagination]="pagination()" [cellTemplates]="cellTemplates" [emptyTitle]="'No posts yet'"
+  [emptyMessage]="'Write your first post to publish it on the website.'" (sortChange)="onSort($event)"
+  (actionClick)="onAction($event)" (pageChange)="onPage($event)" (pageSizeChange)="onPageSize($event)" />
+
+<ng-template #dateTpl let-value="value">
+  <span class="text-muted">{{ value ? (value | date: 'MMM d, y') : '—' }}</span>
+</ng-template>
+
+<ng-template #tagsTpl let-value="value">
+  @if (value?.length) {
+    <div class="flex flex-wrap gap-1">
+      @for (tag of value.slice(0, 3); track tag) {
+        <span class="inline-flex items-center rounded-full bg-surface-muted px-2 py-0.5 text-[11px] text-muted">{{ tag }}</span>
+      }
+      @if (value.length > 3) {
+        <span class="text-[11px] text-muted">+{{ value.length - 3 }}</span>
+      }
+    </div>
+  } @else {
+    <span class="text-muted">—</span>
+  }
+</ng-template>
+
+<ng-template #statusTpl let-value="value">
+  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize"
+    [class]="value === 'published' ? 'bg-primary/15 text-primary' : 'bg-surface-muted text-muted'">
+    {{ value }}
+  </span>
+</ng-template>
+
+<ng-template #readingTimeTpl let-value="value">
+  <span class="text-muted">{{ value ? value + ' min' : '—' }}</span>
+</ng-template>

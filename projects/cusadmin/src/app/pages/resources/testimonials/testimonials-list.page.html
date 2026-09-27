@@ -1,0 +1,46 @@
+<div class="mb-3 flex flex-wrap items-center gap-3">
+  <p class="m-0 text-xs text-muted">Only publish real client quotes. Add a source link where possible.</p>
+  <app-loading-button class="ml-auto" buttonText="Add Testimonial" icon="plus" variant="flat" color="primary"
+    size="small" radius="small" (click)="add()" />
+</div>
+
+<app-custom-table [data]="rows()" [columns]="columns" [actions]="actions" [isLoading]="loading()"
+  [pagination]="pagination()" [cellTemplates]="cellTemplates" [emptyTitle]="'No testimonials yet'"
+  [emptyMessage]="'Add a real client quote to show it on the website.'" (sortChange)="onSort($event)"
+  (actionClick)="onAction($event)" (pageChange)="onPage($event)" (pageSizeChange)="onPageSize($event)" />
+
+<ng-template #nameTpl let-row="row">
+  <div class="flex flex-col">
+    <span class="font-semibold">{{ row.name }}</span>
+    @if (row.role || row.company) {
+      <span class="text-xs text-muted">
+        {{ row.role }}{{ row.role && row.company ? ', ' : '' }}{{ row.company }}
+      </span>
+    }
+  </div>
+</ng-template>
+
+<ng-template #quoteTpl let-value="value">
+  <span class="whitespace-normal" [attr.title]="value">“{{ truncate(value) }}”</span>
+</ng-template>
+
+<ng-template #ratingTpl let-value="value">
+  @if (stars(value); as s) {
+    <span class="text-warning" [attr.aria-label]="value + ' out of 5 stars'">{{ s }}</span>
+  } @else {
+    <span class="text-muted">—</span>
+  }
+</ng-template>
+
+<ng-template #sourceTpl let-value="value">
+  <span class="inline-flex items-center rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-muted">
+    {{ sourceLabel(value) }}
+  </span>
+</ng-template>
+
+<ng-template #booleanTpl let-value="value">
+  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
+    [class]="value ? 'bg-success/15 text-success' : 'bg-surface-muted text-muted'">
+    {{ value ? 'Yes' : 'No' }}
+  </span>
+</ng-template>

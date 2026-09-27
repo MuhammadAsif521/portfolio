@@ -1,0 +1,70 @@
+@if (loading()) {
+  <app-page-loader />
+} @else {
+  @if (message(); as m) {
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+      <app-loading-button buttonText="Back to messages" icon="arrow-left" variant="stroked" color="secondary"
+        size="small" radius="small" (btnClick)="back()" />
+
+      <div class="flex flex-wrap items-center gap-2">
+        <app-loading-button buttonText="Reply by email" icon="reply" color="primary" size="small" radius="small"
+          (btnClick)="reply()" />
+        @if (m.status !== 'new') {
+          <app-loading-button buttonText="Mark as new" icon="mail" variant="stroked" color="secondary" size="small"
+            radius="small" [loading]="saving() === 'new'" [disabled]="!!saving()" (btnClick)="setStatus('new')" />
+        }
+        @if (m.status === 'archived') {
+          <app-loading-button buttonText="Move to inbox" icon="inbox" variant="stroked" color="secondary"
+            size="small" radius="small" [loading]="saving() === 'read'" [disabled]="!!saving()"
+            (btnClick)="setStatus('read')" />
+        } @else {
+          <app-loading-button buttonText="Archive" icon="archive" variant="stroked" color="secondary" size="small"
+            radius="small" [loading]="saving() === 'archived'" [disabled]="!!saving()"
+            (btnClick)="setStatus('archived')" />
+        }
+        <app-loading-button buttonText="Delete" icon="trash-2" variant="stroked" color="error" size="small"
+          radius="small" [disabled]="!!saving()" (btnClick)="confirmDelete()" />
+      </div>
+    </div>
+
+    <article class="rounded-2xl border border-border bg-card p-6 shadow-md">
+      <header class="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
+        <div class="min-w-0">
+          <h1 class="text-lg font-semibold text-heading">{{ m.subject || 'No subject' }}</h1>
+          <p class="mt-1 text-sm">
+            <span class="font-medium">{{ m.name || '—' }}</span>
+            <a [href]="'mailto:' + m.email" class="ml-1 break-all text-primary hover:underline">&lt;{{ m.email }}&gt;</a>
+          </p>
+          <p class="mt-1 text-xs text-muted">
+            Received {{ m.createdAt | date: 'MMM d, y, h:mm a' }} · {{ sourceLabel() }}
+          </p>
+        </div>
+        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize"
+          [class]="m.status === 'new' ? 'bg-primary/15 text-primary' : m.status === 'read' ? 'bg-surface-muted text-muted' : 'border border-border text-muted'">
+          {{ m.status }}
+        </span>
+      </header>
+
+      <section class="py-5">
+        @if (m.message?.trim()) {
+          <p class="whitespace-pre-line break-words text-sm leading-relaxed">{{ m.message }}</p>
+        } @else {
+          <p class="text-sm italic text-muted">
+            Email only — this visitor left their address via the {{ sourceLabel() }} box.
+          </p>
+        }
+      </section>
+
+      <dl class="grid grid-cols-1 gap-x-6 gap-y-2 rounded-xl bg-surface-muted p-4 text-xs text-muted sm:grid-cols-[max-content_1fr]">
+        <dt class="font-semibold">Source</dt>
+        <dd>{{ sourceLabel() }}</dd>
+        <dt class="font-semibold">Read at</dt>
+        <dd>{{ m.readAt ? (m.readAt | date: 'MMM d, y, h:mm a') : '—' }}</dd>
+        <dt class="font-semibold">reCAPTCHA score</dt>
+        <dd>{{ m.recaptchaScore != null ? (m.recaptchaScore | number: '1.1-2') : '—' }}</dd>
+        <dt class="font-semibold">User agent</dt>
+        <dd class="break-all">{{ m.userAgent || '—' }}</dd>
+      </dl>
+    </article>
+  }
+}

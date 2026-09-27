@@ -1,0 +1,18 @@
+@if (loading()) {
+  <app-page-loader />
+} @else {
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="grid grid-cols-12 items-center gap-4">
+      @for (field of formConfig; track field.name) {
+        <div [class]="field.colClass || 'col-span-12'">
+          <app-dynamic-reactive-form [config]="field" [formGroup]="form" [level]="0" />
+        </div>
+      }
+    </div>
+
+    <div class="mt-6 flex items-center justify-end gap-3">
+      <app-loading-button [buttonText]="id ? 'Update' : 'Create'" type="submit" color="primary" radius="small"
+        size="large" [loading]="saving()" [disabled]="saving()" />
+    </div>
+  </form>
+}

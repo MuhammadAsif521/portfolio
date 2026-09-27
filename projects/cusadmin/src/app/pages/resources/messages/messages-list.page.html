@@ -1,0 +1,47 @@
+<div class="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Filter by status">
+  @for (f of filters; track f.value) {
+    <button type="button" class="rounded-full px-4 py-1.5 text-xs font-semibold transition-colors"
+      [class]="status() === f.value ? 'bg-primary text-on-primary' : 'bg-surface-muted text-muted hover:text-primary'"
+      [attr.aria-pressed]="status() === f.value" (click)="setStatus(f.value)">
+      {{ f.label }}
+    </button>
+  }
+</div>
+
+<app-custom-table [data]="rows()" [columns]="columns" [actions]="actions" [isLoading]="loading()"
+  [pagination]="pagination()" [cellTemplates]="cellTemplates" [emptyTitle]="'No messages'"
+  [emptyMessage]="'Messages sent from the website contact form, CTA and footer will appear here.'"
+  (sortChange)="onSort($event)" (actionClick)="onAction($event)" (pageChange)="onPage($event)"
+  (pageSizeChange)="onPageSize($event)" />
+
+<ng-template #fromTpl let-row="row">
+  <div class="flex min-w-0 flex-col">
+    <span class="truncate" [class.font-semibold]="row.status === 'new'">{{ row.name || '—' }}</span>
+    <span class="truncate text-xs text-muted" [class.font-semibold]="row.status === 'new'">{{ row.email }}</span>
+  </div>
+</ng-template>
+
+<ng-template #previewTpl let-row="row">
+  @if (preview(row); as text) {
+    <span [class.font-semibold]="row.status === 'new'">{{ text }}</span>
+  } @else {
+    <span class="italic text-muted">Email only · {{ sourceLabel(row.source) }}</span>
+  }
+</ng-template>
+
+<ng-template #sourceTpl let-value="value">
+  <span class="inline-flex items-center whitespace-nowrap rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-muted">
+    {{ sourceLabel(value) }}
+  </span>
+</ng-template>
+
+<ng-template #statusTpl let-value="value">
+  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize"
+    [class]="value === 'new' ? 'bg-primary/15 text-primary' : value === 'read' ? 'bg-surface-muted text-muted' : 'border border-border text-muted'">
+    {{ value }}
+  </span>
+</ng-template>
+
+<ng-template #dateTpl let-value="value">
+  <span class="whitespace-nowrap text-muted">{{ value ? (value | date: 'MMM d, y, h:mm a') : '—' }}</span>
+</ng-template>

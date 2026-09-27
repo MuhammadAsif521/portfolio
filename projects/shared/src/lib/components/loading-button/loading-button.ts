@@ -5,7 +5,7 @@ import { IconComponent } from '@shared/components/icon-component/icon-component'
 
 export type ButtonVariant = 'flat' | 'stroked';
 export type ButtonSize = 'small' | 'medium' | 'large';
-export type ButtonColor = 'primary' | 'secondary' | 'accent' | 'warn' | 'error';
+export type ButtonColor = 'primary' | 'secondary' | 'accent' | 'warn' | 'error' | 'success' | 'neutral';
 export type ButtonRadius = 'none' | 'small' | 'medium' | 'large';
 export type ButtonIconPos = 'left' | 'right';
 

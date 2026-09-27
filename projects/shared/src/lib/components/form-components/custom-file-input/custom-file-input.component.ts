@@ -242,9 +242,14 @@ export class CustomFileInputComponent implements OnInit, OnChanges, OnDestroy {
     if (this.selectedFiles.length > 0) return;
 
     const items = Array.isArray(this.patchedImages) ? this.patchedImages : [this.patchedImages];
-    const entries = items.filter((item): item is string | File => !!item);
+    // Stored images may be a path, an absolute URL, or an image object ({ key, url, alt }).
+    const entries = items
+      .map((item: unknown) =>
+        item && typeof item === 'object' && !(item instanceof File) ? (item as { url?: string }).url : item,
+      )
+      .filter((item: unknown): item is string | File => !!item);
 
-    this.previews = entries.map((item) =>
+    this.previews = entries.map((item: string | File) =>
       item instanceof File
         ? {
           url: item.type.startsWith('image/') ? URL.createObjectURL(item) : '',
@@ -253,7 +258,7 @@ export class CustomFileInputComponent implements OnInit, OnChanges, OnDestroy {
           size: item.size,
         }
         : {
-          url: `${this.imageBaseUrl}/${item.replace(/^\//, '')}`,
+          url: /^(https?:|blob:|data:)/i.test(item) ? item : `${this.imageBaseUrl}/${item.replace(/^\//, '')}`,
           name: item.split('/').pop() || item,
           isBlob: false,
         },

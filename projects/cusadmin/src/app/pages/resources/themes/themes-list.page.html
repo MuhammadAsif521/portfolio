@@ -1,0 +1,43 @@
+<div class="mb-3 flex flex-wrap items-center gap-3">
+  <p class="m-0 text-xs text-muted">The active theme is applied to the website. The default theme cannot be deleted.</p>
+  <app-loading-button class="ml-auto" buttonText="Add Theme" icon="plus" variant="flat" color="primary"
+    size="small" radius="small" (click)="add()" />
+</div>
+
+<app-custom-table [data]="rows()" [columns]="columns" [actions]="actions" [isLoading]="loading()"
+  [pagination]="pagination()" [cellTemplates]="cellTemplates" [emptyTitle]="'No themes yet'"
+  [emptyMessage]="'Add a colour palette to use on the website.'" (sortChange)="onSort($event)"
+  (actionClick)="onAction($event)" (pageChange)="onPage($event)" (pageSizeChange)="onPageSize($event)" />
+
+<ng-template #nameTpl let-row="row">
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="font-semibold">{{ row.name }}</span>
+    @if (row.isActive) {
+      <span class="inline-flex items-center rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-semibold text-primary">
+        Active
+      </span>
+    }
+    @if (row.isDefault) {
+      <span class="inline-flex items-center rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-muted">
+        Default
+      </span>
+    }
+  </div>
+</ng-template>
+
+<ng-template #swatchesTpl let-row="row">
+  <div class="flex items-center gap-2">
+    @for (hex of [row.primary, row.secondary, row.accent]; track $index) {
+      <span class="inline-block h-6 w-6 rounded-full border border-black/10" [style.background]="hex"
+        [attr.title]="hex"></span>
+    }
+    <span class="ml-1 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
+      [style.background]="row.primary" [style.color]="row.secondary" [attr.title]="row.name + ' preview'">
+      Aa
+    </span>
+  </div>
+</ng-template>
+
+<ng-template #dateTpl let-value="value">
+  <span class="text-muted">{{ value ? (value | date: 'MMM d, y') : '—' }}</span>
+</ng-template>

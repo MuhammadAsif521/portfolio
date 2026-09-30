@@ -1,0 +1,32 @@
+@if (loading()) {
+  <div class="flex min-h-[600px] items-center justify-center">
+    <app-page-loader />
+  </div>
+} @else if (form) {
+  <app-custom-tabs [tabs]="tabs" [activeTab]="activeTab()" (activeTabChange)="onTabChange($event)" class="mb-3" />
+
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <!-- Every tab stays rendered so its controls (and file/editor state) survive tab switches. -->
+    @for (section of sections; track section.tab.value) {
+      <section [hidden]="activeTab() !== section.tab.value" [attr.aria-label]="section.tab.label">
+        <div class="grid grid-cols-12 items-center gap-4">
+          @for (field of section.fields; track field.name) {
+            <div [class]="field.colClass || 'col-span-12'">
+              <app-dynamic-reactive-form [config]="field" [formGroup]="form" [level]="0" />
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <div class="mt-6 flex items-center justify-end gap-3">
+      <app-loading-button buttonText="Save changes" type="submit" color="primary" radius="small" size="large"
+        [loading]="saving()" [disabled]="saving()" />
+    </div>
+  </form>
+} @else if (loadFailed()) {
+  <div class="flex min-h-[300px] flex-col items-center justify-center gap-4 text-center">
+    <p>Site settings could not be loaded.</p>
+    <app-loading-button buttonText="Try again" type="button" color="primary" radius="small" (btnClick)="load()" />
+  </div>
+}

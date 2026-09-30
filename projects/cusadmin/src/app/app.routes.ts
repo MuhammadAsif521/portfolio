@@ -85,6 +85,21 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'settings',
+        loadComponent: () => import('./pages/settings/site-settings.page').then((m) => m.SiteSettingsPage),
+        data: { title: 'Site Settings' },
+      },
+      {
+        path: 'themes',
+        loadComponent: () => import('./pages/resources/themes/themes-list.page').then((m) => m.ThemesListPage),
+        data: { title: 'Themes' },
+      },
+      {
+        path: 'resume',
+        loadComponent: () => import('./pages/resume/resume.page').then((m) => m.ResumePage),
+        data: { title: 'Resume' },
+      },
       { path: '**', redirectTo: '' },
     ],
   },

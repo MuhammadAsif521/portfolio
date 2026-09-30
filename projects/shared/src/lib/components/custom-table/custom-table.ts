@@ -20,7 +20,7 @@ export interface TableAction {
     label: string;
     icon: string;
     iconSize?: number;
-    color?: 'primary' | 'secondary' | 'info' | 'error';
+    color?: 'primary' | 'secondary' | 'info' | 'success' | 'error';
     hidden?: (row: any) => boolean;
 }
 
@@ -139,6 +139,7 @@ export class CustomTableComponent {
             primary: 'text-primary hover:bg-primary hover:text-black',
             secondary: 'text-secondary hover:bg-secondary hover:text-white',
             info: 'text-info hover:bg-info hover:text-black',
+            success: 'text-success hover:bg-success hover:text-white',
             error: 'text-error hover:bg-error hover:text-white',
         };
 

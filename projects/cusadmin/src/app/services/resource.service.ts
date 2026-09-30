@@ -1,7 +1,9 @@
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, type Observable } from 'rxjs';
 import type { PaginationMeta } from '@shared/components/custom-paginator/custom-paginator';
-import type { ApiResponse, PaginatedResponse } from '@shared/interfaces/auth.interface';
+import { API_BASE_URL } from '@shared/config/api.tokens';
+import { WITH_CREDENTIALS, type ApiResponse, type PaginatedResponse } from '@shared/interfaces/auth.interface';
 import type { AssetImage } from '@shared/interfaces/entities.interface';
 import { ApiService } from '@shared/services/api.service';
 import { toPaginationMeta } from '@shared/utils/pagination.util';
@@ -38,6 +40,8 @@ export interface UploadedImage extends AssetImage {
 @Injectable({ providedIn: 'root' })
 export class ResourceService {
   private readonly api = inject(ApiService);
+  private readonly http = inject(HttpClient);
+  private readonly apiBase = inject(API_BASE_URL);
   private readonly base = '/admin';
 
   list<T>(path: string, params: ListParams = {}): Observable<ListResult<T>> {
@@ -76,6 +80,30 @@ export class ResourceService {
   /** POST /admin/<path> (non-CRUD), e.g. resume/generate. */
   post<T>(path: string, body: Record<string, unknown> = {}): Observable<ApiResponse<T>> {
     return this.api.post<T>(`${this.base}/${path}`, body);
+  }
+
+  /**
+   * GET /admin/<path> as a raw Blob (no JSON envelope), e.g. resume/preview → application/pdf.
+   * ApiService only speaks JSON, so this uses HttpClient with the same credentials context.
+   * Error bodies arrive as Blobs too; `blobError` turns them back into { message, errors }.
+   */
+  getBlob(path: string): Observable<Blob> {
+    return this.http.get(`${this.apiBase}${this.base}/${path}`, {
+      responseType: 'blob',
+      withCredentials: true,
+      context: new HttpContext().set(WITH_CREDENTIALS, true),
+    });
+  }
+
+  /** Parses the JSON envelope out of a failed blob request so `getError` can read it. */
+  async blobError(err: unknown): Promise<unknown> {
+    const body = (err as { error?: unknown } | null)?.error;
+    if (!(body instanceof Blob)) return err;
+    try {
+      return { error: JSON.parse(await body.text()) as unknown };
+    } catch {
+      return err;
+    }
   }
 
   /** Multipart upload; the server converts to WebP and returns { key, url, alt, width, height }. */

@@ -1,10 +1,78 @@
-<section class="grid gap-6">
-  <header>
-    <h1 class="text-2xl font-semibold tracking-[-0.03em] text-heading">Welcome back, {{ name }}</h1>
-    <p class="mt-1 text-sm text-muted">Manage your portfolio content, messages and site settings.</p>
-  </header>
+@if (loading()) {
+  <app-page-loader />
+} @else {
+  <section class="grid gap-6">
+    <header>
+      <h1 class="text-2xl font-semibold tracking-[-0.03em] text-heading">Welcome back, {{ name }}</h1>
+      <p class="mt-1 text-sm text-muted">An overview of your portfolio content and inbox.</p>
+    </header>
 
-  <div class="rounded-2xl border border-border bg-card p-6 shadow-md">
-    <p class="text-sm text-muted">Pick a section from the sidebar to get started.</p>
-  </div>
-</section>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      @for (card of cards(); track card.key) {
+        <a [routerLink]="card.link"
+          class="group rounded-2xl border border-border bg-card p-5 shadow-md transition-colors hover:border-primary">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-xs font-semibold uppercase tracking-wide text-muted">{{ card.label }}</p>
+            <span class="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <i-lucide [name]="card.icon" [size]="18" />
+            </span>
+          </div>
+          <p class="mt-3 text-3xl font-semibold text-heading">
+            {{ card.value === null ? '—' : (card.value | number) }}
+          </p>
+          @if (card.hint) {
+            <p class="mt-1 text-xs text-muted">{{ card.hint }}</p>
+          }
+        </a>
+      }
+    </div>
+
+    <div class="grid grid-cols-12 gap-6">
+      <div class="col-span-12 rounded-2xl border border-border bg-card p-6 shadow-md xl:col-span-8">
+        <div class="mb-4 flex items-center justify-between gap-3">
+          <h2 class="text-base font-semibold text-heading">Recent messages</h2>
+          <a routerLink="/messages" class="text-sm font-medium text-primary hover:underline">View all</a>
+        </div>
+
+        @if (recent().length) {
+          <ul class="divide-y divide-border">
+            @for (m of recent(); track m._id) {
+              <li>
+                <a [routerLink]="['/messages', m._id]"
+                  class="-mx-3 flex items-start justify-between gap-4 rounded-lg px-3 py-3 transition-colors hover:bg-surface-muted">
+                  <div class="min-w-0">
+                    <p class="truncate text-sm" [class.font-semibold]="m.status === 'new'">
+                      {{ m.name || m.email }}
+                      @if (m.status === 'new') {
+                        <span class="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary">New</span>
+                      }
+                    </p>
+                    <p class="mt-0.5 truncate text-xs text-muted">
+                      {{ m.subject || m.message || 'Email only · ' + sourceLabels[m.source] }}
+                    </p>
+                  </div>
+                  <span class="shrink-0 text-xs text-muted">{{ m.createdAt | date: 'MMM d, h:mm a' }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="py-10 text-center text-sm text-muted">No messages yet.</p>
+        }
+      </div>
+
+      <div class="col-span-12 rounded-2xl border border-border bg-card p-6 shadow-md xl:col-span-4">
+        <h2 class="mb-4 text-base font-semibold text-heading">Quick actions</h2>
+        <div class="grid gap-2">
+          @for (q of quickLinks; track q.link) {
+            <a [routerLink]="q.link"
+              class="flex items-center gap-3 rounded-xl border border-border px-4 py-3 text-sm font-medium text-heading transition-colors hover:border-primary hover:text-primary">
+              <i-lucide [name]="q.icon" [size]="18" />
+              {{ q.label }}
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+}

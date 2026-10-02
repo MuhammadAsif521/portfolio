@@ -1,0 +1,271 @@
+@use 'styles/mixins' as m;
+
+// Mobile menu (below lg): full-screen frosted overlay over the page. The top row repeats the header bar
+// so the close button sits exactly where the menu button was; links are big numbered rows, then the CTAs.
+// Colours are theme tokens only, so it follows the active Theme and light/dark mode.
+
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  flex-direction: column;
+  padding-right: var(--scroll-lock-gap, 0px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background:
+    radial-gradient(120% 60% at 50% 45%, var(--primary-soft), transparent 70%),
+    color-mix(in srgb, var(--body-bg) 88%, transparent);
+  color: var(--heading);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  visibility: hidden;
+  opacity: 0;
+
+  @include m.motion-safe {
+    transition:
+      opacity var(--duration-normal) var(--ease-out),
+      visibility 0s linear var(--duration-normal);
+  }
+
+  @include m.up(lg) {
+    display: none;
+  }
+}
+
+:host(.mobile-menu--open) {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+
+.mobile-menu__top {
+  flex: none;
+  padding: 0.75rem var(--container-gutter) 0;
+}
+
+// Same box as .site-nav__bar (mobile), so nothing appears to move when the menu opens.
+.mobile-menu__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: var(--container-max);
+  min-height: var(--header-height);
+  margin-inline: auto;
+  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--band-dark) 94%, transparent);
+  color: var(--band-dark-text);
+  box-shadow: var(--shadow-md);
+}
+
+// Brand mark and close button match the header's (.site-nav__mark / .site-nav__menu-button).
+.mobile-menu__brand {
+  display: inline-flex;
+  align-items: center;
+  margin-right: auto;
+  padding: 0.25rem;
+  border-radius: var(--radius-pill);
+  color: var(--band-dark-text);
+
+  @include m.focus-ring;
+}
+
+.mobile-menu__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.mobile-menu__logo {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
+.mobile-menu__close {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--band-dark-border);
+  border-radius: var(--radius-pill);
+  background: var(--band-dark-raised);
+  color: var(--band-dark-text);
+  cursor: pointer;
+
+  @include m.focus-ring;
+}
+
+.mobile-menu__body {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+  padding: 1.5rem var(--container-gutter) calc(1.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+.mobile-menu__links {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Staggered rise-in, only when motion is allowed (otherwise items are simply there).
+@include m.motion-safe {
+  .mobile-menu__item {
+    opacity: 0;
+    transform: translateY(0.75rem);
+    transition:
+      opacity var(--duration-normal) var(--ease-out),
+      transform var(--duration-normal) var(--ease-out);
+  }
+
+  :host(.mobile-menu--open) .mobile-menu__item {
+    opacity: 1;
+    transform: none;
+    transition-duration: var(--duration-slow);
+    transition-delay: calc(60ms + var(--i, 0) * 40ms);
+  }
+}
+
+.mobile-menu__link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.5rem; // comfortable touch target
+  padding: 0.75rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  color: var(--heading);
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+
+  @include m.up(sm) {
+    font-size: var(--text-2xl);
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--heading) 6%, transparent);
+  }
+
+  @include m.focus-ring;
+
+  &.is-active {
+    border-color: var(--primary-muted);
+    background: var(--primary-soft);
+  }
+}
+
+.mobile-menu__num {
+  flex: none;
+  min-width: 1.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0;
+
+  .is-active & {
+    color: color-mix(in srgb, var(--primary) 65%, var(--heading));
+  }
+}
+
+.mobile-menu__label {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mobile-menu__arrow {
+  display: inline-flex;
+  flex: none;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+
+  .mobile-menu__link:hover & {
+    transform: translateX(0.25rem);
+  }
+
+  .is-active & {
+    color: color-mix(in srgb, var(--primary) 65%, var(--heading));
+  }
+}
+
+.mobile-menu__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.mobile-menu__cta {
+  display: flex;
+  flex: 1 1 9rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--primary);
+  min-height: 3.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: var(--fs-ui);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-md);
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    border-color: var(--primary-hover);
+    background: var(--primary-hover);
+  }
+
+  @include m.focus-ring;
+
+  &--ghost {
+    border-color: var(--border-strong);
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+    color: var(--heading);
+    box-shadow: none;
+
+    &:hover {
+      border-color: var(--primary-muted);
+      background: var(--primary-soft);
+    }
+
+    .mobile-menu__cta-icon {
+      background: var(--primary-soft);
+    }
+  }
+}
+
+.mobile-menu__cta-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--on-primary) 12%, transparent);
+}

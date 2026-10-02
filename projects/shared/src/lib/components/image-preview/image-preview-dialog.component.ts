@@ -16,18 +16,18 @@ export interface ImagePreviewData {
     <mat-dialog-content class="!p-0 dialog-content">
       <div class="relative bg-body/95 w-[95vw] h-[90vh] flex items-center justify-center">
       <button type="button" (click)="close()"
-        class="absolute top-4 right-4 z-10 rounded-full bg-white/10 p-2 hover:bg-white/20 transition-base">
-        <i-lucide name="x" [size]="22" class="text-white"></i-lucide>
+        class="absolute top-4 right-4 z-10 rounded-full bg-heading/10 p-2 hover:bg-heading/20 transition-base">
+        <i-lucide name="x" [size]="22" class="text-heading"></i-lucide>
       </button>
 
       @if (images.length > 1) {
         <button type="button" (click)="prev()"
-          class="absolute left-4 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/10 p-2 hover:bg-white/20 transition-base">
-          <i-lucide name="chevron-left" [size]="26" class="text-white"></i-lucide>
+          class="absolute left-4 top-1/2 -translate-y-1/2 z-10 rounded-full bg-heading/10 p-2 hover:bg-heading/20 transition-base">
+          <i-lucide name="chevron-left" [size]="26" class="text-heading"></i-lucide>
         </button>
         <button type="button" (click)="next()"
-          class="absolute right-4 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/10 p-2 hover:bg-white/20 transition-base">
-          <i-lucide name="chevron-right" [size]="26" class="text-white"></i-lucide>
+          class="absolute right-4 top-1/2 -translate-y-1/2 z-10 rounded-full bg-heading/10 p-2 hover:bg-heading/20 transition-base">
+          <i-lucide name="chevron-right" [size]="26" class="text-heading"></i-lucide>
         </button>
       }
 
@@ -35,7 +35,7 @@ export interface ImagePreviewData {
            class="max-w-full max-h-full object-contain" />
 
       @if (images.length > 1) {
-        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm">
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-muted text-sm">
           {{ activeIndex() + 1 }} / {{ images.length }}
         </div>
       }

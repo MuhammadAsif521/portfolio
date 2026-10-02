@@ -30,7 +30,16 @@ module.exports = {
                 'on-primary': { DEFAULT: color('on-primary'), container: color('form-chip-text') },
                 'on-secondary': color('on-secondary'),
                 'on-accent': color('on-accent'),
-                'on-error': '#ffffff',
+                'on-error': color('on-error'),
+                'on-success': color('on-success'),
+                'on-info': color('on-info'),
+                'on-warning': color('on-warning'),
+                // Text/icons over photos and dark overlays (image preview, media cards); fixed in both modes
+                'on-media': color('on-media'),
+                overlay: token('overlay'),
+                navy: color('navy'),
+                'on-navy': color('on-navy'),
+                paper: color('paper'),
 
                 body: color('body-bg'),
                 'band-a': color('band-a'),

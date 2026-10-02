@@ -4,20 +4,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
-import { environment } from '@shared/environment/environment';
 import { SeoService } from '@shared/services/seo.service';
 import { dayMonthYear } from '../../core/dates';
 import { siteFeature } from '../../core/store/site.feature';
 import { withHeadingIds } from './legal-html';
-import {
-  LEGAL_DEFAULTS_UPDATED,
-  LEGAL_FALLBACKS,
-  LEGAL_ORDER,
-  LEGAL_PAGES,
-  LEGAL_UI,
-  type LegalContext,
-  type LegalKind,
-} from './legal.content';
+import { LEGAL_ORDER, LEGAL_PAGES, LEGAL_UI, type LegalKind } from './legal.content';
 
 /** True when admin HTML has visible text (an editor's empty "<p><br></p>" doesn't count). */
 export function hasText(html: string | undefined | null): html is string {
@@ -27,8 +18,9 @@ export function hasText(html: string | undefined | null): html is string {
 /**
  * /privacy-policy, /terms-and-conditions and /cookie-policy (one component, `kind` from route data).
  *
- * Renders the admin's HTML from Site Settings when present, else the built-in default from ./defaults.
- * Both go through Angular's HTML sanitiser (admin HTML is also sanitised by portfolio-node on save, like
+ * Renders only the policy HTML from Site Settings (cusadmin → Site Settings → Legal); there is no
+ * built-in text. While the field is empty the page shows a short notice and asks search engines not to
+ * index it. The HTML goes through Angular's sanitiser (portfolio-node also sanitises it on save, like
  * blog posts); only then are slug ids added to the <h2>s for the table of contents, which is why the
  * result is marked trusted (the sanitiser itself would strip those ids).
  */
@@ -57,25 +49,18 @@ export class LegalPage {
     LEGAL_ORDER.filter((kind) => kind !== this.page().kind).map((kind) => LEGAL_PAGES[kind]),
   );
 
-  protected readonly email = computed(() => this.settings()?.contactEmail || LEGAL_FALLBACKS.email);
+  protected readonly email = computed(() => this.settings()?.contactEmail?.trim() || null);
 
-  private readonly custom = computed(() => {
+  /** The published policy, or null while the Site Settings field is empty. */
+  private readonly policy = computed(() => {
     const html = this.settings()?.[this.page().settingsKey];
     return hasText(html) ? html : null;
   });
-
-  private readonly context = computed<LegalContext>(() => {
-    const settings = this.settings();
-    return {
-      siteName: this.siteName(),
-      email: this.email(),
-      country: settings?.country?.trim() || LEGAL_FALLBACKS.country,
-      siteUrl: (settings?.domain || environment.siteUrl).replace(/\/+$/, ''),
-    };
-  });
+  protected readonly published = computed(() => this.policy() !== null);
 
   private readonly rendered = computed(() => {
-    const raw = this.custom() ?? this.page().defaultHtml(this.context());
+    const raw = this.policy();
+    if (raw === null) return { html: null, toc: [] };
     const clean = this.sanitizer.sanitize(SecurityContext.HTML, raw) ?? '';
     const { html, toc } = withHeadingIds(clean);
     return { html: this.sanitizer.bypassSecurityTrustHtml(html), toc };
@@ -83,16 +68,19 @@ export class LegalPage {
   protected readonly html = computed(() => this.rendered().html);
   protected readonly toc = computed(() => this.rendered().toc);
 
-  /** Admin-edited policy: when Site Settings last changed. Built-in default: when the template changed. */
-  protected readonly updated = computed(() =>
-    dayMonthYear(this.custom() ? this.settings()?.updatedAt : undefined) ?? dayMonthYear(LEGAL_DEFAULTS_UPDATED),
-  );
+  /** When Site Settings last changed (the API has no per-policy timestamp). */
+  protected readonly updated = computed(() => (this.published() ? dayMonthYear(this.settings()?.updatedAt) : null));
 
   constructor() {
     effect(() => {
       const page = this.page();
       this.seo.updateFromRouteData(
-        { title: page.title, metaDescription: page.metaDescription, robots: 'index, follow' },
+        {
+          title: page.title,
+          metaDescription: page.metaDescription,
+          // An unpublished policy is an empty shell: keep it out of search results until it has text.
+          robots: this.published() ? 'index, follow' : 'noindex, follow',
+        },
         page.path,
       );
       // updateSeo only touches the fields it is given, so this just adds the breadcrumb to the JSON-LD.

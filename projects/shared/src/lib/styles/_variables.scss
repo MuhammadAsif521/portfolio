@@ -51,6 +51,35 @@
   --marquee: #fb6514; // marquee band
   --footer-bg: #272727;
   --glass-border: rgb(255 255 255 / 0.35);
+  --on-navy: #ffffff;
+  --paper: #ffffff; // stays white in dark mode: QR-code quiet zone, PDF/document previews
+  --footer-border: #475467;
+
+  // Colour-mix bases for shading a token darker/lighter: color-mix(in srgb, var(--x) 88%, var(--mix-dark))
+  --mix-dark: #000000;
+  --mix-light: #ffffff;
+
+  // Text, icons and glass drawn over photos, textured dark bands and dark overlays. Fixed, because the
+  // imagery underneath doesn't change with light/dark mode. For translucent white (glass fills, borders,
+  // inactive dots) use color-mix(in srgb, var(--on-media) N%, transparent).
+  --on-media: #ffffff;
+  --media-scrim: rgb(0 0 0 / 0.45); // bottom gradient behind titles on screenshots
+  --media-glass: rgb(60 45 40 / 0.45); // warm frosted panel over project screenshots
+  --media-text-shadow: 0 1px 8px rgb(0 0 0 / 0.25);
+  --media-text-shadow-lg: 0 2px 16px rgb(0 0 0 / 0.25);
+  --band-texture-base: #121212; // under band-texture.webp
+  --band-scrim: rgb(17 17 17 / 0.35); // darkens the texture (services)
+  --band-scrim-strong: rgb(17 17 17 / 0.45); // (testimonials)
+  --band-stack-back: rgb(94 94 94 / 0.7); // service card stacked "screens"
+  --band-stack-mid: rgb(158 157 157 / 0.85);
+  --quote-mark: rgb(20 20 20 / 0.35);
+  --avatar-bg: #98d8ff; // testimonial initials
+  --on-avatar: var(--navy);
+
+  // White input field on a dark band (footer quick-contact)
+  --band-field-bg: #ffffff;
+  --band-field-text: #141414;
+  --band-field-muted: #475467;
 
   // Typography: Outfit (free, OFL — the closest open match to the Figma's licensed Lufga) for everything,
   // Urbanist for the hero headline. Both self-hosted from assets/fonts (styles/_fonts.scss).
@@ -153,6 +182,11 @@
   --warning-soft: color-mix(in srgb, var(--warning) 12%, transparent);
   --success-soft: color-mix(in srgb, var(--success) 12%, transparent);
   --info-soft: color-mix(in srgb, var(--info) 12%, transparent);
+  // Text/icons on a solid status fill (bg-error, bg-success…)
+  --on-error: #ffffff;
+  --on-success: #ffffff;
+  --on-info: #ffffff;
+  --on-warning: #141414;
 
   // Elevation
   --shadow-xs: 0 1px 2px rgb(16 24 40 / 0.05);
@@ -178,6 +212,7 @@
   --form-chip-text: color-mix(in srgb, var(--primary) 72%, #000000);
   --form-chip-summary-bg: var(--surface-muted);
   --form-chip-summary-text: var(--text);
+  --form-toggle-thumb: #ffffff; // switch knob; white on both the off (border) and on (primary) track
 }
 
 // ── Mode layer: dark ─────────────────────────────────────────────────────────
@@ -213,6 +248,11 @@
   --warning: #fdb022;
   --success: #32d583;
   --info: #53b1fd;
+  // Dark-mode status colours are lighter, so near-black reads better on them
+  --on-error: #141414;
+  --on-success: #141414;
+  --on-info: #141414;
+  --on-warning: #141414;
 
   --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.5), 0 1px 2px rgb(0 0 0 / 0.4);

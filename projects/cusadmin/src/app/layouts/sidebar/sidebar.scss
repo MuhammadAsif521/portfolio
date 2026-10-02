@@ -202,7 +202,7 @@ $transition: all 0.25s ease;
   inset: 0;
   z-index: 65;
   border: 0;
-  background: rgba(0, 0, 0, .55);
+  background: var(--overlay);
   backdrop-filter: blur(4px);
 }
 

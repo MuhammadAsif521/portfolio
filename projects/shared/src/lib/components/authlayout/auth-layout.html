@@ -31,7 +31,7 @@
   <aside class="relative hidden overflow-hidden border-l border-border bg-band-dark text-band-dark-text lg:flex lg:flex-col lg:items-center lg:justify-center lg:px-16">
     <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_80%_20%,color-mix(in_srgb,var(--primary)_35%,transparent),transparent_70%)]"></div>
     <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_15%_90%,color-mix(in_srgb,var(--accent)_25%,transparent),transparent_70%)]"></div>
-    <div class="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:44px_44px]"></div>
+    <div class="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:linear-gradient(var(--band-dark-text)_1px,transparent_1px),linear-gradient(90deg,var(--band-dark-text)_1px,transparent_1px)] [background-size:44px_44px]"></div>
 
     <div class="relative z-10 max-w-[560px] text-center">
       <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{{ current.badge }}</p>
@@ -45,7 +45,7 @@
 
       <div class="mt-10 flex items-center justify-center gap-4">
         @for (stat of current.stats; track stat.label) {
-          <div class="min-w-[120px] rounded-xl border border-white/10 px-6 py-5">
+          <div class="min-w-[120px] rounded-xl border border-band-dark-text/10 px-6 py-5">
             <p class="text-2xl font-bold">{{ stat.value }}</p>
             <p class="mt-1 text-[11px] font-semibold uppercase tracking-widest text-band-dark-muted">{{ stat.label }}</p>
           </div>

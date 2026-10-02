@@ -286,9 +286,9 @@
   gap: 0.25rem;
   padding: 0.5rem;
   transform: translateX(-50%);
-  border: 1px solid rgb(255 255 255 / 0.7);
+  border: 1px solid color-mix(in srgb, var(--on-media) 70%, transparent);
   border-radius: var(--radius-pill);
-  background: rgb(255 255 255 / 0.1);
+  background: color-mix(in srgb, var(--on-media) 10%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -300,12 +300,12 @@
   min-height: 3.75rem;
   padding-inline: 1.75rem;
   border-radius: var(--radius-pill);
-  color: #fff;
+  color: var(--on-media);
   font-size: var(--fs-lead);
   font-weight: 400;
   white-space: nowrap;
   text-decoration: none;
-  text-shadow: 0 1px 8px rgb(0 0 0 / 0.25);
+  text-shadow: var(--media-text-shadow);
   transition:
     background-color var(--transition-normal),
     color var(--transition-normal);
@@ -331,9 +331,9 @@
 
 .hero__actions:has(.hero__cta--ghost:is(:hover, :focus-visible)) .hero__cta--primary {
   background: transparent;
-  color: #fff;
+  color: var(--on-media);
   font-weight: 400;
-  text-shadow: 0 1px 8px rgb(0 0 0 / 0.25);
+  text-shadow: var(--media-text-shadow);
 }
 
 // Only the active button shows the arrow.

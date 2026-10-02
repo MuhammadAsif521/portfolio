@@ -9,19 +9,19 @@ import { Component } from "@angular/core";
         <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="chipGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#2d2d2d"></stop>
-              <stop offset="100%" stop-color="#0f0f0f"></stop>
+              <stop offset="0%" style="stop-color: var(--secondary-hover)"></stop>
+              <stop offset="100%" style="stop-color: var(--secondary)"></stop>
             </linearGradient>
 
             <linearGradient id="textGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#eeeeee"></stop>
-              <stop offset="100%" stop-color="#888888"></stop>
+              <stop offset="0%" style="stop-color: var(--on-secondary)"></stop>
+              <stop offset="100%" style="stop-color: color-mix(in srgb, var(--on-secondary) 55%, var(--secondary))"></stop>
             </linearGradient>
 
             <linearGradient id="pinGradient" x1="1" y1="0" x2="0" y2="0">
-              <stop offset="0%" stop-color="#bbbbbb"></stop>
-              <stop offset="50%" stop-color="#888888"></stop>
-              <stop offset="100%" stop-color="#555555"></stop>
+              <stop offset="0%" style="stop-color: var(--border-strong)"></stop>
+              <stop offset="50%" style="stop-color: color-mix(in srgb, var(--on-secondary) 55%, var(--secondary))"></stop>
+              <stop offset="100%" style="stop-color: var(--text-muted)"></stop>
             </linearGradient>
           </defs>
 
@@ -59,9 +59,8 @@ import { Component } from "@angular/core";
             rx="20"
             ry="20"
             fill="url(#chipGradient)"
-            stroke="#222"
             stroke-width="3"
-            filter="drop-shadow(0 0 6px rgba(0,0,0,0.8))"
+            style="stroke: var(--secondary-hover); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--secondary) 80%, transparent))"
           ></rect>
 
           <g>
@@ -90,15 +89,15 @@ import { Component } from "@angular/core";
             Loading
           </text>
 
-          <circle cx="100" cy="100" r="5" fill="black"></circle>
-          <circle cx="80" cy="180" r="5" fill="black"></circle>
-          <circle cx="60" cy="260" r="5" fill="black"></circle>
-          <circle cx="100" cy="350" r="5" fill="black"></circle>
+          <circle cx="100" cy="100" r="5" style="fill: var(--heading)"></circle>
+          <circle cx="80" cy="180" r="5" style="fill: var(--heading)"></circle>
+          <circle cx="60" cy="260" r="5" style="fill: var(--heading)"></circle>
+          <circle cx="100" cy="350" r="5" style="fill: var(--heading)"></circle>
 
-          <circle cx="700" cy="90" r="5" fill="black"></circle>
-          <circle cx="740" cy="160" r="5" fill="black"></circle>
-          <circle cx="720" cy="250" r="5" fill="black"></circle>
-          <circle cx="680" cy="340" r="5" fill="black"></circle>
+          <circle cx="700" cy="90" r="5" style="fill: var(--heading)"></circle>
+          <circle cx="740" cy="160" r="5" style="fill: var(--heading)"></circle>
+          <circle cx="720" cy="250" r="5" style="fill: var(--heading)"></circle>
+          <circle cx="680" cy="340" r="5" style="fill: var(--heading)"></circle>
         </svg>
       </div>
     </div> 
@@ -134,7 +133,7 @@ import { Component } from "@angular/core";
 
 
     .trace-bg {
-      stroke: #333;
+      stroke: var(--border-strong);
       stroke-width: 1.8;
       fill: none;
     }
@@ -189,9 +188,9 @@ import { Component } from "@angular/core";
 
     /* Piny */
     .chip-pin {
-      stroke: #444;
+      stroke: var(--text-subtle);
       stroke-width: 0.5;
-      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
+      filter: drop-shadow(0 0 2px color-mix(in srgb, var(--secondary) 60%, transparent));
     }
   `,
   ],

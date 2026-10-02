@@ -9,16 +9,6 @@ const ID_ATTR = /\sid\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/i;
 
 const ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
 
-/** Escapes text for HTML element content and quoted attribute values. */
-export function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 /** Heading markup → plain text for the TOC (rendered with interpolation, so it is escaped again). */
 export function headingText(markup: string): string {
   return markup

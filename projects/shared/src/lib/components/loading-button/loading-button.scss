@@ -98,9 +98,9 @@ $colors: (
   primary: (var(--primary), var(--on-primary)),
   secondary: (var(--secondary), var(--on-secondary)),
   accent: (var(--accent), var(--on-accent)),
-  warn: (var(--warning), #141414),
-  success: (var(--success), #fff),
-  error: (var(--error), #fff),
+  warn: (var(--warning), var(--on-warning)),
+  success: (var(--success), var(--on-success)),
+  error: (var(--error), var(--on-error)),
   neutral: (var(--surface-muted), var(--heading)),
 );
 
@@ -113,7 +113,7 @@ $colors: (
     color: $text;
 
     &:hover:not(:disabled):not(.btn-loading) {
-      background-color: color-mix(in srgb, #{$fill} 88%, #000);
+      background-color: color-mix(in srgb, #{$fill} 88%, var(--mix-dark));
     }
   }
 

@@ -25,7 +25,7 @@ import { IconComponent } from "@shared/components/icon-component/icon-component"
             <!-- Custom checkbox box -->
             <span class="fc-check" [class.fc-check-active]="isChecked(option.id)">
               @if (isChecked(option.id)) {
-              <i-lucide name="check" color="white" [size]="15"/>
+              <i-lucide name="check" color="on-primary" [size]="15"/>
               }
             </span>
 

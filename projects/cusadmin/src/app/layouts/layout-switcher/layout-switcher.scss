@@ -133,7 +133,7 @@
 
     &:hover {
         background: var(--error);
-        color: #fff;
+        color: var(--on-error);
         transform: rotate(90deg);
     }
 }

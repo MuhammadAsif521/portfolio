@@ -48,7 +48,13 @@ export class IconComponent implements OnChanges {
         warning: 'var(--warning)',
         success: 'var(--success)',
         info: 'var(--info)',
-        white: '#ffffff',
+        'on-secondary': 'var(--on-secondary)',
+        'on-error': 'var(--on-error)',
+        'on-success': 'var(--on-success)',
+        'on-info': 'var(--on-info)',
+        'on-warning': 'var(--on-warning)',
+        'on-media': 'var(--on-media)',
+        white: 'var(--on-media)', // legacy name: white over photos/overlays
     };
 
     ngOnChanges(): void {

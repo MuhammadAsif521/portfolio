@@ -189,11 +189,11 @@ export function createResizableImageWrapper(
 
   const tooltip = document.createElement('span');
   tooltip.style.cssText =
-    'position:absolute;top:-22px;left:0;background:#333;color:#fff;font-size:11px;padding:1px 5px;border-radius:3px;display:none;white-space:nowrap;pointer-events:none;';
+    'position:absolute;top:-22px;left:0;background:var(--secondary);color:var(--on-secondary);font-size:11px;padding:1px 5px;border-radius:3px;display:none;white-space:nowrap;pointer-events:none;';
 
   const handle = document.createElement('span');
   handle.style.cssText =
-    'position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;background:var(--secondary);border:2px solid #fff;border-radius:2px;cursor:se-resize;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.4);';
+    'position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;background:var(--secondary);border:2px solid var(--surface);border-radius:2px;cursor:se-resize;z-index:10;box-shadow:var(--shadow-sm);';
 
   let startX = 0;
   let startW = 0;
@@ -347,6 +347,6 @@ export function isRequiredPlaceholder(key: string, placeholders: RichTextPlaceho
 
 export function flashChip(chip: HTMLElement): void {
   chip.style.outline = '2px solid var(--error)';
-  chip.style.background = 'rgba(var(--error-rgb), 0.1)';
+  chip.style.background = 'var(--error-soft)';
   setTimeout(() => { chip.style.outline = ''; chip.style.background = ''; }, 600);
 }

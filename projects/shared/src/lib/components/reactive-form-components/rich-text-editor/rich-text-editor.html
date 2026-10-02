@@ -197,7 +197,7 @@
           + {{ ph.label }}
           @if (ph.required) {
           <span class="rounded-full px-1.5 py-0.5 text-[9px] font-bold"
-            style="background: var(--warning); color: #fff">REQ</span>
+            style="background: var(--warning); color: var(--on-warning)">REQ</span>
           }
         </button>
         }
@@ -283,7 +283,7 @@
 </div>
 
 @if (showImportModal) {
-<div class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.5)"
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="background: var(--overlay)"
   (click)="closeImportModal()">
   <div class="w-full max-w-2xl rounded-2xl border shadow-xl border-border bg-background" (click)="$event.stopPropagation()">
 
@@ -314,7 +314,7 @@
         Cancel
       </button>
       <button type="button" (click)="confirmImportHtml()"
-        class="rounded-lg px-4 py-1.5 text-xs font-semibold text-white hover:opacity-90 bg-primary">
+        class="rounded-lg px-4 py-1.5 text-xs font-semibold text-on-primary hover:opacity-90 bg-primary">
         Import
       </button>
     </div>

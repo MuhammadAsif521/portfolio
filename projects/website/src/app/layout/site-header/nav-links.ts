@@ -23,3 +23,8 @@ export const NAV_RIGHT: readonly NavLink[] = [
 ];
 
 export const NAV_ALL: readonly NavLink[] = [...NAV_LEFT, ...NAV_RIGHT];
+
+/** Stable key for a nav item ("route:/blog", "section:about"), shared by the desktop nav and the mobile menu. */
+export function navKey(link: NavLink): string {
+  return link.route ? `route:${link.route}` : `section:${link.section ?? ''}`;
+}

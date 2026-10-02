@@ -136,7 +136,7 @@
       <nav aria-label="Legal">
         <ul class="m-0 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-sm">
           @for (link of legalLinks; track link.path) {
-          <li><a class="rounded-xs text-white/70 no-underline transition-colors hover:text-primary focus-visible:shadow-focus focus-visible:outline-none" [routerLink]="link.path">{{ link.label }}</a></li>
+          <li><a class="rounded-xs text-band-dark-text/70 no-underline transition-colors hover:text-primary focus-visible:shadow-focus focus-visible:outline-none" [routerLink]="link.path">{{ link.label }}</a></li>
           }
         </ul>
       </nav>

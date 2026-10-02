@@ -46,6 +46,7 @@
             #menuButton
             type="button"
             class="site-nav__menu-button"
+            aria-haspopup="dialog"
             [attr.aria-expanded]="menuOpen()"
             aria-controls="mobile-menu"
             [attr.aria-label]="menuOpen() ? 'Close menu' : 'Open menu'"
@@ -56,35 +57,9 @@
         </div>
       </div>
     </div>
-
-    <!-- Mobile menu -->
-    <div id="mobile-menu" class="mobile-menu" [class.mobile-menu--open]="menuOpen()" [attr.hidden]="menuOpen() ? null : ''">
-      <ul class="mobile-menu__links">
-        @for (link of all; track link.label; let first = $first) {
-          <li>
-            @if (link.route) {
-              <a class="mobile-menu__link" [class.is-active]="isActive(link)" [routerLink]="link.route" [attr.aria-current]="isActive(link) ? 'page' : null">
-                {{ link.label }}
-              </a>
-            } @else if (first) {
-              <a #firstMenuLink class="mobile-menu__link" [class.is-active]="isActive(link)" routerLink="/" [fragment]="link.section" (click)="onSectionClick($event, link)" [attr.aria-current]="isActive(link) ? 'location' : null">
-                {{ link.label }}
-              </a>
-            } @else {
-              <a class="mobile-menu__link" [class.is-active]="isActive(link)" routerLink="/" [fragment]="link.section" (click)="onSectionClick($event, link)" [attr.aria-current]="isActive(link) ? 'location' : null">
-                {{ link.label }}
-              </a>
-            }
-          </li>
-        }
-      </ul>
-      @if (resumeUrl(); as url) {
-        <a class="site-nav__resume mobile-menu__resume" [href]="url" target="_blank" rel="noopener">
-          Resume <i-lucide name="arrow-up-right" [size]="14" />
-        </a>
-      }
-    </div>
   </nav>
+
+  <app-mobile-menu [open]="menuOpen()" [activeKey]="activeKey()" (closeRequest)="closeMenu()" (sectionClick)="onSectionClick($event.event, $event.link)" />
 </header>
 
 <ng-template #navItem let-link>

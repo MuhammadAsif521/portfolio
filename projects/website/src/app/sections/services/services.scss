@@ -11,14 +11,14 @@
   padding: clamp(3rem, 2rem + 3vw, 5rem) var(--container-gutter) clamp(2.5rem, 1.5rem + 2vw, 3.5rem);
   border-radius: var(--radius-band);
   background:
-    linear-gradient(rgb(17 17 17 / 0.35), rgb(17 17 17 / 0.35)),
-    #121212 url('/assets/images/band-texture.webp') center / cover no-repeat;
+    linear-gradient(var(--band-scrim), var(--band-scrim)),
+    var(--band-texture-base) url('/assets/images/band-texture.webp') center / cover no-repeat;
   color: var(--band-dark-text);
   scroll-margin-top: var(--header-height);
 
   @include m.down(md) {
     background-image:
-      linear-gradient(rgb(17 17 17 / 0.35), rgb(17 17 17 / 0.35)),
+      linear-gradient(var(--band-scrim), var(--band-scrim)),
       url('/assets/images/band-texture-sm.webp');
   }
 }
@@ -129,7 +129,7 @@
   font-weight: 600;
   line-height: var(--leading-tight);
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--band-dark-text);
 }
 
 .services__accent {
@@ -138,7 +138,7 @@
 
 .services__intro {
   margin: 0;
-  color: #fff;
+  color: var(--band-dark-text);
   font-size: var(--text-lg);
   line-height: 1.35;
 
@@ -149,8 +149,8 @@
 
 .service-card {
   --card-radius: 1.5rem;
-  --card-glass: rgb(255 255 255 / 0.42);
-  --card-edge: rgb(255 255 255 / 0.5);
+  --card-glass: color-mix(in srgb, var(--on-media) 42%, transparent);
+  --card-edge: color-mix(in srgb, var(--on-media) 50%, transparent);
   --stack-gap: 1.75rem;
   --notch: clamp(7rem, 4rem + 4vw, 8.5rem); // moved up from media so ::before can use it
 
@@ -196,7 +196,7 @@
   min-height: clamp(4.25rem, 3.5rem + 2vw, 5.5rem);
   margin: 0;
   padding: 0 1.25rem 0 1.75rem;
-  color: #fff;
+  color: var(--band-dark-text);
   font-size: var(--fs-h3);
   font-weight: 500;
   line-height: 1.15;
@@ -222,14 +222,14 @@
   &--back {
     right: 11%;
     left: 11%;
-    background: rgb(94 94 94 / 0.7);
+    background: var(--band-stack-back);
   }
 
   &--mid {
     top: calc(var(--stack-gap) + 1.1rem);
     right: 5.5%;
     left: 5.5%;
-    background: rgb(158 157 157 / 0.85);
+    background: var(--band-stack-mid);
   }
 }
 
@@ -238,7 +238,7 @@
   inset: calc(var(--stack-gap) + 2.2rem) 0 0;
   overflow: hidden;
   border-radius: var(--card-radius) var(--card-radius) 0 var(--card-radius);
-  background: linear-gradient(160deg, #f4ede7 0%, #e6d9ce 100%);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, var(--surface)) 0%, color-mix(in srgb, var(--accent) 26%, var(--surface-muted)) 100%);
 
   @include m.notch;
 }
@@ -260,9 +260,9 @@
   margin: 1.25rem 1.25rem 0;
   padding: 1.25rem 1.25rem 0;
   border-radius: 1rem 1rem 0 0;
-  background: #fff;
-  box-shadow: 0 10px 30px -12px rgb(16 24 40 / 0.35);
-  color: #344054;
+  background: var(--card-bg);
+  box-shadow: var(--shadow-lg);
+  color: var(--text);
 }
 
 .service-card__icon {
@@ -271,7 +271,7 @@
   width: 3rem;
   height: 3rem;
   border-radius: 0.875rem;
-  background: color-mix(in srgb, var(--primary) 16%, #fff);
+  background: color-mix(in srgb, var(--primary) 16%, var(--card-bg));
   color: var(--primary);
 }
 
@@ -300,8 +300,8 @@
 .service-card__chip {
   padding: 0.25rem 0.625rem;
   border-radius: var(--radius-pill);
-  background: #f2f4f7;
-  color: #344054;
+  background: var(--surface-muted);
+  color: var(--text);
   font-size: var(--text-xs);
   font-weight: 500;
 }
@@ -312,7 +312,7 @@
 
   z-index: 1;
   background: var(--navy);
-  color: #fff;
+  color: var(--on-navy);
   transition:
     background-color var(--transition-normal),
     transform var(--transition-normal);

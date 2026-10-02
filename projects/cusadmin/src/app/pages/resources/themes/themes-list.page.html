@@ -28,7 +28,7 @@
 <ng-template #swatchesTpl let-row="row">
   <div class="flex items-center gap-2">
     @for (hex of [row.primary, row.secondary, row.accent]; track $index) {
-      <span class="inline-block h-6 w-6 rounded-full border border-black/10" [style.background]="hex"
+      <span class="inline-block h-6 w-6 rounded-full border border-heading/10" [style.background]="hex"
         [attr.title]="hex"></span>
     }
     <span class="ml-1 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"

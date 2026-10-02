@@ -1,0 +1,58 @@
+<!--
+  Full-screen frosted overlay (below lg). The top row mirrors the header bar, so the close button lands
+  exactly where the menu button was; the links are large numbered rows with an arrow, then the CTAs.
+  The host is the dialog; it stays in the DOM (inert while closed) so it can fade in and out.
+-->
+<div class="mobile-menu__top">
+  <div class="mobile-menu__bar">
+    <a class="mobile-menu__brand" routerLink="/" fragment="home" (click)="sectionClick.emit({ event: $event, link: links[0] })" [attr.aria-label]="siteName() + ', home'">
+      @if (logo(); as image) {
+        <img class="mobile-menu__logo" [src]="image.url" [alt]="''" width="32" height="32" />
+      } @else {
+        <span class="mobile-menu__mark" aria-hidden="true">{{ brand.mark }}</span>
+      }
+    </a>
+    <app-theme-toggle [onDark]="true" />
+    <button #closeButton type="button" class="mobile-menu__close" aria-label="Close menu" (click)="closeRequest.emit()">
+      <i-lucide name="x" [size]="20" />
+    </button>
+  </div>
+</div>
+
+<nav class="mobile-menu__body" aria-label="Main">
+  <ul class="mobile-menu__links">
+    @for (link of links; track link.label; let i = $index) {
+      <li class="mobile-menu__item" [style.--i]="i">
+        @if (link.route) {
+          <a class="mobile-menu__link" [class.is-active]="isActive(link)" [routerLink]="link.route" [attr.aria-current]="isActive(link) ? 'page' : null" (click)="closeRequest.emit()">
+            <ng-container [ngTemplateOutlet]="row" [ngTemplateOutletContext]="{ $implicit: link, index: i }" />
+          </a>
+        } @else {
+          <a class="mobile-menu__link" [class.is-active]="isActive(link)" routerLink="/" [fragment]="link.section" [attr.aria-current]="isActive(link) ? 'location' : null" (click)="sectionClick.emit({ event: $event, link })">
+            <ng-container [ngTemplateOutlet]="row" [ngTemplateOutletContext]="{ $implicit: link, index: i }" />
+          </a>
+        }
+      </li>
+    }
+  </ul>
+
+  <div class="mobile-menu__item mobile-menu__ctas" [style.--i]="links.length">
+    <a class="mobile-menu__cta" routerLink="/" [fragment]="contactLink.section" (click)="sectionClick.emit({ event: $event, link: contactLink })">
+      Hire me
+      <span class="mobile-menu__cta-icon" aria-hidden="true"><i-lucide name="arrow-up-right" [size]="18" /></span>
+    </a>
+    @if (resumeUrl(); as url) {
+      <a class="mobile-menu__cta mobile-menu__cta--ghost" [href]="url" target="_blank" rel="noopener" (click)="closeRequest.emit()">
+        Resume
+        <span class="mobile-menu__cta-icon" aria-hidden="true"><i-lucide name="arrow-up-right" [size]="18" /></span>
+        <span class="sr-only">(opens in a new tab)</span>
+      </a>
+    }
+  </div>
+</nav>
+
+<ng-template #row let-link let-index="index">
+  <span class="mobile-menu__num" aria-hidden="true">{{ number(index) }}</span>
+  <span class="mobile-menu__label">{{ link.label }}</span>
+  <span class="mobile-menu__arrow" aria-hidden="true"><i-lucide name="arrow-right" [size]="20" /></span>
+</ng-template>

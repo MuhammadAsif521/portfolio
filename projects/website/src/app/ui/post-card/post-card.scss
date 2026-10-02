@@ -66,7 +66,7 @@
   @include m.notch-button;
 
   background: var(--navy);
-  color: #fff;
+  color: var(--on-navy);
   transition:
     background-color 250ms var(--ease-out),
     color 250ms var(--ease-out);

@@ -51,7 +51,7 @@
   position: absolute;
   inset: 45% 0 0;
   z-index: 1;
-  background: linear-gradient(to top, rgb(0 0 0 / 0.45), transparent);
+  background: linear-gradient(to top, var(--media-scrim), transparent);
   pointer-events: none;
   transition: opacity var(--transition-normal);
 }
@@ -72,7 +72,7 @@
     backdrop-filter var(--transition-normal);
 
   .project-card:is(:hover, :focus-within) & {
-    background: rgb(60 45 40 / 0.45);
+    background: var(--media-glass);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
   }
@@ -80,12 +80,12 @@
 
 .project-card__title {
   margin: 0;
-  color: #fff;
+  color: var(--on-media);
   font-size: var(--fs-h2);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.02em;
-  text-shadow: 0 2px 16px rgb(0 0 0 / 0.25);
+  text-shadow: var(--media-text-shadow-lg);
   transition: font-size var(--transition-normal);
 
   .project-card:is(:hover, :focus-within) & {
@@ -101,7 +101,7 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   line-clamp: 3;
-  color: #fff;
+  color: var(--on-media);
   font-size: var(--text-base);
   line-height: 1.45;
   opacity: 0;

@@ -17,7 +17,7 @@
   border-radius: 1.25rem 1.25rem 0 0;
 
   background: var(--footer-bg);
-  color: #fff;
+  color: var(--band-dark-text);
 }
 
 .footer__inner {
@@ -43,13 +43,13 @@
   padding-bottom:
     clamp(2.5rem, 0.5rem + 6vw, 6.25rem);
 
-  border-bottom: 1px solid #475467;
+  border-bottom: 1px solid var(--footer-border);
 }
 
 .footer__connect-title {
   margin: 0;
 
-  color: #fff;
+  color: var(--band-dark-text);
 
   font-size: var(--fs-h2);
   font-weight: 600;
@@ -111,7 +111,7 @@
   padding-block:
     clamp(2.5rem, 2rem + 2vw, 4.25rem);
 
-  border-bottom: 1px solid #475467;
+  border-bottom: 1px solid var(--footer-border);
 }
 
 
@@ -140,7 +140,7 @@
 
   gap: 0.75rem;
 
-  color: #fff;
+  color: var(--band-dark-text);
 
   text-decoration: none;
 
@@ -176,7 +176,7 @@
 }
 
 .footer__name {
-  color: #fff;
+  color: var(--band-dark-text);
 
   font-size: var(--fs-h4);
   font-weight: 700;
@@ -192,7 +192,7 @@
 .footer__description {
   max-width: 40rem;
   margin: 1.75rem 0 0;
-  color: #fff;
+  color: var(--band-dark-text);
   font-size: var(--fs-lead);
   line-height: 1.5;
 }
@@ -220,7 +220,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #fff;
+  color: var(--band-dark-text);
   font-size: var(--text-base);
   text-decoration: none;
   overflow-wrap: anywhere;
@@ -264,7 +264,7 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 0.5rem;
-  color: #fff;
+  color: var(--band-dark-text);
 
   transition:
     color var(--transition-normal),
@@ -298,7 +298,7 @@
 .footer__quick-text {
   display: block;
   margin: 0 0 1.5rem;
-  color: rgb(255 255 255 / 70%);
+  color: color-mix(in srgb, var(--band-dark-text) 70%, transparent);
   line-height: 1.5;
 }
 
@@ -314,7 +314,7 @@
   justify-content: space-between;
   gap: 0.5rem 1.5rem;
   padding-top:clamp(1.5rem, 1rem + 2vw, 3.5rem);
-  color: #fff;
+  color: var(--band-dark-text);
   font-size: var(--fs-lead);
 
   p {
@@ -329,7 +329,7 @@
 
 .footer__recaptcha {
   max-width: 34rem;
-  color: rgb(255 255 255 / 70%);
+  color: color-mix(in srgb, var(--band-dark-text) 70%, transparent);
   font-size: var(--text-sm) !important;
   line-height: 1.5;
 
@@ -340,7 +340,7 @@
     transition: color var(--transition-fast);
 
     &:hover {
-      color: #fff;
+      color: var(--band-dark-text);
     }
   }
 }

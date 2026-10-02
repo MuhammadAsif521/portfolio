@@ -24,7 +24,7 @@ export interface PaginationMeta {
   styles: [
     `
       .pager-btn { width: 2.25rem; height: 2.25rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; border: 1px solid var(--border); background: var(--field-bg); color: var(--form-label); transition: background 180ms ease, color 180ms ease, border-color 180ms ease, opacity 180ms ease; }
-      .pager-btn:hover:not(:disabled) { background: var(--secondary); border-color: var(--secondary); color: var(--black); }
+      .pager-btn:hover:not(:disabled) { background: var(--secondary); border-color: var(--secondary); color: var(--on-secondary); }
       .pager-btn:disabled { cursor: not-allowed; opacity: 0.42; }
     `,
   ],
@@ -99,7 +99,7 @@ export class CustomPaginatorComponent implements OnChanges {
     const isActive = page === this.pagination?.currentPage;
 
     return isActive
-      ? `${base} bg-primary border-primary text-black`
+      ? `${base} bg-primary border-primary text-on-primary`
       : `${base} bg-field border-form-control text-form-label hover:bg-muted/10`;
   }
 

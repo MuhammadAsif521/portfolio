@@ -81,7 +81,7 @@ $-notch-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
   @if $size {
     --notch: #{$size};
   }
-  $layers: url('#{$-notch-svg}'), linear-gradient(#000, #000), linear-gradient(#000, #000);
+  $layers: url('#{$-notch-svg}'), linear-gradient(var(--mix-dark), var(--mix-dark)), linear-gradient(var(--mix-dark), var(--mix-dark)); // mask: only alpha matters
   // The two rectangles overlap the corner piece by 1px so no anti-aliased seam shows between layers.
   $sizes: var(--notch, 160px) var(--notch, 160px), calc(100% - var(--notch, 160px) + 1px) 100%,
     100% calc(100% - var(--notch, 160px) + 1px);

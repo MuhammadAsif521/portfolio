@@ -241,74 +241,14 @@
   }
 }
 
-// ── Mobile menu ──
-
-.mobile-menu {
-  margin-top: 0.5rem;
-  padding: 0.75rem;
-  border-radius: var(--radius-xl);
-  background: var(--band-dark);
-  color: var(--band-dark-text);
-  box-shadow: var(--shadow-lg);
-
-  &[hidden] {
-    display: none;
-  }
-
-  @include m.motion-safe {
-    animation: menu-in var(--duration-normal) var(--ease-out);
-  }
-
-  @include m.up(lg) {
-    display: none;
-  }
-}
-
-.mobile-menu__links {
-  display: grid;
-  gap: 0.25rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.mobile-menu__link {
-  display: flex;
-  align-items: center;
-  min-height: 3rem; // comfortable touch target
-  padding-inline: 1rem;
-  border-radius: var(--radius-lg);
-  color: var(--band-dark-text);
-  font-weight: 500;
-
-  &:hover {
-    background: var(--band-dark-raised);
-  }
-
-  &.is-active {
-    background: var(--primary);
-    color: var(--on-primary);
-  }
-}
-
-.mobile-menu__resume {
-  display: inline-flex;
-  margin-top: 0.75rem;
-}
-
-@keyframes menu-in {
-  from {
-    opacity: 0;
-    transform: translateY(-0.5rem);
-  }
-}
+// Mobile menu overlay: see ../mobile-menu/mobile-menu.scss
 
 // ── Wide screens: compact Figma-style bar (68px bar, 52px pills, 16px items) ──
 @include m.up(xl) {
   .site-nav__bar {
     min-height: 4.25rem;
     padding: 0.5rem;
-    background: var(--band-dark); // #171717; stays dark in dark mode too
+    background: var(--band-dark); // stays dark in dark mode too
   }
 
   .site-nav__indicator {
@@ -319,16 +259,16 @@
   .site-nav__link {
     height: 3.25rem;
     padding-inline: 1.125rem;
-    color: #fff;
+    color: var(--band-dark-text);
     font-size: var(--fs-ui);
     font-weight: 400;
     transition:
       color var(--transition-fast),
       background-color var(--transition-fast);
 
-    // Figma hover pill (#535353); the active one keeps the orange indicator.
+    // Figma hover pill (a lighter step of the bar); the active one keeps the primary indicator.
     &:hover:not(.is-active) {
-      background: #535353;
+      background: color-mix(in srgb, var(--band-dark-text) 25%, var(--band-dark));
     }
 
     &.is-active {

@@ -10,13 +10,13 @@
   padding: clamp(3.5rem, 2rem + 5vw, 7.5rem) 0 clamp(3.5rem, 2rem + 5vw, 10rem);
   border-radius: var(--radius-band);
   background:
-    linear-gradient(rgb(17 17 17 / 0.45), rgb(17 17 17 / 0.45)),
-    #121212 url('/assets/images/band-texture.webp') center / cover no-repeat;
-  color: #fff;
+    linear-gradient(var(--band-scrim-strong), var(--band-scrim-strong)),
+    var(--band-texture-base) url('/assets/images/band-texture.webp') center / cover no-repeat;
+  color: var(--band-dark-text);
 
   @include m.down(md) {
     background-image:
-      linear-gradient(rgb(17 17 17 / 0.45), rgb(17 17 17 / 0.45)),
+      linear-gradient(var(--band-scrim-strong), var(--band-scrim-strong)),
       url('/assets/images/band-texture-sm.webp');
   }
 }
@@ -26,7 +26,7 @@
   width: 1.75rem;
   height: 1.75rem;
   fill: none;
-  stroke: #fff;
+  stroke: var(--band-dark-text);
   stroke-width: 1.8;
   stroke-linejoin: round;
 
@@ -64,7 +64,7 @@
   font-weight: 600;
   line-height: 1.3;
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--band-dark-text);
 }
 
 .testimonials__line {
@@ -78,7 +78,7 @@
   width: 2.25rem;
   height: 2.25rem;
   fill: none;
-  stroke: #fff;
+  stroke: var(--band-dark-text);
   stroke-width: 3;
   stroke-linecap: round;
 }
@@ -89,7 +89,7 @@
 
 .testimonials__intro {
   margin: 0;
-  color: #fff;
+  color: var(--band-dark-text);
   font-size: var(--text-lg);
   line-height: 1.35;
 
@@ -121,14 +121,14 @@
   border: 1px solid transparent;
   border-radius: 1.25rem;
   // Figma: translucent white over the texture (the band shows through), blurred.
-  background: rgb(255 255 255 / 0.12);
+  background: color-mix(in srgb, var(--on-media) 12%, transparent);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   transition: border-color var(--transition-normal);
 
   &:hover,
   &:focus-within {
-    border-color: rgb(255 255 255 / 0.45);
+    border-color: color-mix(in srgb, var(--on-media) 45%, transparent);
   }
 }
 
@@ -139,7 +139,7 @@
   right: 1.5rem;
   width: clamp(4rem, 2rem + 6vw, 8.6rem); // Figma: ~110px tall glyph
   height: auto;
-  fill: rgb(20 20 20 / 0.35);
+  fill: var(--quote-mark);
   pointer-events: none;
 }
 
@@ -157,8 +157,8 @@
   width: 3.4rem;
   height: 3.4rem;
   border-radius: 50%;
-  background: #98d8ff;
-  color: #1d2939;
+  background: var(--avatar-bg);
+  color: var(--on-avatar);
   font-weight: 700;
 }
 
@@ -167,14 +167,14 @@
 }
 
 .quote-card__name {
-  color: #fff;
+  color: var(--band-dark-text);
   font-size: var(--fs-h4);
   font-weight: 600;
   line-height: 1.2;
 }
 
 .quote-card__role {
-  color: rgb(255 255 255 / 0.85);
+  color: color-mix(in srgb, var(--band-dark-text) 85%, transparent);
   font-size: var(--text-base);
 }
 
@@ -186,13 +186,13 @@
   color: var(--primary);
 
   .is-off {
-    color: rgb(255 255 255 / 0.35);
+    color: color-mix(in srgb, var(--band-dark-text) 35%, transparent);
   }
 }
 
 .quote-card__score {
   margin-left: 0.5rem;
-  color: #fff;
+  color: var(--band-dark-text);
   font-size: var(--fs-h4);
   font-weight: 500;
 }
@@ -203,7 +203,7 @@
 
   p {
     margin: 0;
-    color: #fff;
+    color: var(--band-dark-text);
     font-size: var(--fs-lead);
     line-height: 1.4;
   }
@@ -214,7 +214,7 @@
   align-items: center;
   gap: 0.25rem;
   align-self: flex-start;
-  color: rgb(255 255 255 / 0.75);
+  color: color-mix(in srgb, var(--band-dark-text) 75%, transparent);
   font-size: var(--text-sm);
   text-decoration: none;
 

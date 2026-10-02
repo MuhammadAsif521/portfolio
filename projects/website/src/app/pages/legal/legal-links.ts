@@ -1,4 +1,4 @@
-// Paths and titles only, so the footer can link the legal pages without bundling their default texts.
+// Paths and titles only, so the footer can link the legal pages without pulling in the page component.
 
 export type LegalKind = 'privacy' | 'terms' | 'cookies';
 

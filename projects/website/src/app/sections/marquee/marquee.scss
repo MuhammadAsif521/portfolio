@@ -17,7 +17,7 @@
   min-height: clamp(5rem, 3rem + 5vw, 8rem);
   overflow: hidden;
   border-radius: 1.25rem;
-  background: var(--marquee);
+  background: var(--secondary);
 }
 
 // The white strip; wider than the band so its tilted ends never show a gap.
@@ -27,8 +27,8 @@
   overflow: hidden; // the track scrolls inside the strip, so the rotation pivot stays centred
   margin-inline: -3%;
   padding-block: clamp(0.25rem, 0.1rem + 0.4vw, 0.5rem);
-  background: #fff;
-  color: #141414;
+  background: var(--on-secondary); // contrasts with the --secondary band behind it
+  color: var(--secondary);
   transform: rotate(-2.5deg);
 }
 

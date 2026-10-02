@@ -42,7 +42,7 @@ let colorfieldUid = 0;
           {{ control.value || placeholder || 'Pick a color' }}
         </span>
 
-        <i-lucide name="palette" color="gray" [size]="18"/>
+        <i-lucide name="palette" color="muted" [size]="18"/>
       </button>
 
       <!-- Color picker panel -->

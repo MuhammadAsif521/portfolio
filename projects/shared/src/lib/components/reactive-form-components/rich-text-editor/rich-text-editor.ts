@@ -117,8 +117,10 @@ export class RichTextEditorComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngAfterViewInit(): void {
-    document.execCommand('styleWithCSS', false, 'true');
-    document.execCommand('defaultParagraphSeparator', false, 'div');
+    // Semantic markup (<b>/<i>/<u>/<strike>, <p> paragraphs) rather than <span style> / <div>: the API's
+    // HTML allowlist drops inline styles and unknown tags, so CSS-based formatting would vanish on save.
+    document.execCommand('styleWithCSS', false, 'false');
+    document.execCommand('defaultParagraphSeparator', false, 'p');
 
     const editor = this.editorRef.nativeElement;
     editor.innerHTML = this.control?.value ? parseHtmlToChips(this.control.value) : '';

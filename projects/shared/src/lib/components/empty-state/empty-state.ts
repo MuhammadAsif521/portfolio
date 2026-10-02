@@ -12,7 +12,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   aria-live="polite"
 >
    <div
-      class="relative w-full max-w-[760px] overflow-hidden rounded-[32px] border border-border bg-field p-6 text-center shadow-[0_18px_60px_rgba(15,23,42,0.08)] sm:px-10 sm:py-12"
+      class="relative w-full max-w-[760px] overflow-hidden rounded-[32px] border border-border bg-field p-6 text-center shadow-md sm:px-10 sm:py-12"
    >
       <!-- Decorative background -->
       <div
@@ -35,16 +35,16 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                      <stop offset="100%" style="stop-color: var(--primary)" />
                   </linearGradient>
                   <linearGradient id="d" x1="0" y1="0" x2="0" y2="1">
-                     <stop offset="0%" stop-color="#33342f" />
-                     <stop offset="100%" stop-color="#232420" />
+                     <stop offset="0%" style="stop-color: var(--surface-muted)"/>
+                     <stop offset="100%" style="stop-color: color-mix(in srgb, var(--surface-muted) 70%, var(--border))"/>
                   </linearGradient>
                   <linearGradient id="b" x1="0" y1="0" x2="0" y2="1">
-                     <stop offset="0%" stop-color="#2a2b27" />
-                     <stop offset="100%" stop-color="#1d1e1b" />
+                     <stop offset="0%" style="stop-color: var(--surface-muted)"/>
+                     <stop offset="100%" style="stop-color: color-mix(in srgb, var(--surface-muted) 60%, var(--border))"/>
                   </linearGradient>
                   <linearGradient id="c" x1="0" y1="0" x2="0" y2="1">
-                     <stop offset="0%" stop-color="#4a4b45" />
-                     <stop offset="100%" stop-color="#3a3b36" />
+                     <stop offset="0%" style="stop-color: var(--border-strong)"/>
+                     <stop offset="100%" style="stop-color: var(--border)"/>
                   </linearGradient>
                   <radialGradient id="a" cx=".5" cy=".5" r=".5">
                      <stop
@@ -64,14 +64,13 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                   cx="240"
                   cy="205"
                   r="138"
-                  stroke="#4a4b45"
                   stroke-width="1.6"
                   stroke-dasharray="5 9"
-                  opacity=".7"
+                  opacity=".7" style="stroke: var(--border-strong)"
                />
                <circle cx="240" cy="67" r="4" style="fill: var(--primary)" />
-               <circle cx="371" cy="252" r="3.5" fill="#5a5b54" />
-               <circle cx="112" cy="266" r="3.5" fill="#5a5b54" />
+               <circle cx="371" cy="252" r="3.5" style="fill: var(--border-strong)"/>
+               <circle cx="112" cy="266" r="3.5" style="fill: var(--border-strong)"/>
                <path
                   d="m96 118 4.5 11 11 4.5-11 4.5-4.5 11-4.5-11-11-4.5 11-4.5z"
                   style="fill: var(--accent)"
@@ -84,14 +83,12 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                />
                <path
                   d="m348 84 2.4 5.8 5.8 2.4-5.8 2.4-2.4 5.8-2.4-5.8-5.8-2.4 5.8-2.4z"
-                  fill="#6a6b63"
-                  opacity=".8"
+                  opacity=".8" style="fill: var(--text-subtle)"
                />
                <path
                   d="M142 176h60a12 12 0 0 1 9.6 4.8l9.8 13a12 12 0 0 0 9.6 4.8h107a14 14 0 0 1 14 14v96a14 14 0 0 1-14 14H156a14 14 0 0 1-14-14z"
                   fill="url(#b)"
-                  stroke="#454641"
-                  stroke-width="1.5"
+                  stroke-width="1.5" style="stroke: var(--border-strong)"
                />
                <g transform="rotate(-4 247 196)">
                   <rect
@@ -101,32 +98,28 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                      height="86"
                      rx="8"
                      fill="url(#c)"
-                     stroke="#55564f"
-                     stroke-width="1.4"
+                     stroke-width="1.4" style="stroke: var(--border-strong)"
                   />
                   <rect
                      x="196"
                      y="184"
                      width="66"
                      height="7"
-                     rx="3.5"
-                     fill="#6b6c64"
+                     rx="3.5" style="fill: var(--text-subtle)"
                   />
                   <rect
                      x="196"
                      y="199"
                      width="96"
                      height="6"
-                     rx="3"
-                     fill="#5b5c55"
+                     rx="3" style="fill: var(--border-strong)"
                   />
                   <rect
                      x="196"
                      y="212"
                      width="80"
                      height="6"
-                     rx="3"
-                     fill="#5b5c55"
+                     rx="3" style="fill: var(--border-strong)"
                   />
                </g>
                <g transform="rotate(5 300 200)">
@@ -136,32 +129,27 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                      width="110"
                      height="76"
                      rx="8"
-                     fill="#43443e"
-                     stroke="#55564f"
-                     stroke-width="1.4"
+                     stroke-width="1.4" style="fill: var(--card-bg); stroke: var(--border-strong)"
                   />
                   <rect
                      x="266"
                      y="188"
                      width="52"
                      height="7"
-                     rx="3.5"
-                     fill="#63645c"
+                     rx="3.5" style="fill: var(--text-subtle)"
                   />
                   <rect
                      x="266"
                      y="203"
                      width="76"
                      height="6"
-                     rx="3"
-                     fill="#565750"
+                     rx="3" style="fill: var(--border-strong)"
                   />
                </g>
                <path
                   d="M132 238a14 14 0 0 1 13.6-10.6h198.8a14 14 0 0 1 13.6 17.4l-19 66a14 14 0 0 1-13.6 10.2H160a14 14 0 0 1-13.6-17.4z"
                   fill="url(#d)"
-                  stroke="#4c4d47"
-                  stroke-width="1.5"
+                  stroke-width="1.5" style="stroke: var(--border-strong)"
                />
                <rect
                   x="196"
@@ -182,10 +170,9 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                />
                <path
                   d="M146 231h198"
-                  stroke="#5a5b54"
                   stroke-width="1.4"
                   stroke-linecap="round"
-                  opacity=".6"
+                  opacity=".6" style="stroke: var(--border-strong)"
                />
                <g transform="rotate(-6 208 116)">
                   <rect
@@ -196,15 +183,14 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                      rx="19"
                      fill="url(#e)"
                   />
-                  <circle cx="172" cy="117" r="7" fill="#1a1a17" />
+                  <circle cx="172" cy="117" r="7" style="fill: var(--on-primary)"/>
                   <rect
                      x="188"
                      y="112"
                      width="62"
                      height="9"
                      rx="4.5"
-                     fill="#1a1a17"
-                     opacity=".85"
+                     opacity=".85" style="fill: var(--on-primary)"
                   />
                </g>
                <g transform="rotate(7 306 96)">
@@ -214,9 +200,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                      width="102"
                      height="34"
                      rx="17"
-                     fill="#2e2f2a"
-                     stroke="#4c4d47"
-                     stroke-width="1.4"
+                     stroke-width="1.4" style="fill: var(--card-bg); stroke: var(--border-strong)"
                   />
                   <circle cx="276" cy="95" r="6" style="fill: var(--primary)" />
                   <rect
@@ -224,15 +208,13 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                      y="91"
                      width="50"
                      height="8"
-                     rx="4"
-                     fill="#6b6c64"
+                     rx="4" style="fill: var(--text-subtle)"
                   />
                </g>
                <g transform="rotate(-12 120 208)">
                   <path
                      d="M104 196h22a6 6 0 0 1 6 6v10a6 6 0 0 1-1.8 4.3l-15 14.6a6 6 0 0 1-8.4 0l-11-11a6 6 0 0 1 0-8.5l14-13.7a6 6 0 0 1 4.2-1.7z"
-                     fill="#2e2f2a"
-                     style="stroke: var(--primary)"
+                     style="stroke: var(--primary); fill: var(--card-bg)"
                      stroke-width="1.8"
                   />
                   <circle cx="122" cy="207" r="3.4" style="fill: var(--primary)" />
@@ -242,8 +224,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
                   cy="336"
                   rx="132"
                   ry="12"
-                  fill="#000"
-                  opacity=".35"
+                  opacity=".35" style="fill: var(--heading)"
                />
             </svg> 
 
@@ -256,7 +237,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
             </h3>
 
             <p
-               class="mx-auto mt-3 max-w-[480px] font-body text-sm leading-7 text-secondary sm:text-[15px]"
+               class="mx-auto mt-3 max-w-[480px] font-body text-sm leading-7 text-muted sm:text-[15px]"
             >
                {{ displayMessage() }}
             </p>

@@ -5,10 +5,10 @@
 //  field (footer) — white field with an orange square send button attached on the right.
 
 :host {
-  --quick-bg: #fff;
-  --quick-border: #eaecf0;
+  --quick-bg: var(--form-control-bg);
+  --quick-border: var(--border);
   --quick-text: var(--ink);
-  --quick-muted: #344054;
+  --quick-muted: var(--text);
 
   display: block;
   width: 100%;
@@ -16,8 +16,9 @@
 }
 
 :host(.is-dark) {
-  --quick-text: #141414;
-  --quick-muted: #475467;
+  --quick-bg: var(--band-field-bg);
+  --quick-text: var(--band-field-text);
+  --quick-muted: var(--band-field-muted);
 }
 
 .quick__pill {
@@ -49,7 +50,7 @@
   width: clamp(2.75rem, 0.5rem + 4vw, 4rem); // Figma: 64px
   height: clamp(2.75rem, 0.5rem + 4vw, 4rem);
   border-radius: 50%;
-  background: color-mix(in srgb, var(--primary) 22%, #fff);
+  background: color-mix(in srgb, var(--primary) 22%, var(--quick-bg));
   color: var(--primary);
 }
 

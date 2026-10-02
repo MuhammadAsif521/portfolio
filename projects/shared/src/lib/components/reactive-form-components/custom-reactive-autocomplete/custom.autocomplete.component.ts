@@ -120,7 +120,7 @@ let autocompleteUid = 0;
                     <button type="button" (click)="remove(user)"
                       class="flex h-3.5 w-3.5 items-center justify-center rounded-full"
                       style="color: var(--form-chip-text)">
-                     <i-lucide name="x" [size]="16" color="coral" />
+                     <i-lucide name="x" [size]="16" color="error" />
                     </button>
                   }
                 </span>

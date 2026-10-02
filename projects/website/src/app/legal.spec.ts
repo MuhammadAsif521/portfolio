@@ -3,7 +3,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { provideMockStore } from '@ngrx/store/testing';
 import { routes } from './app.routes';
-import { LEGAL_DEFAULTS_UPDATED, LEGAL_PAGES } from './pages/legal/legal.content';
+import { LEGAL_PAGES, LEGAL_UI } from './pages/legal/legal.content';
 import { headingText, slugify, withHeadingIds } from './pages/legal/legal-html';
 import { hasText, LegalPage } from './pages/legal/legal-page';
 import type { LegalKind } from './pages/legal/legal-links';
@@ -76,26 +76,33 @@ describe('LegalPage', () => {
     ]);
   });
 
-  it('renders the built-in privacy policy with a TOC, contact box and SEO', () => {
-    const { el } = render('privacy');
+  const PRIVACY =
+    '<p>Intro with <a href="/cookie-policy">cookies</a>.</p>' +
+    '<h2>Who I am</h2><p>Contact <a href="mailto:hello@example.com">hello@example.com</a>.</p>' +
+    '<h2>What data I collect</h2><h3>Contact form</h3><ul><li><strong>Name</strong></li></ul>' +
+    '<h2>Your rights</h2><p>See <a href="https://policies.google.com/privacy">Google</a>.</p>';
+
+  it('renders the Site Settings policy with a TOC, settings date, contact box, cross-links and SEO', () => {
+    const { el } = render('privacy', { privacyPolicy: PRIVACY });
     expect(el.querySelector('h1')?.textContent?.trim()).toBe('Privacy Policy');
 
     const headings = Array.from(el.querySelectorAll('.legal-content h2'));
-    expect(headings.length).toBeGreaterThan(8);
-    expect(headings.every((h) => /^[a-z0-9-]+$/.test(h.id))).toBe(true);
+    expect(headings.map((h) => h.id)).toEqual(['who-i-am', 'what-data-i-collect', 'your-rights']);
 
     const tocLinks = Array.from(el.querySelectorAll<HTMLAnchorElement>('nav[aria-labelledby="legal-toc-title"] a'));
-    expect(tocLinks.length).toBe(headings.length);
-    expect(tocLinks[0]!.getAttribute('href')).toBe(`/privacy-policy#${headings[0]!.id}`);
+    expect(tocLinks.map((a) => a.getAttribute('href'))).toEqual([
+      '/privacy-policy#who-i-am',
+      '/privacy-policy#what-data-i-collect',
+      '/privacy-policy#your-rights',
+    ]);
 
-    const content = el.querySelector('.legal-content')!.innerHTML;
-    expect(content).toContain('https://policies.google.com/privacy');
-    expect(content).toContain('https://policies.google.com/terms');
-    expect(content).toContain('hello@example.com');
+    const content = el.querySelector('.legal-content')!;
+    expect(content.querySelector('h3')?.textContent).toBe('Contact form');
+    expect(content.innerHTML).toContain('https://policies.google.com/privacy');
+    expect(el.querySelector('[data-testid="legal-empty"]')).toBeNull();
 
-    // Default content: the template's own date, not Site Settings updatedAt.
-    expect(el.querySelector('header time')?.getAttribute('datetime')).toBe(LEGAL_DEFAULTS_UPDATED);
-    expect(el.querySelector<HTMLAnchorElement>('a[href="mailto:hello@example.com"]')).not.toBeNull();
+    expect(el.querySelector('header time')?.getAttribute('datetime')).toBe('2026-09-20');
+    expect(el.querySelector<HTMLAnchorElement>('aside a[href="mailto:hello@example.com"]')).not.toBeNull();
 
     const related = Array.from(el.querySelectorAll('nav[aria-labelledby="legal-related-title"] a')).map((a) =>
       a.getAttribute('href'),
@@ -110,21 +117,17 @@ describe('LegalPage', () => {
     expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toMatch(/\/privacy-policy$/);
   });
 
-  it('lists the real cookies and storage keys in the cookie policy', () => {
-    const { el } = render('cookies');
-    const text = el.querySelector('.legal-table')?.textContent ?? '';
-    for (const name of ['public_session_token', 'public-session-expires-at', 'theme-preference', '_GRECAPTCHA']) {
-      expect(text).toContain(name);
-    }
-    expect(el.querySelectorAll('.legal-table tbody tr').length).toBe(4);
+  it('keeps tables from the admin HTML', () => {
+    const { el } = render('cookies', {
+      cookiePolicy:
+        '<h2>Cookies</h2><table><thead><tr><th scope="col">Name</th></tr></thead>' +
+        '<tbody><tr><td>theme-preference</td></tr></tbody></table>',
+    });
+    expect(el.querySelector('.legal-content table th')?.getAttribute('scope')).toBe('col');
+    expect(el.querySelector('.legal-content table td')?.textContent).toBe('theme-preference');
   });
 
-  it('uses the settings country for governing law', () => {
-    const { el } = render('terms', { country: 'Norway' });
-    expect(el.querySelector('.legal-content')?.textContent).toContain('governed by the laws of Norway');
-  });
-
-  it('prefers the admin HTML (sanitised) and dates it from Site Settings', () => {
+  it('sanitises the admin HTML', () => {
     const { el } = render('cookies', {
       cookiePolicy: '<h2>Our cookies</h2><p>Custom text</p><script>alert(1)</script><img src="x" onerror="alert(1)">',
     });
@@ -133,11 +136,29 @@ describe('LegalPage', () => {
     expect(content.innerHTML).not.toContain('<script');
     expect(content.innerHTML).not.toContain('onerror');
     expect(content.querySelector('h2')?.id).toBe('our-cookies');
-    expect(el.querySelector('header time')?.getAttribute('datetime')).toBe('2026-09-20');
   });
 
-  it('falls back to the default when the admin field is empty editor markup', () => {
-    const { el } = render('terms', { termsAndConditions: '<p><br></p>' });
-    expect(el.querySelector('.legal-content')?.textContent).toContain('Intellectual property');
+  for (const [kind, settings] of [
+    ['terms', {}],
+    ['terms', { termsAndConditions: '<p><br></p>' }],
+    ['cookies', { cookiePolicy: '' }],
+  ] as const) {
+    it(`shows a neutral empty state and noindex when ${kind} is ${JSON.stringify(settings)}`, () => {
+      const { el } = render(kind, settings);
+      expect(el.querySelector('.legal-content')).toBeNull();
+      const empty = el.querySelector('[data-testid="legal-empty"]');
+      expect(empty?.textContent).toContain(LEGAL_UI.emptyText);
+      expect(el.querySelector('nav[aria-labelledby="legal-toc-title"]')).toBeNull();
+      expect(el.querySelector('header time')).toBeNull();
+      expect(TestBed.inject(Meta).getTag('name="robots"')?.content).toBe('noindex, follow');
+      // No built-in policy text sneaks back in.
+      expect(el.textContent).not.toContain('Intellectual property');
+      expect(el.querySelectorAll('nav[aria-labelledby="legal-related-title"] a').length).toBe(2);
+    });
+  }
+
+  it('hides the contact box when Site Settings has no email', () => {
+    const { el } = render('privacy', { privacyPolicy: PRIVACY, contactEmail: undefined });
+    expect(el.querySelector('aside[aria-labelledby="legal-contact-title"]')).toBeNull();
   });
 });

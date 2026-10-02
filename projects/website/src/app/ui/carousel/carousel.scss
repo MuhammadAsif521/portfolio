@@ -114,9 +114,9 @@
   }
 
   .carousel__nav--on-dark & {
-    border-color: rgb(255 255 255 / 0.4);
-    background: rgb(255 255 255 / 0.08);
-    color: #fff;
+    border-color: color-mix(in srgb, var(--band-dark-text) 40%, transparent);
+    background: color-mix(in srgb, var(--band-dark-text) 8%, transparent);
+    color: var(--band-dark-text);
   }
 
   .carousel__nav--on-dark &:hover:not(:disabled) {
@@ -152,7 +152,7 @@
   }
 
   .carousel__dots--on-dark &:not(.is-active) {
-    background: rgb(255 255 255 / 0.3);
+    background: color-mix(in srgb, var(--band-dark-text) 30%, transparent);
   }
 }
 

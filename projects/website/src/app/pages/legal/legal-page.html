@@ -74,26 +74,42 @@
       }
 
       <div class="min-w-0">
-        <!-- Sanitised by Angular before the TOC ids are added (see LegalPage). -->
-        <article class="legal-content prose max-w-[72ch] break-words" [innerHTML]="html()"></article>
-
-        <!-- Contact -->
-        <aside class="mt-12 flex max-w-[72ch] flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-xs sm:flex-row sm:items-center sm:justify-between sm:p-8"
-          aria-labelledby="legal-contact-title">
-          <div class="flex min-w-0 items-start gap-4">
+        @if (html(); as content) {
+          <!-- Sanitised by Angular before the TOC ids are added (see LegalPage). -->
+          <article class="legal-content prose max-w-[72ch] break-words" [innerHTML]="content"></article>
+        } @else {
+          <!-- The Site Settings field is empty (the page is also noindex). -->
+          <section class="flex max-w-[72ch] items-start gap-4 rounded-2xl border border-dashed border-border bg-surface p-6 sm:p-8"
+            aria-labelledby="legal-empty-title" data-testid="legal-empty">
             <span class="inline-grid h-11 w-11 shrink-0 place-items-center rounded-pill bg-primary-soft text-primary" aria-hidden="true">
-              <i-lucide name="mail" [size]="20" />
+              <i-lucide name="file-clock" [size]="20" />
             </span>
             <div class="min-w-0">
-              <h2 id="legal-contact-title" class="m-0 text-lg font-semibold text-heading">{{ ui.contactTitle }}</h2>
-              <p class="mb-0 mt-1 text-muted">{{ ui.contactText }}</p>
+              <h2 id="legal-empty-title" class="m-0 text-lg font-semibold text-heading">{{ ui.emptyTitle }}</h2>
+              <p class="mb-0 mt-1 text-muted">{{ ui.emptyText }}</p>
             </div>
-          </div>
-          <a class="inline-flex max-w-full shrink-0 items-center justify-center gap-2 rounded-pill bg-primary px-5 py-3 font-semibold text-on-primary no-underline transition-colors hover:bg-primary-hover focus-visible:shadow-focus focus-visible:outline-none [overflow-wrap:anywhere]"
-            [href]="'mailto:' + email()">
-            {{ email() }}
-          </a>
-        </aside>
+          </section>
+        }
+
+        <!-- Contact (only when Site Settings has an email) -->
+        @if (email(); as mail) {
+          <aside class="mt-12 flex max-w-[72ch] flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-xs sm:flex-row sm:items-center sm:justify-between sm:p-8"
+            aria-labelledby="legal-contact-title">
+            <div class="flex min-w-0 items-start gap-4">
+              <span class="inline-grid h-11 w-11 shrink-0 place-items-center rounded-pill bg-primary-soft text-primary" aria-hidden="true">
+                <i-lucide name="mail" [size]="20" />
+              </span>
+              <div class="min-w-0">
+                <h2 id="legal-contact-title" class="m-0 text-lg font-semibold text-heading">{{ ui.contactTitle }}</h2>
+                <p class="mb-0 mt-1 text-muted">{{ ui.contactText }}</p>
+              </div>
+            </div>
+            <a class="inline-flex max-w-full shrink-0 items-center justify-center gap-2 rounded-pill bg-primary px-5 py-3 font-semibold text-on-primary no-underline transition-colors hover:bg-primary-hover focus-visible:shadow-focus focus-visible:outline-none [overflow-wrap:anywhere]"
+              [href]="'mailto:' + mail">
+              {{ mail }}
+            </a>
+          </aside>
+        }
 
         <!-- Other policies -->
         <nav class="mt-10 max-w-[72ch]" aria-labelledby="legal-related-title">

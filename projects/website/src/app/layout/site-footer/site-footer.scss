@@ -167,7 +167,8 @@
 }
 
 .footer__logo-img {
-  width: 2.875rem;
+  width: auto;
+  max-width: 10rem;
   height: 2.875rem;
 
   flex: 0 0 auto;

@@ -84,9 +84,11 @@
   letter-spacing: 0.02em;
 }
 
+// Same sizing as .site-nav__logo-img: fixed height, natural width.
 .mobile-menu__logo {
-  width: 2rem;
-  height: 2rem;
+  width: auto;
+  max-width: 8rem;
+  height: 2.25rem;
   object-fit: contain;
 }
 

@@ -18,7 +18,7 @@
 
       <a class="site-nav__brand" routerLink="/" fragment="home" (click)="onSectionClick($event, left[0])" [attr.aria-label]="siteName() + ', home'">
         @if (logo(); as image) {
-          <img class="site-nav__logo-img" [src]="image.url" [alt]="''" width="32" height="32" />
+          <img class="site-nav__logo-img" [src]="image.url" [alt]="''" [attr.width]="image.width || 32" [attr.height]="image.height || 32" />
         } @else {
           <span class="site-nav__mark" aria-hidden="true">{{ brand.mark }}</span>
         }

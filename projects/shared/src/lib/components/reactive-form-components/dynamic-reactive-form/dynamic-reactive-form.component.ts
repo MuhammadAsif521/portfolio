@@ -337,10 +337,10 @@ export class DynamicReactiveFormComponent implements OnInit, OnChanges {
       state: place.state?.name ?? '',
       country: place.country?.name ?? '',
       zipCode: place.zipCode ?? '',
-      coordinates: {
-        lat: place.coordinates?.lat ?? null,
-        lng: place.coordinates?.lng ?? null,
-      },
+      // coordinates: {
+      //   lat: place.coordinates?.lat ?? null,
+      //   lng: place.coordinates?.lng ?? null,
+      // },
     });
 
     this.markGroupValid(this.formGroup);

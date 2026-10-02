@@ -49,6 +49,16 @@
                 "glob": "llm.txt",
                 "input": "projects/website/src",
                 "output": "/"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "projects/website/src",
+                "output": "/"
+              },
+              {
+                "glob": "site.webmanifest",
+                "input": "projects/website/src",
+                "output": "/"
               }
             ],
             "styles": [

@@ -7,7 +7,7 @@
   <div class="mobile-menu__bar">
     <a class="mobile-menu__brand" routerLink="/" fragment="home" (click)="sectionClick.emit({ event: $event, link: links[0] })" [attr.aria-label]="siteName() + ', home'">
       @if (logo(); as image) {
-        <img class="mobile-menu__logo" [src]="image.url" [alt]="''" width="32" height="32" />
+        <img class="mobile-menu__logo" [src]="image.url" [alt]="''" [attr.width]="image.width || 32" [attr.height]="image.height || 32" />
       } @else {
         <span class="mobile-menu__mark" aria-hidden="true">{{ brand.mark }}</span>
       }

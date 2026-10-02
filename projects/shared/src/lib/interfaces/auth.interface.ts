@@ -67,6 +67,8 @@ export interface SiteSettings extends Timestamped {
   siteSlogan?: string;
   description?: string;
   siteLogo?: AssetImage;
+  /** Square browser-tab icon (WebP, like every upload). */
+  favicon?: AssetImage;
   ogImage?: AssetImage;
   resume?: ResumeFile;
   contactEmail?: string;

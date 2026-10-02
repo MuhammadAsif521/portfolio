@@ -63,6 +63,8 @@ export interface SiteSettingsSeoInput {
   /** Default share image (absolute URL), used when a page has no ogImage of its own. */
   ogImage?: string;
   logo?: string;
+  /** Browser-tab / home-screen icon (absolute URL). Replaces the static icons shipped in index.html. */
+  favicon?: string;
   contactEmail?: string;
   phoneNumber?: string;
   address?: string;
@@ -150,8 +152,9 @@ export class SeoService {
   private readonly siteUrl = environment.siteUrl.replace(/\/+$/, '');
   private defaultDescription =
     'Building scalable, production Angular & Node systems — from multi-tenant platforms to e-commerce and real-time apps.';
-  // No invented fallback image: without a site or page ogImage, image tags are simply omitted.
-  private defaultImage = '';
+  /** Committed brand share image (projects/shared/src/lib/assets/images); Site Settings' ogImage replaces it. */
+  static readonly STATIC_OG_IMAGE = '/assets/images/og-default.jpg';
+  private defaultImage = SeoService.STATIC_OG_IMAGE;
 
   private renderer: Renderer2 = this.rendererFactory.createRenderer(null, null);
 
@@ -208,6 +211,7 @@ export class SeoService {
     if (input.siteName?.trim()) this.siteName = input.siteName.trim();
     if (input.description?.trim()) this.defaultDescription = input.description.trim();
     if (input.ogImage) this.defaultImage = input.ogImage;
+    this.applySiteIcons(input.favicon);
     this.applySiteVerification(input.googleSiteVerification);
     this.applyOrganizationSchema(input);
   }
@@ -220,6 +224,34 @@ export class SeoService {
       url: this.buildUrl(url),
       mainEntity: { '@id': this.personId },
     };
+  }
+
+  /**
+   * Points the tab icon and the apple-touch-icon at the Site Settings favicon. Without one, the static
+   * set in index.html (favicon.ico, assets/favicon/*) stays as is. The static icon links are removed when
+   * a favicon is set: browsers choose among all rel="icon" links by size and type, not by order, so
+   * leaving them would let the bundled icon win over the admin's.
+   */
+  applySiteIcons(favicon?: string): void {
+    if (!favicon) return;
+    const href = this.absoluteUrl(favicon);
+    const type = /\.webp(\?|$)/i.test(href) ? 'image/webp' : /\.png(\?|$)/i.test(href) ? 'image/png' : undefined;
+    const head = this.document.head;
+    head
+      .querySelectorAll('link[rel="icon"]:not([data-site-icon]), link[rel="apple-touch-icon"]:not([data-site-icon])')
+      .forEach((link) => link.remove());
+
+    for (const rel of ['icon', 'apple-touch-icon']) {
+      let link = head.querySelector<HTMLLinkElement>(`link[rel="${rel}"][data-site-icon]`);
+      if (!link) {
+        link = this.renderer.createElement('link') as HTMLLinkElement;
+        this.renderer.setAttribute(link, 'rel', rel);
+        this.renderer.setAttribute(link, 'data-site-icon', '');
+        this.renderer.appendChild(head, link);
+      }
+      this.renderer.setAttribute(link, 'href', href);
+      if (rel === 'icon' && type) this.renderer.setAttribute(link, 'type', type);
+    }
   }
 
   private applySiteVerification(id?: string): void {

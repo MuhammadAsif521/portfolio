@@ -171,9 +171,11 @@
   letter-spacing: 0.02em;
 }
 
+// Fixed height, natural width: fits a square mark or a horizontal lockup.
 .site-nav__logo-img {
-  width: 2rem;
-  height: 2rem;
+  width: auto;
+  max-width: 8rem;
+  height: 2.25rem;
   object-fit: contain;
 }
 
@@ -276,9 +278,13 @@
     }
   }
 
-  .site-nav__mark,
-  .site-nav__logo-img {
+  .site-nav__mark {
     width: 2.625rem;
+    height: 2.625rem;
+  }
+
+  .site-nav__logo-img {
+    max-width: 9.5rem;
     height: 2.625rem;
   }
 

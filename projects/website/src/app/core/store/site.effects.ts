@@ -38,6 +38,7 @@ export const applySettings = createEffect(
           description: settings.description,
           ogImage: settings.ogImage?.url,
           logo: settings.siteLogo?.url,
+          favicon: settings.favicon?.url,
           contactEmail: settings.contactEmail,
           phoneNumber: settings.phoneNumber,
           address: settings.address,

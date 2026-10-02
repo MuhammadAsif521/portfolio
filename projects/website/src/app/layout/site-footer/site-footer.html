@@ -24,7 +24,7 @@
         <!-- Logo + Name -->
         <a class="footer__logo" routerLink="/" fragment="home" [attr.aria-label]="siteName() + ', home'">
           @if (logo(); as image) {
-          <img class="footer__logo-img" [src]="image.url" alt="" width="32" height="32" loading="lazy" />
+          <img class="footer__logo-img" [src]="image.url" alt="" [attr.width]="image.width || 32" [attr.height]="image.height || 32" loading="lazy" />
           } @else {
           <span class="footer__mark" aria-hidden="true">
             {{ mark }}

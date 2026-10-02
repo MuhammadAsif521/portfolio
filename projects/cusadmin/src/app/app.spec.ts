@@ -145,6 +145,83 @@ describe('login page', () => {
   });
 });
 
+describe('login page with two-factor authentication', () => {
+  async function renderLogin(returnUrl?: string) {
+    const ctx = setup();
+    const nav = ctx.router.navigateByUrl(returnUrl ? `/login?returnUrl=${encodeURIComponent(returnUrl)}` : '/login');
+    await tick();
+    ctx.http.expectOne(`${API}/auth/me`).flush({ code: 'UNAUTHENTICATED' }, { status: 401, statusText: 'Unauthorized' });
+    await nav;
+    const fixture = TestBed.createComponent(AdminLoginPage);
+    await fixture.whenStable();
+    return { ...ctx, fixture, page: fixture.componentInstance };
+  }
+
+  async function passwordStep(ctx: Awaited<ReturnType<typeof renderLogin>>) {
+    ctx.page.form.setValue({ email: 'asif@example.com', password: 'correct horse battery' });
+    ctx.page.submit();
+    await tick();
+    ctx.http
+      .expectOne(`${API}/auth/login`)
+      .flush({ status: true, message: 'Enter the code', data: { mfaRequired: true, mfaToken: 'mfa-ticket' } });
+    await tick();
+    ctx.fixture.detectChanges();
+  }
+
+  it('asks for a code without signing in, then auto-submits six digits and follows returnUrl', async () => {
+    const ctx = await renderLogin('/projects');
+    await passwordStep(ctx);
+    expect(ctx.page.step()).toBe('mfa');
+    expect(ctx.store.selectSignal(selectProfileUser)()).toBeNull();
+
+    const input = (ctx.fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>('#mfa-code')!;
+    expect(input.getAttribute('inputmode')).toBe('numeric');
+    expect(input.getAttribute('autocomplete')).toBe('one-time-code');
+    input.value = '12 34 56';
+    input.dispatchEvent(new Event('input'));
+    await tick();
+
+    const req = ctx.http.expectOne(`${API}/auth/mfa/verify`);
+    expect(req.request.body).toEqual({ mfaToken: 'mfa-ticket', code: '123456' });
+    req.flush({ status: true, message: 'Signed in', data: { user, expiresIn: 43200 } });
+    await tick();
+    expect(ctx.store.selectSignal(selectProfileUser)()).toEqual(user);
+    expect(ctx.router.url).toBe('/projects');
+  });
+
+  it('can use a recovery code instead', async () => {
+    const ctx = await renderLogin();
+    await passwordStep(ctx);
+    ctx.page.toggleRecoveryCode();
+    ctx.page.recoveryCode.setValue('abcd-2345');
+    ctx.page.verify();
+    const req = ctx.http.expectOne(`${API}/auth/mfa/verify`);
+    expect(req.request.body).toEqual({ mfaToken: 'mfa-ticket', recoveryCode: 'abcd-2345' });
+  });
+
+  it('stays on the code step for a wrong code and goes back to sign in when the step expired', async () => {
+    const ctx = await renderLogin();
+    await passwordStep(ctx);
+    ctx.page.code.setValue('000000');
+    ctx.page.verify();
+    ctx.http
+      .expectOne(`${API}/auth/mfa/verify`)
+      .flush({ code: 'INVALID_MFA_CODE', message: 'Invalid verification code' }, { status: 401, statusText: 'Unauthorized' });
+    await tick();
+    expect(ctx.page.step()).toBe('mfa');
+    expect(ctx.router.url).toBe('/login');
+
+    ctx.page.code.setValue('111111');
+    ctx.page.verify();
+    ctx.http
+      .expectOne(`${API}/auth/mfa/verify`)
+      .flush({ code: 'TOKEN_EXPIRED' }, { status: 401, statusText: 'Unauthorized' });
+    await tick();
+    expect(ctx.page.step()).toBe('password');
+    expect(ctx.page.form.controls.password.value).toBe('');
+  });
+});
+
 describe('shell', () => {
   it('renders the grouped sidebar with the AP mark and the signed-in admin', async () => {
     const { store } = setup();

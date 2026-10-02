@@ -1,0 +1,200 @@
+<section class="grid gap-6">
+  <header>
+    <h1 class="text-2xl font-semibold tracking-[-0.03em] text-heading">My profile</h1>
+    <p class="mt-1 text-sm text-muted">
+      Manage your account details, password and two-factor authentication.
+      @if (user()?.lastLoginAt) {
+        Last sign-in {{ user()!.lastLoginAt | date: 'medium' }}.
+      }
+      @if (user()?.createdAt) {
+        Account created {{ user()!.createdAt | date: 'mediumDate' }}.
+      }
+    </p>
+  </header>
+
+  <!-- Account details -->
+  <div class="rounded-2xl border border-border bg-card p-6 shadow-md">
+    <div class="mb-5">
+      <h2 class="text-base font-semibold text-heading">Account details</h2>
+      <p class="mt-1 text-sm text-muted">Your name is shown in the admin panel. Changing your email needs your current password.</p>
+    </div>
+    <form [formGroup]="accountForm" (ngSubmit)="saveAccount()" novalidate>
+      <div class="grid grid-cols-12 items-start gap-4">
+        @for (field of accountFields; track field.name) {
+          <div [class]="field.colClass || 'col-span-12'">
+            <app-dynamic-reactive-form [config]="field" [formGroup]="accountForm" [level]="0" />
+          </div>
+        }
+        @if (emailChanged()) {
+          <div [class]="accountPasswordField.colClass">
+            <app-dynamic-reactive-form [config]="accountPasswordField" [formGroup]="accountForm" [level]="0" />
+          </div>
+        }
+      </div>
+      <div class="mt-5 flex justify-end">
+        <app-loading-button buttonText="Save details" type="submit" color="primary" radius="small"
+          [loading]="savingAccount()" [disabled]="savingAccount()" />
+      </div>
+    </form>
+  </div>
+
+  <!-- Change password -->
+  <div class="rounded-2xl border border-border bg-card p-6 shadow-md">
+    <div class="mb-5">
+      <h2 class="text-base font-semibold text-heading">Change password</h2>
+      <p class="mt-1 text-sm text-muted">Use at least 12 characters. Other devices are signed out; this one stays signed in.</p>
+    </div>
+    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+      <div class="grid grid-cols-12 items-start gap-4">
+        @for (field of passwordFields; track field.name) {
+          <div [class]="field.colClass || 'col-span-12'">
+            <app-dynamic-reactive-form [config]="field" [formGroup]="passwordForm" [level]="0" />
+          </div>
+        }
+      </div>
+      <div class="mt-5 flex justify-end">
+        <app-loading-button buttonText="Change password" type="submit" color="primary" radius="small"
+          [loading]="savingPassword()" [disabled]="savingPassword()" />
+      </div>
+    </form>
+  </div>
+
+  <!-- Two-factor authentication -->
+  <div class="rounded-2xl border border-border bg-card p-6 shadow-md">
+    <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h2 class="flex items-center gap-2 text-base font-semibold text-heading">
+          <i-lucide name="shield-check" [size]="18" />
+          Two-factor authentication
+        </h2>
+        <p class="mt-1 text-sm text-muted">
+          Ask for a code from an authenticator app (Google Authenticator, 1Password, Authy…) after your password.
+        </p>
+      </div>
+      <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
+        [class]="mfaEnabled() ? 'bg-success/15 text-success' : 'bg-surface-muted text-muted'">
+        {{ mfaEnabled() ? 'Enabled' : 'Off' }}
+      </span>
+    </div>
+
+    @switch (mfaView()) {
+      @case ('setup') {
+        @if (setup(); as s) {
+          <div class="grid gap-6 md:grid-cols-[auto_1fr]">
+            <img [src]="s.qrDataUrl" alt="QR code to add this account to your authenticator app" width="200" height="200"
+              class="rounded-xl border border-border bg-white p-2" />
+            <div class="grid content-start gap-4">
+              <ol class="list-decimal space-y-1 pl-5 text-sm text-muted">
+                <li>Scan the QR code with your authenticator app.</li>
+                <li>Or enter this key manually (time-based, 6 digits):</li>
+              </ol>
+              <code class="block select-all break-all rounded-xl bg-surface-muted px-4 py-3 font-mono text-sm tracking-wider text-heading">{{ s.secret }}</code>
+              <div>
+                <label for="mfa-enable-code" class="mb-1.5 block text-[0.875rem] font-[600] uppercase text-muted">Code from the app</label>
+                <input id="mfa-enable-code" type="text" [formControl]="enableCode" (input)="onEnableCodeInput()"
+                  (keydown.enter)="$event.preventDefault(); enable()" inputmode="numeric" autocomplete="one-time-code"
+                  pattern="[0-9]*" maxlength="6" placeholder="123456"
+                  class="code-input w-full max-w-xs rounded-xl border px-4 py-3 text-center font-mono text-xl tracking-[0.4em]" />
+                @if (enableCode.touched && enableCode.invalid) {
+                  <p class="mt-1.5 text-xs text-error">Enter the 6 digits shown in your app.</p>
+                }
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <app-loading-button buttonText="Enable" color="primary" radius="small"
+                  [loading]="mfaBusy() === 'enable'" [disabled]="!!mfaBusy()" (btnClick)="enable()" />
+                <app-loading-button buttonText="Cancel" variant="stroked" color="neutral" radius="small"
+                  [disabled]="!!mfaBusy()" (btnClick)="cancelSetup()" />
+              </div>
+            </div>
+          </div>
+        }
+      }
+
+      @case ('codes') {
+        <div class="grid gap-4">
+          <div class="rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-heading">
+            Save these recovery codes somewhere safe. Each one signs you in once if you lose your authenticator.
+            <strong>They will not be shown again.</strong>
+          </div>
+          <ul class="grid grid-cols-2 gap-2 rounded-xl bg-surface-muted p-4 font-mono text-sm text-heading sm:grid-cols-5"
+            aria-label="Recovery codes">
+            @for (code of recoveryCodes(); track code) {
+              <li class="select-all">{{ code }}</li>
+            }
+          </ul>
+          <div class="flex flex-wrap gap-3">
+            <app-loading-button buttonText="Copy" icon="copy" variant="stroked" color="primary" radius="small"
+              (btnClick)="copyCodes()" />
+            <app-loading-button buttonText="Download .txt" icon="download" variant="stroked" color="primary"
+              radius="small" (btnClick)="downloadCodes()" />
+          </div>
+          <label class="flex items-center gap-2 text-sm text-heading">
+            <input type="checkbox" [formControl]="savedConfirmed" class="size-4 accent-primary" />
+            I've saved these recovery codes
+          </label>
+          <div>
+            <app-loading-button buttonText="Done" color="primary" radius="small" [disabled]="!savedConfirmed.value"
+              (btnClick)="confirmCodesSaved()" />
+          </div>
+        </div>
+      }
+
+      @default {
+        @if (!mfaEnabled()) {
+          <app-loading-button buttonText="Set up two-factor authentication" icon="shield-plus" color="primary"
+            radius="small" [loading]="mfaBusy() === 'setup'" [disabled]="!!mfaBusy()" (btnClick)="startSetup()" />
+        } @else {
+          <div class="grid gap-5">
+            <div class="flex flex-wrap gap-3">
+              <app-loading-button buttonText="Regenerate recovery codes" icon="key-round" variant="stroked"
+                color="primary" radius="small" [disabled]="!!mfaBusy()"
+                (btnClick)="showRegenerate.set(!showRegenerate()); showDisable.set(false)" />
+              <app-loading-button buttonText="Disable" icon="shield-off" variant="stroked" color="error" radius="small"
+                [disabled]="!!mfaBusy()" (btnClick)="showDisable.set(!showDisable()); showRegenerate.set(false)" />
+            </div>
+
+            @if (showRegenerate()) {
+              <div class="grid gap-3 rounded-xl border border-border p-4">
+                <p class="text-sm text-muted">Your current recovery codes stop working. Confirm with a code from your app.</p>
+                <div>
+                  <label for="mfa-regenerate-code" class="mb-1.5 block text-[0.875rem] font-[600] uppercase text-muted">Authenticator or recovery code</label>
+                  <input id="mfa-regenerate-code" type="text" [formControl]="regenerateCode"
+                    (keydown.enter)="$event.preventDefault(); regenerate()" autocomplete="one-time-code" maxlength="9"
+                    placeholder="123456"
+                    class="code-input w-full max-w-xs rounded-xl border px-4 py-3 font-mono text-base tracking-[0.2em]" />
+                  @if (regenerateCode.touched && regenerateCode.invalid) {
+                    <p class="mt-1.5 text-xs text-error">Enter a 6-digit code or a recovery code.</p>
+                  }
+                </div>
+                <div>
+                  <app-loading-button buttonText="Generate new codes" color="primary" radius="small"
+                    [loading]="mfaBusy() === 'regenerate'" [disabled]="!!mfaBusy()" (btnClick)="regenerate()" />
+                </div>
+              </div>
+            }
+
+            @if (showDisable()) {
+              <form [formGroup]="disableForm" (ngSubmit)="disable()" novalidate
+                class="grid gap-3 rounded-xl border border-error/30 p-4">
+                <p class="text-sm text-muted">
+                  Signing in will need only your password again. Other devices are signed out.
+                </p>
+                <div class="grid grid-cols-12 items-start gap-4">
+                  @for (field of disableFields; track field.name) {
+                    <div [class]="field.colClass || 'col-span-12'">
+                      <app-dynamic-reactive-form [config]="field" [formGroup]="disableForm" [level]="0" />
+                    </div>
+                  }
+                </div>
+                <div>
+                  <app-loading-button buttonText="Disable two-factor authentication" type="submit" color="error"
+                    radius="small" [loading]="mfaBusy() === 'disable'" [disabled]="!!mfaBusy()" />
+                </div>
+              </form>
+            }
+          </div>
+        }
+      }
+    }
+  </div>
+</section>

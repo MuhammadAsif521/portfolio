@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 // Brief, Part 4: "/" is the single scrollable page; /projects/:slug, /blog and /blog/:slug are the
-// only other routes.
+// only other content routes, plus the three legal pages.
 export const routes: Routes = [
   {
     path: '',
@@ -19,6 +19,23 @@ export const routes: Routes = [
   {
     path: 'blog/:slug',
     loadComponent: () => import('./pages/blog-post/blog-post').then((m) => m.BlogPostPage),
+  },
+  // Legal pages: one lazy component, admin HTML from Site Settings or a built-in default. Server-rendered
+  // like everything else (see app.routes.server.ts), so admin edits show without a redeploy.
+  {
+    path: 'privacy-policy',
+    loadComponent: () => import('./pages/legal/legal-page').then((m) => m.LegalPage),
+    data: { kind: 'privacy' },
+  },
+  {
+    path: 'terms-and-conditions',
+    loadComponent: () => import('./pages/legal/legal-page').then((m) => m.LegalPage),
+    data: { kind: 'terms' },
+  },
+  {
+    path: 'cookie-policy',
+    loadComponent: () => import('./pages/legal/legal-page').then((m) => m.LegalPage),
+    data: { kind: 'cookies' },
   },
   { path: '**', redirectTo: '' },
 ];

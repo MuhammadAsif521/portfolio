@@ -7,7 +7,8 @@ import { ProfileActions } from '@cusadmin/store/profile/profile.actions';
 
 /** Session codes after which the cookie is gone (portfolio-node clears it): sign in again. */
 const SESSION_ENDED = new Set(['UNAUTHENTICATED', 'TOKEN_EXPIRED', 'TOKEN_INVALID']);
-const AUTH_PATHS = ['/auth/login', '/auth/me', '/auth/logout'];
+// /auth/mfa/verify runs before there is a session: its TOKEN_* errors mean the sign-in step expired.
+const AUTH_PATHS = ['/auth/login', '/auth/mfa/verify', '/auth/me', '/auth/logout'];
 
 /**
  * Sends the httpOnly session cookie on every call. portfolio-node has no refresh token, so when an admin

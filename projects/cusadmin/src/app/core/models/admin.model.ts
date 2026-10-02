@@ -5,6 +5,8 @@ export interface AdminUser {
   name?: string;
   role: 'admin';
   isActive: boolean;
+  /** TOTP two-factor sign-in is on (secrets and recovery codes are never sent). */
+  mfaEnabled?: boolean;
   lastLoginAt?: string;
   createdAt?: string;
   updatedAt?: string;

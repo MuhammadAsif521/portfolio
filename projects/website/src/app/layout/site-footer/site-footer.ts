@@ -8,6 +8,7 @@ import { siteFeature } from '../../core/store/site.feature';
 import { QuickContact } from '../../ui/quick-contact/quick-contact';
 import { SocialIcon } from '../../ui/social-icon/social-icon';
 import { HERO_CONTENT } from '@website/content/hero.content';
+import { LEGAL_LINKS, LEGAL_ORDER } from '../../pages/legal/legal-links';
 
 const SAFE_LINK = /^(https?:|mailto:)/i;
 
@@ -46,4 +47,8 @@ export class SiteFooter {
     (this.settings()?.socialLinks ?? []).filter((link) => link.label?.trim() && SAFE_LINK.test(link.value ?? '')),
   );
   protected readonly mark = BRAND_CONTENT.mark;
+  protected readonly legalLinks = LEGAL_ORDER.map((kind) => ({
+    path: LEGAL_LINKS[kind].path,
+    label: LEGAL_LINKS[kind].title,
+  }));
 }

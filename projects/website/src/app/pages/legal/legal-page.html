@@ -1,0 +1,116 @@
+@let p = page();
+<div class="bg-band-a text-text">
+  <!-- Hero -->
+  <header class="border-b border-border bg-band-b px-gutter pb-10 pt-6 sm:pb-14 sm:pt-8">
+    <div class="mx-auto w-full max-w-container">
+      <nav aria-label="Breadcrumb">
+        <ol class="m-0 flex list-none flex-wrap items-center gap-2 p-0 text-sm text-muted">
+          <li>
+            <a class="rounded-xs text-muted no-underline transition-colors hover:text-primary focus-visible:shadow-focus focus-visible:outline-none"
+              routerLink="/">{{ ui.breadcrumbHome }}</a>
+          </li>
+          <li aria-hidden="true" class="text-subtle">/</li>
+          <li aria-current="page" class="text-heading">{{ p.title }}</li>
+        </ol>
+      </nav>
+
+      <span class="mt-8 inline-flex items-center gap-2 rounded-pill bg-primary-soft px-3 py-1 text-sm font-medium text-on-primary-container">
+        <i-lucide [name]="p.kind === 'cookies' ? 'cookie' : p.kind === 'terms' ? 'scroll-text' : 'shield-check'" [size]="16" aria-hidden="true" />
+        Legal
+      </span>
+
+      <h1 class="mb-0 mt-4 font-heading text-4xl font-semibold leading-tight tracking-tight text-heading sm:text-5xl">
+        {{ p.title }}
+      </h1>
+      <p class="mb-0 mt-4 max-w-[60ch] text-lg leading-relaxed text-muted">{{ p.lead }}</p>
+
+      @if (updated(); as u) {
+        <p class="mb-0 mt-6 inline-flex flex-wrap items-center gap-2 text-sm text-muted">
+          <i-lucide name="calendar-clock" [size]="16" aria-hidden="true" />
+          <span>{{ ui.updatedLabel }}: <time class="font-medium text-heading" [attr.datetime]="u.iso">{{ u.label }}</time></span>
+        </p>
+      }
+    </div>
+  </header>
+
+  <div class="mx-auto w-full max-w-container px-gutter py-10 sm:py-14">
+    <div class="grid grid-cols-1 gap-10 lg:gap-16" [class]="toc().length ? 'lg:grid-cols-[15rem_minmax(0,1fr)]' : ''">
+      <!-- Table of contents -->
+      @if (toc().length) {
+        <aside class="min-w-0">
+          <!-- Small screens: collapsible, closed by default so the policy starts right away. -->
+          <details class="group rounded-xl border border-border bg-card lg:hidden">
+            <summary
+              class="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-3 font-semibold text-heading focus-visible:shadow-focus focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+              {{ ui.tocTitle }}
+              <i-lucide class="transition-transform group-open:rotate-180" name="chevron-down" [size]="18" aria-hidden="true" />
+            </summary>
+            <nav class="border-t border-border px-4 py-3" [attr.aria-label]="p.title + ': ' + ui.tocTitle">
+              <ol class="m-0 grid list-none gap-1 p-0">
+                @for (item of toc(); track item.id) {
+                  <li>
+                    <a class="block rounded-sm py-1.5 text-sm text-text no-underline hover:text-primary focus-visible:shadow-focus focus-visible:outline-none"
+                      [attr.href]="p.path + '#' + item.id" (click)="jump($event, item.id)">{{ item.label }}</a>
+                  </li>
+                }
+              </ol>
+            </nav>
+          </details>
+
+          <!-- lg+: sticky beside the text. -->
+          <nav class="hidden lg:sticky lg:top-[calc(var(--header-height)+2rem)] lg:block lg:max-h-[calc(100vh-var(--header-height)-4rem)] lg:overflow-y-auto"
+            [attr.aria-labelledby]="'legal-toc-title'">
+            <p id="legal-toc-title" class="mb-3 mt-0 text-xs font-semibold uppercase tracking-wider text-muted">{{ ui.tocTitle }}</p>
+            <ol class="m-0 grid list-none gap-0.5 border-l border-border p-0">
+              @for (item of toc(); track item.id) {
+                <li>
+                  <a class="-ml-px block border-l-2 border-transparent py-1.5 pl-4 text-sm leading-snug text-muted no-underline transition-colors hover:border-primary hover:text-heading focus-visible:shadow-focus focus-visible:outline-none"
+                    [attr.href]="p.path + '#' + item.id" (click)="jump($event, item.id)">{{ item.label }}</a>
+                </li>
+              }
+            </ol>
+          </nav>
+        </aside>
+      }
+
+      <div class="min-w-0">
+        <!-- Sanitised by Angular before the TOC ids are added (see LegalPage). -->
+        <article class="legal-content prose max-w-[72ch] break-words" [innerHTML]="html()"></article>
+
+        <!-- Contact -->
+        <aside class="mt-12 flex max-w-[72ch] flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-xs sm:flex-row sm:items-center sm:justify-between sm:p-8"
+          aria-labelledby="legal-contact-title">
+          <div class="flex min-w-0 items-start gap-4">
+            <span class="inline-grid h-11 w-11 shrink-0 place-items-center rounded-pill bg-primary-soft text-primary" aria-hidden="true">
+              <i-lucide name="mail" [size]="20" />
+            </span>
+            <div class="min-w-0">
+              <h2 id="legal-contact-title" class="m-0 text-lg font-semibold text-heading">{{ ui.contactTitle }}</h2>
+              <p class="mb-0 mt-1 text-muted">{{ ui.contactText }}</p>
+            </div>
+          </div>
+          <a class="inline-flex max-w-full shrink-0 items-center justify-center gap-2 rounded-pill bg-primary px-5 py-3 font-semibold text-on-primary no-underline transition-colors hover:bg-primary-hover focus-visible:shadow-focus focus-visible:outline-none [overflow-wrap:anywhere]"
+            [href]="'mailto:' + email()">
+            {{ email() }}
+          </a>
+        </aside>
+
+        <!-- Other policies -->
+        <nav class="mt-10 max-w-[72ch]" aria-labelledby="legal-related-title">
+          <h2 id="legal-related-title" class="mb-4 mt-0 text-xs font-semibold uppercase tracking-wider text-muted">{{ ui.related }}</h2>
+          <ul class="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
+            @for (other of related(); track other.kind) {
+              <li>
+                <a class="group flex h-full items-center justify-between gap-3 rounded-xl border border-border bg-surface px-5 py-4 font-medium text-heading no-underline transition-colors hover:border-primary focus-visible:shadow-focus focus-visible:outline-none"
+                  [routerLink]="other.path">
+                  {{ other.title }}
+                  <i-lucide class="text-primary transition-transform group-hover:translate-x-0.5" name="arrow-right" [size]="18" aria-hidden="true" />
+                </a>
+              </li>
+            }
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>

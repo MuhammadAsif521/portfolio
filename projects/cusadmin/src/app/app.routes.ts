@@ -59,15 +59,49 @@ export const routes: Routes = [
       },
       {
         path: 'experience',
-        loadComponent: () =>
-          import('./pages/resources/experience/experience-list.page').then((m) => m.ExperienceListPage),
-        data: { title: 'Experience' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/resources/experience/experience-list.page').then((m) => m.ExperienceListPage),
+            data: { title: 'Experience' },
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('./pages/resources/experience/experience-form.page').then((m) => m.ExperienceFormPage),
+            data: { title: 'Add Experience' },
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import('./pages/resources/experience/experience-form.page').then((m) => m.ExperienceFormPage),
+            data: { title: 'Edit Experience' },
+          },
+        ],
       },
       {
         path: 'testimonials',
-        loadComponent: () =>
-          import('./pages/resources/testimonials/testimonials-list.page').then((m) => m.TestimonialsListPage),
-        data: { title: 'Testimonials' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/resources/testimonials/testimonials-list.page').then((m) => m.TestimonialsListPage),
+            data: { title: 'Testimonials' },
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('./pages/resources/testimonials/testimonials-form.page').then((m) => m.TestimonialsFormPage),
+            data: { title: 'Add Testimonial' },
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import('./pages/resources/testimonials/testimonials-form.page').then((m) => m.TestimonialsFormPage),
+            data: { title: 'Edit Testimonial' },
+          },
+        ],
       },
       {
         path: 'messages',
@@ -99,6 +133,11 @@ export const routes: Routes = [
         path: 'resume',
         loadComponent: () => import('./pages/resume/resume.page').then((m) => m.ResumePage),
         data: { title: 'Resume' },
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./pages/profile/profile.page').then((m) => m.ProfilePage),
+        data: { title: 'My Profile' },
       },
       { path: '**', redirectTo: '' },
     ],

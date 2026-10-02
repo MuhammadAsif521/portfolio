@@ -58,9 +58,9 @@ export class PhoneInputComponent implements ControlValueAccessor, Validator, Aft
   placeholder = input<string>('');
   required = input<boolean>(false);
   showError = input<boolean>(true);
-  initialCountry = input<string>('us');
-  preferredCountries = input<string[]>(['us']);
-  onlyCountries = input<string[]>(['us']);
+  initialCountry = input<string>('pk');
+  preferredCountries = input<string[]>(['pk']);
+  onlyCountries = input<string[]>(['pk']);
 
   // ── @Input for template / dynamic form usage (like checkbox) ───────
   @Input() controlName!: string;
@@ -69,9 +69,9 @@ export class PhoneInputComponent implements ControlValueAccessor, Validator, Aft
   @Input() requiredInput: boolean = false;
   @Input() disableInput: boolean = false;
   @Input() showErrorInput: boolean = true;
-  @Input() initialCountryInput: string = 'us';
-  @Input() preferredCountriesInput: string[] = ['us'];
-  @Input() onlyCountriesInput: string[] = ['us'];
+  @Input() initialCountryInput: string = 'pk';
+  @Input() preferredCountriesInput: string[] = ['pk'];
+  @Input() onlyCountriesInput: string[] = ['pk'];
 
   isFocused = signal(false);
   isDisabled = signal(false);
@@ -177,7 +177,7 @@ export class PhoneInputComponent implements ControlValueAccessor, Validator, Aft
   // when the digits match a known number-plan template, so garbage input (e.g. all zeros)
   // is left as a plain, unbounded digit string. This always re-applies the separator layout
   // from the current example-number placeholder positionally, and hard-caps the digit count
-  // to that placeholder's digit slots (e.g. 10 for US), regardless of whether the typed
+  // to that placeholder's digit slots (e.g. 10 for pk), regardless of whether the typed
   // digits form a plausible number.
   private _applyPhoneMask(): void {
     if (!this._iti || !this._utilsReady) return;

@@ -1,19 +1,14 @@
 import { AfterViewInit, Component, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog';
 import { PaginationMeta } from '@shared/components/custom-paginator/custom-paginator';
 import { CustomTableComponent, SortEvent, TableAction, TableColumn } from '@shared/components/custom-table/custom-table';
 import { LoadingButtonComponent } from '@shared/components/loading-button/loading-button';
-import type { FormFieldConfig } from '@shared/components/reactive-form-components/dynamic-reactive-form/dynamic-reactive-form.component';
 import type { Testimonial } from '@shared/interfaces/public-api.interface';
 import { ToastService } from '@shared/services/toast.service';
 import { getError } from '@shared/utils/get-error.util';
 import { ResourceService } from '@cusadmin/services/resource.service';
-import { toPayload } from '@cusadmin/pages/resources/_shared/resource-io';
-import {
-  ResourceFormDialogComponent,
-  ResourceFormDialogData,
-} from '@cusadmin/pages/resources/resource-form-dialog/resource-form-dialog';
 
 const PATH = 'testimonials';
 
@@ -28,45 +23,7 @@ const SOURCE_OPTIONS = [
   { name: 'Other', id: 'other' },
 ];
 
-const RATING_OPTIONS = [
-  { name: 'No rating', id: '' },
-  ...[5, 4, 3, 2, 1].map((n) => ({ name: `${'★'.repeat(n)} (${n})`, id: n })),
-];
-
-/** portfolio-node PATCH accepts null for these (clears them). */
-const NULLABLE = ['role', 'company', 'rating', 'sourceUrl'] as const;
-
-const FIELDS: FormFieldConfig[] = [
-  { name: 'name', label: 'Client name', type: 'text', required: true, maxLength: 80, colClass: 'col-span-12 md:col-span-6' },
-  { name: 'role', label: 'Role', type: 'text', maxLength: 80, colClass: 'col-span-12 md:col-span-6' },
-  { name: 'company', label: 'Company', type: 'text', maxLength: 120, colClass: 'col-span-12 md:col-span-6' },
-  { name: 'source', label: 'Source', type: 'dropdown', options: SOURCE_OPTIONS, required: true, defaultValue: 'client', colClass: 'col-span-12 md:col-span-6' },
-  {
-    name: 'quote',
-    label: 'Quote',
-    type: 'textarea',
-    rows: 4,
-    required: true,
-    minLength: 10,
-    maxLength: 600,
-    placeholder: "Paste the client's exact words (real quotes only, never rewritten or invented)",
-    colClass: 'col-span-12',
-  },
-  { name: 'rating', label: 'Rating', type: 'dropdown', options: RATING_OPTIONS, defaultValue: '', colClass: 'col-span-12 md:col-span-6' },
-  {
-    name: 'sourceUrl',
-    label: 'Source link',
-    type: 'url',
-    maxLength: 500,
-    pattern: '^https?://.+',
-    placeholder: 'https://… (where the quote can be verified)',
-    colClass: 'col-span-12 md:col-span-6',
-  },
-  { name: 'order', label: 'Order', type: 'number', defaultValue: 0, colClass: 'col-span-12 md:col-span-6' },
-  { name: 'showOnWebsite', label: 'Show on website', type: 'single-checkbox', defaultValue: true, colClass: 'col-span-12 md:col-span-6' },
-];
-
-/** Testimonials (simple resource): sortable list, create/edit in ResourceFormDialog, delete with confirm. */
+/** Testimonials (simple resource): sortable list, create/edit on the testimonials form page, delete with confirm. */
 @Component({
   selector: 'app-testimonials-list',
   standalone: true,
@@ -77,6 +34,7 @@ export class TestimonialsListPage implements OnInit, AfterViewInit {
   private readonly svc = inject(ResourceService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
 
   readonly columns: TableColumn[] = [
     { key: 'name', label: 'Client', width: 'w-48' },
@@ -156,12 +114,12 @@ export class TestimonialsListPage implements OnInit, AfterViewInit {
   }
 
   onAction({ action, row }: { action: string; row: AdminTestimonial }): void {
-    if (action === 'edit') this.openForm(row);
+    if (action === 'edit') void this.router.navigate(['/testimonials', row._id, 'edit']);
     if (action === 'delete') this.confirmDelete(row);
   }
 
   add(): void {
-    this.openForm();
+    void this.router.navigate(['/testimonials', 'new']);
   }
 
   truncate(text: unknown, max = 90): string {
@@ -176,53 +134,6 @@ export class TestimonialsListPage implements OnInit, AfterViewInit {
 
   sourceLabel(id: unknown): string {
     return SOURCE_OPTIONS.find((o) => o.id === id)?.name ?? String(id ?? '—');
-  }
-
-  private openForm(row?: AdminTestimonial): void {
-    const mode = row ? 'update' : 'create';
-    const data: ResourceFormDialogData = {
-      title: row ? 'Edit testimonial' : 'Add testimonial (real client quote)',
-      submitLabel: row ? 'Save changes' : 'Add Testimonial',
-      fields: FIELDS,
-      value: row
-        ? {
-            name: row.name,
-            role: row.role ?? '',
-            company: row.company ?? '',
-            source: row.source,
-            quote: row.quote,
-            rating: row.rating ?? '',
-            sourceUrl: row.sourceUrl ?? '',
-            order: row.order ?? 0,
-            showOnWebsite: row.showOnWebsite ?? true,
-          }
-        : undefined,
-      onSubmit: (value) => {
-        const rating = value['rating'] === '' || value['rating'] == null ? '' : Number(value['rating']);
-        const body = toPayload(
-          {
-            ...value,
-            rating,
-            order: Number(value['order'] ?? 0),
-            showOnWebsite: !!value['showOnWebsite'],
-          },
-          mode,
-          { nullable: NULLABLE },
-        );
-        return row
-          ? this.svc.update<AdminTestimonial>(PATH, row._id, body)
-          : this.svc.create<AdminTestimonial>(PATH, body);
-      },
-    };
-
-    this.dialog
-      .open(ResourceFormDialogComponent, { data, autoFocus: false, width: '720px', maxWidth: '95vw' })
-      .afterClosed()
-      .subscribe((res: { message?: string } | null | undefined) => {
-        if (!res) return;
-        this.toast.success(res.message || (row ? 'Testimonial updated' : 'Testimonial added'));
-        this.fetch();
-      });
   }
 
   private confirmDelete(row: AdminTestimonial): void {

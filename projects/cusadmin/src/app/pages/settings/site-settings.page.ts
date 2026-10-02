@@ -116,7 +116,7 @@ export class SiteSettingsPage implements OnInit {
         {
           name: 'phoneNumber',
           label: 'Phone number',
-          type: 'text',
+          type: 'tel',
           placeholder: '+1 555 123 4567',
           pattern: '^\\+?[0-9\\s\\-()]{7,20}$',
           colClass: half,

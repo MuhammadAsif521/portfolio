@@ -135,15 +135,17 @@ export class CustomTableComponent {
     }
 
     getActionClass(color?: string): string {
+        // Icon always visible in its colour; hover fills the circle with that colour and turns the icon white.
+        // 'secondary' (edit) uses the heading colour, since the brand secondary is near-black and vanishes in dark mode.
         const map: Record<string, string> = {
-            primary: 'text-primary hover:bg-primary hover:text-black',
-            secondary: 'text-secondary hover:bg-secondary hover:text-white',
-            info: 'text-info hover:bg-info hover:text-black',
-            success: 'text-success hover:bg-success hover:text-white',
-            error: 'text-error hover:bg-error hover:text-white',
+            primary: 'text-primary hover:border-primary hover:bg-primary hover:text-white',
+            secondary: 'text-heading hover:border-heading hover:bg-heading hover:text-card',
+            info: 'text-info hover:border-info hover:bg-info hover:text-white',
+            success: 'text-success hover:border-success hover:bg-success hover:text-white',
+            error: 'text-error hover:border-error hover:bg-error hover:text-white',
         };
 
-        return map[color ?? ''];
+        return map[color ?? ''] ?? map['secondary'];
     }
 
     isActionHidden(action: TableAction, row: any): boolean {

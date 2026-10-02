@@ -1,21 +1,74 @@
 <app-auth-layout mode="login">
-  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <div class="mb-7">
-      <h1 class="mt-2 text-3xl font-semibold tracking-[-0.05em] text-heading">
-        Admin <span class="text-primary">Login</span>
-      </h1>
-      <p class="mt-2 text-sm leading-6 text-muted">Sign in to manage your portfolio content and site settings.</p>
-    </div>
+  @if (step() === 'password') {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="mb-7">
+        <h1 class="mt-2 text-3xl font-semibold tracking-[-0.05em] text-heading">
+          Admin <span class="text-primary">Login</span>
+        </h1>
+        <p class="mt-2 text-sm leading-6 text-muted">Sign in to manage your portfolio content and site settings.</p>
+      </div>
 
-    <div class="grid grid-cols-12 gap-2">
-      @for (field of fields; track field.name) {
-        <div [class]="field.colClass || 'col-span-12'">
-          <app-dynamic-reactive-form [config]="field" [formGroup]="form" />
-        </div>
+      <div class="grid grid-cols-12 gap-2">
+        @for (field of fields; track field.name) {
+          <div [class]="field.colClass || 'col-span-12'">
+            <app-dynamic-reactive-form [config]="field" [formGroup]="form" />
+          </div>
+        }
+      </div>
+
+      <app-loading-button buttonText="Login" type="submit" color="primary" radius="small" size="large"
+        [loading]="isSubmitting()" [disabled]="isSubmitting()" customClass="w-full mt-2" />
+    </form>
+  } @else {
+    <form (ngSubmit)="verify()" novalidate>
+      <div class="mb-7">
+        <h1 class="mt-2 text-3xl font-semibold tracking-[-0.05em] text-heading">
+          Two-factor <span class="text-primary">check</span>
+        </h1>
+        <p class="mt-2 text-sm leading-6 text-muted">
+          @if (useRecoveryCode()) {
+            Enter one of the recovery codes you saved when you turned on two-factor authentication. Each code works once.
+          } @else {
+            Enter the 6-digit code from your authenticator app.
+          }
+        </p>
+      </div>
+
+      @if (useRecoveryCode()) {
+        <label for="mfa-recovery-code" class="mb-1.5 block text-[0.875rem] font-[600] uppercase text-muted">Recovery code</label>
+        <input #codeInput id="mfa-recovery-code" type="text" [formControl]="recoveryCode" autocomplete="off"
+          autocapitalize="none" spellcheck="false" maxlength="9" placeholder="xxxx-xxxx"
+          class="mfa-input w-full rounded-xl border px-4 py-3.5 text-center font-mono text-lg tracking-[0.2em] outline-none"
+          [attr.aria-invalid]="recoveryCode.touched && recoveryCode.invalid" />
+        @if (recoveryCode.touched && recoveryCode.invalid) {
+          <p class="mt-1.5 text-xs text-error">Recovery codes look like abcd-2345.</p>
+        }
+      } @else {
+        <label for="mfa-code" class="mb-1.5 block text-[0.875rem] font-[600] uppercase text-muted">Authentication code</label>
+        <input #codeInput id="mfa-code" type="text" [formControl]="code" (input)="onCodeInput()" inputmode="numeric"
+          autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="123456"
+          class="mfa-input w-full rounded-xl border px-4 py-3.5 text-center font-mono text-2xl tracking-[0.5em] outline-none"
+          [attr.aria-invalid]="code.touched && code.invalid" />
+        @if (code.touched && code.invalid) {
+          <p class="mt-1.5 text-xs text-error">Enter the 6 digits shown in your app.</p>
+        }
       }
-    </div>
 
-    <app-loading-button buttonText="Login" type="submit" color="primary" radius="small" size="large"
-      [loading]="isSubmitting()" [disabled]="isSubmitting()" customClass="w-full mt-2" />
-  </form>
+      <app-loading-button [buttonText]="useRecoveryCode() ? 'Use recovery code' : 'Verify'" type="submit"
+        color="primary" radius="small" size="large" [loading]="isSubmitting()" [disabled]="isSubmitting()"
+        customClass="w-full mt-4" />
+
+      <div class="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm">
+        <button type="button" class="font-semibold text-primary hover:underline" (click)="toggleRecoveryCode()"
+          [disabled]="isSubmitting()">
+          {{ useRecoveryCode() ? 'Use your authenticator app instead' : 'Use a recovery code instead' }}
+        </button>
+        <button type="button" class="text-muted hover:text-heading hover:underline" (click)="backToSignIn()"
+          [disabled]="isSubmitting()">
+          Back to sign in
+        </button>
+      </div>
+    </form>
+  }
 </app-auth-layout>
+

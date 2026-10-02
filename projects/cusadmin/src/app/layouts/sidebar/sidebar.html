@@ -25,7 +25,7 @@
       [icon]="themeSer.isDark() ? 'sun' : 'moon-star'" [iconSize]="18" customClass="!h-10 !w-10 !p-0"
       (click)="themeSer.toggle()" />
 
-    <button class="profile-chip" type="button" [matMenuTriggerFor]="profileMenu" aria-label="Account menu">
+    <button class="profile-chip" type="button" [matMenuTriggerFor]="profileMenu" #topMenuTrigger="matMenuTrigger" aria-label="Account menu">
       <span>{{ getUserInitials(userData()) }}</span>
     </button>
 
@@ -38,6 +38,11 @@
             <small>{{ getRoleName() }}</small>
           </div>
         </div>
+
+        <a class="profile-menu-item" routerLink="/profile" (click)="topMenuTrigger.closeMenu(); onMenuItemClick()">
+          <i-lucide name="user-round" [size]="20" color="primary"></i-lucide>
+          <span>My profile</span>
+        </a>
 
         <a class="profile-menu-item" [href]="siteUrl" target="_blank" rel="noopener">
           <i-lucide name="external-link" [size]="20" color="primary"></i-lucide>
@@ -95,7 +100,7 @@
 
   <div class="sidebar-footer">
     <button class="user-card" [class.collapsed]="isSidebarCollapsed" type="button"
-      [matMenuTriggerFor]="sidebarProfileMenu">
+      [matMenuTriggerFor]="sidebarProfileMenu" #sidebarMenuTrigger="matMenuTrigger">
       <span class="avatar">{{ getUserInitials(userData()) }}</span>
       @if (!(isSidebarCollapsed && isLargeScreen)) {
       <span class="min-w-0 flex-1 text-left">
@@ -114,6 +119,11 @@
             <small>{{ getRoleName() }}</small>
           </div>
         </div>
+
+        <a class="profile-menu-item" routerLink="/profile" (click)="sidebarMenuTrigger.closeMenu(); onMenuItemClick()">
+          <i-lucide name="user-round" [size]="20" color="primary"></i-lucide>
+          <span>My profile</span>
+        </a>
 
         <a class="profile-menu-item" [href]="siteUrl" target="_blank" rel="noopener">
           <i-lucide name="external-link" [size]="20" color="primary"></i-lucide>

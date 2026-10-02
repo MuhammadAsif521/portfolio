@@ -2,12 +2,11 @@ export const environment = {
   production: true,
   name: 'prod',
 
-  server: 'https://asifdev.com/api/v1',
+  server: 'https://api.asifdev.com/api/v1',
   imageUrl: 'https://cdn.asifdev.com',
   google_places: 'AIzaSyCDemXt2UVNMAyxUHiQQRJOGBrLJFLSquo',
   SITE_KEY: '6LdR8EctAAAAANRBUd-p2P0HQyTWDEhegk1PAuDU',
   siteUrl: 'https://asifdev.com',
   siteName: 'Asif Portfolio',
-  /** Never in production: only real content from the API is shown. */
   demoContent: false,
 };

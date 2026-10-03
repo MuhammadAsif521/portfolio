@@ -51,6 +51,6 @@ Desktop - 1.png
 .env.*
 !.env.example
 
-# Vercel build output for the admin project (projects/cusadmin/vercel.json)
-.vercel-dist/
+# Vercel
+
 .vercel

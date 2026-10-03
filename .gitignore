@@ -50,6 +50,7 @@ Desktop - 1.png
 .env
 .env.*
 !.env.example
+design/
 
 # Vercel
 

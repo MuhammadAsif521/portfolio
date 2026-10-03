@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "npm-run-all --parallel  start:cusadmin start:website ",
-    "build": "npm-run-all --parallel build:website build:cusadmin ",
+    "build": "ng build website && ng build cusadmin",
     "watch": "ng build --watch --configuration=development",
     "test": "ng test",
     "start:website": "ng serve --project=website --port=4200",

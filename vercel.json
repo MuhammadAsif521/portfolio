@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm ci",
+  "buildCommand": "npx ng build website",
+  "outputDirectory": "dist/website/browser",
+  "functions": {
+    "api/render.mjs": {
+      "memory": 1024,
+      "maxDuration": 30,
+      "includeFiles": "dist/website/server/**"
+    }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/render" }]
+}

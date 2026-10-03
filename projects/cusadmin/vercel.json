@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "cd ../.. && npm ci",
+  "buildCommand": "cd ../.. && npx ng build cusadmin --output-path projects/cusadmin/.vercel-dist",
+  "outputDirectory": ".vercel-dist/browser",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

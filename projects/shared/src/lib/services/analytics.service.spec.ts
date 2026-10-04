@@ -126,6 +126,31 @@ describe('AnalyticsService', () => {
     expect(layer().at(-2)).toEqual(['consent', 'update', { analytics_storage: 'denied' }]);
   });
 
+  it('defaults by region: analytics granted globally, denied in the EEA/UK/CH; ads denied everywhere', () => {
+    const { analytics } = setup();
+    analytics.start({ googleTagManagerId: GTM });
+    const defaults = layer().filter((e) => Array.isArray(e) && e[0] === 'consent' && e[1] === 'default') as [
+      string,
+      string,
+      Record<string, unknown>,
+    ][];
+    expect(defaults).toHaveLength(2);
+    expect(defaults[0][2]).toMatchObject({ analytics_storage: 'granted', ad_storage: 'denied' });
+    expect(defaults[0][2]['region']).toBeUndefined();
+    expect(defaults[1][2]).toMatchObject({ analytics_storage: 'denied', ad_storage: 'denied' });
+    expect(defaults[1][2]['region']).toEqual(expect.arrayContaining(['DE', 'FR', 'GB', 'CH', 'NO']));
+    expect(defaults[1][2]['region']).not.toContain('PK');
+  });
+
+  it('a first Reject (no earlier choice) pushes consent update denied', () => {
+    const { analytics, consent } = setup();
+    analytics.start({ googleTagManagerId: GTM });
+    expect(layer().some((e) => Array.isArray(e) && e[1] === 'update')).toBe(false);
+    consent.reject();
+    TestBed.tick();
+    expect(layer()).toContainEqual(['consent', 'update', { analytics_storage: 'denied' }]);
+  });
+
   it('returning visitor who accepted: update granted right after the default, before the script loads', () => {
     document.cookie = `${CONSENT_COOKIE}=${encodeURIComponent(JSON.stringify({ necessary: true, analytics: true }))}; path=/`;
     const { analytics, consent } = setup();

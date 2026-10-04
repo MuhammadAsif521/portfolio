@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { DestroyRef, Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { ConsentService } from '@shared/services/consent.service';
 
@@ -43,13 +43,35 @@ const IDLE_TIMEOUT_MS = 3_000;
  * Consent Mode v2 defaults: everything optional is denied until the visitor accepts (everywhere, not
  * only in the EEA — the HTML is cached at the edge, so there is no per-region server decision to make).
  */
+/**
+ * Consent Mode v2 defaults by region (Google resolves the visitor's region in the browser, so this works
+ * with edge-cached HTML). Ads are denied everywhere (the site has none). Analytics: granted by default with
+ * opt-out (Reject / Cookie settings), except in the EEA, UK and Switzerland where it waits for Accept (GDPR).
+ * The region-specific default takes precedence over the global one.
+ */
 export const CONSENT_DEFAULTS = {
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied',
+  analytics_storage: 'granted',
+  functionality_storage: 'granted',
+  security_storage: 'granted',
+} as const;
+
+/** EEA + UK + Switzerland (ISO 3166-1 alpha-2). */
+export const CONSENT_REQUIRED_REGIONS = [
+  'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU',
+  'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH',
+] as const;
+
+export const CONSENT_DEFAULTS_REGIONAL = {
   ad_storage: 'denied',
   ad_user_data: 'denied',
   ad_personalization: 'denied',
   analytics_storage: 'denied',
   functionality_storage: 'granted',
   security_storage: 'granted',
+  region: [...CONSENT_REQUIRED_REGIONS],
   wait_for_update: 500,
 } as const;
 
@@ -66,7 +88,7 @@ export function resolveAnalyticsSetup(config: AnalyticsConfig | null | undefined
  * Google Tag Manager / Google Analytics 4 with Google Consent Mode v2 ("advanced" mode).
  *
  * `start()` (browser only, once, after hydration):
- *  1. creates `dataLayer` + the `gtag()` stub and pushes `consent default` (all denied) — always the very
+ *  1. creates `dataLayer` + the `gtag()` stub and pushes the regional `consent default`s (see CONSENT_DEFAULTS) — always the very
  *     first command, before any Google script exists;
  *  2. if the visitor accepted on an earlier visit, pushes `consent update` (analytics granted) right away,
  *     so the first hit of the visit is already a full one;
@@ -94,6 +116,10 @@ export class AnalyticsService {
   private readonly active = signal<AnalyticsSetup>({ mode: 'off' });
   private started = false;
   private lastConsent: boolean | null = null;
+  /** The visitor's explicit choice (true = Accept, false = Reject), or null while they haven't chosen. */
+  private readonly choice = computed<boolean | null>(() =>
+    this.consent.answered() ? this.consent.analyticsGranted() : null,
+  );
   private lastPage: string | null = null;
   private lastLocation: string | null = null;
   private lastTitle: string | null = null;
@@ -107,11 +133,11 @@ export class AnalyticsService {
     if (!this.isBrowser) return;
     // Consent changes after start → Consent Mode update (the initial state is pushed by start()).
     effect(() => {
-      const granted = this.consent.analyticsGranted();
-      if (this.active().mode === 'off' || granted === this.lastConsent) return;
-      this.lastConsent = granted;
-      this.pushConsentUpdate(granted);
-      this.dataLayer().push({ event: CONSENT_UPDATE_EVENT, analytics_storage: granted ? 'granted' : 'denied' });
+      const choice = this.choice();
+      if (this.active().mode === 'off' || choice === null || choice === this.lastConsent) return;
+      this.lastConsent = choice;
+      this.pushConsentUpdate(choice);
+      this.dataLayer().push({ event: CONSENT_UPDATE_EVENT, analytics_storage: choice ? 'granted' : 'denied' });
     });
   }
 
@@ -123,10 +149,11 @@ export class AnalyticsService {
 
     const gtag = this.gtag();
     gtag('consent', 'default', { ...CONSENT_DEFAULTS });
+    gtag('consent', 'default', { ...CONSENT_DEFAULTS_REGIONAL, region: [...CONSENT_REQUIRED_REGIONS] });
     gtag('set', 'ads_data_redaction', true);
-    const granted = this.consent.analyticsGranted();
-    this.lastConsent = granted;
-    if (granted) this.pushConsentUpdate(true);
+    // A returning visitor's earlier choice (Accept or Reject) overrides the regional default right away.
+    this.lastConsent = this.choice();
+    if (this.lastConsent !== null) this.pushConsentUpdate(this.lastConsent);
 
     let src: string;
     if (setup.mode === 'gtm') {

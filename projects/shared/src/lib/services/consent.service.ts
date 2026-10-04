@@ -1,127 +1,97 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { CookieService } from 'ngx-cookie-service';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
-const CONSENT_KEY = 'bo_cookie_consent';
+/** First-party cookie that stores the visitor's analytics choice (listed in the Cookie Policy). */
+export const CONSENT_COOKIE = 'bo_cookie_consent';
+/** How long a choice is remembered before the banner asks again (6 months, as CNIL recommends). */
+export const CONSENT_MAX_AGE_DAYS = 180;
 
+/** What is stored in the cookie. `marketing` is always false: the site has no advertising. */
 export interface ConsentPreferences {
   necessary: true;
   analytics: boolean;
-  marketing: boolean;
+  marketing: false;
 }
 
-const DEFAULT_PREFERENCES: ConsentPreferences = {
-  necessary: true,
-  analytics: false,
-  marketing: false,
-};
-
-declare global {
-  interface Window {
-    gtag?: (...args: unknown[]) => void;
-    dataLayer?: unknown[];
-  }
-}
-
+/**
+ * The visitor's cookie choice for optional (analytics) cookies. Browser only: on the server nothing is
+ * read or written, so the SSR HTML is the same for everyone and safe to cache at the edge.
+ *
+ *  - No stored choice  → analytics denied, banner should be shown.
+ *  - Stored choice     → applied at once, banner hidden (returning visitors are not asked again).
+ *  - `reopen()`        → the footer's "Cookie settings" shows the banner again to change the choice.
+ *
+ * AnalyticsService turns `analyticsGranted()` into Google Consent Mode updates; this service knows
+ * nothing about Google.
+ */
 @Injectable({ providedIn: 'root' })
 export class ConsentService {
-  private readonly cookieService = inject(CookieService);
-  private readonly platformId = inject(PLATFORM_ID);
-  private readonly isBrowser = isPlatformBrowser(this.platformId);
+  private readonly document = inject(DOCUMENT);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  private readonly _preferences = signal<ConsentPreferences>(DEFAULT_PREFERENCES);
+  private readonly _analytics = signal(false);
   private readonly _answered = signal(false);
+  private readonly _reopened = signal(false);
 
-  readonly preferences = this._preferences.asReadonly();
+  /** True once the visitor accepted analytics (now or on an earlier visit). */
+  readonly analyticsGranted = this._analytics.asReadonly();
+  /** True once the visitor made a choice (accept or reject). */
   readonly answered = this._answered.asReadonly();
-
-  readonly bannerVisible = signal(false);
-  readonly modalOpen = signal(false);
-
-  readonly analyticsGranted = computed(() => this._preferences().analytics);
-  readonly marketingGranted = computed(() => this._preferences().marketing);
+  /** True while the banner was opened again from "Cookie settings" (focus moves into it). */
+  readonly reopened = this._reopened.asReadonly();
+  /** Whether the banner should be on screen. Always false on the server. */
+  readonly bannerVisible = computed(() => this.isBrowser && (!this._answered() || this._reopened()));
 
   constructor() {
     if (!this.isBrowser) return;
-
-    const stored = this.readStoredPreferences();
+    const stored = this.read();
     if (stored) {
-      this._preferences.set(stored);
-      this._answered.set(true); 
-      this.pushConsentUpdate(stored);
-    } else {
-       setTimeout(() => {
-        if (!this._answered()) this.bannerVisible.set(true);
-      }, 800);
+      this._analytics.set(stored.analytics);
+      this._answered.set(true);
     }
   }
 
-  acceptAll(): void {
-    this.applyAndPersist({ necessary: true, analytics: true, marketing: true });
+  acceptAnalytics(): void {
+    this.choose(true);
   }
 
-  rejectNonEssential(): void {
-    this.applyAndPersist({ necessary: true, analytics: false, marketing: false });
+  reject(): void {
+    this.choose(false);
   }
 
-  savePreferences(prefs: { analytics: boolean; marketing: boolean }): void {
-    this.applyAndPersist({ necessary: true, analytics: prefs.analytics, marketing: prefs.marketing });
+  /** Shows the banner again (footer "Cookie settings"). */
+  reopen(): void {
+    if (this.isBrowser) this._reopened.set(true);
   }
 
-  openPreferences(): void {
-    this.modalOpen.set(true);
+  /** Hides a reopened banner without changing the stored choice. No-op before the first choice. */
+  dismiss(): void {
+    this._reopened.set(false);
   }
 
-  closePreferences(): void {
-    this.modalOpen.set(false);
-  }
-
-  private applyAndPersist(prefs: ConsentPreferences): void {
-    this._preferences.set(prefs);
+  private choose(analytics: boolean): void {
+    this._analytics.set(analytics);
     this._answered.set(true);
-    this.bannerVisible.set(false);
-    this.modalOpen.set(false);
-
+    this._reopened.set(false);
     if (!this.isBrowser) return;
-
-    this.persistCookie(prefs);
-    this.pushConsentUpdate(prefs);
+    const prefs: ConsentPreferences = { necessary: true, analytics, marketing: false };
+    const secure = this.document.location?.protocol === 'https:' ? '; Secure' : '';
+    this.document.cookie =
+      `${CONSENT_COOKIE}=${encodeURIComponent(JSON.stringify(prefs))}; Max-Age=${CONSENT_MAX_AGE_DAYS * 86_400}` +
+      `; Path=/; SameSite=Lax${secure}`;
   }
 
-  private persistCookie(prefs: ConsentPreferences): void {
-    const expires = new Date();
-    expires.setFullYear(expires.getFullYear() + 1);
-
-    this.cookieService.set(CONSENT_KEY, JSON.stringify(prefs), {
-      expires,
-      path: '/',
-      sameSite: 'Lax',
-      secure: location.protocol === 'https:',
-    });
-  }
-
-  private pushConsentUpdate(prefs: ConsentPreferences): void {
-    if (typeof window.gtag !== 'function') return;
-
-    window.gtag('consent', 'update', {
-      ad_storage: prefs.marketing ? 'granted' : 'denied',
-      ad_user_data: prefs.marketing ? 'granted' : 'denied',
-      ad_personalization: prefs.marketing ? 'granted' : 'denied',
-      analytics_storage: prefs.analytics ? 'granted' : 'denied',
-    });
-  }
-
-  private readStoredPreferences(): ConsentPreferences | null {
-    const raw = this.cookieService.get(CONSENT_KEY);
+  private read(): ConsentPreferences | null {
+    const raw = this.document.cookie
+      .split(';')
+      .map((part) => part.trim())
+      .find((part) => part.startsWith(`${CONSENT_COOKIE}=`))
+      ?.slice(CONSENT_COOKIE.length + 1);
     if (!raw) return null;
-
     try {
-      const parsed = JSON.parse(raw) as Partial<ConsentPreferences>;
-      return {
-        necessary: true,
-        analytics: parsed.analytics === true,
-        marketing: parsed.marketing === true,
-      };
+      const parsed = JSON.parse(decodeURIComponent(raw)) as Partial<ConsentPreferences> | null;
+      if (!parsed || typeof parsed !== 'object') return null;
+      return { necessary: true, analytics: parsed.analytics === true, marketing: false };
     } catch {
       return null;
     }

@@ -1,0 +1,111 @@
+@use '../../styles/mixins' as m;
+
+// Compact card fixed to the bottom: full width minus a gutter on phones (kept short so the hero CTAs
+// stay visible above it), a small card in the bottom-right corner from md up. Theme tokens only.
+// Fixed positioning → appearing or leaving never shifts the page (no CLS).
+
+.consent {
+  position: fixed;
+  z-index: calc(var(--z-overlay) - 1); // above the sticky header, below the mobile menu overlay
+  right: 0.75rem;
+  bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  left: 0.75rem;
+  display: grid;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-lg), var(--focus-ring);
+  }
+
+  @include m.up(md) {
+    left: auto;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    width: min(24rem, calc(100vw - 3rem));
+    padding: 1.125rem 1.25rem;
+  }
+
+  @include m.motion-safe {
+    animation: consent-in var(--duration-normal, 200ms) var(--ease-out, ease-out) both;
+  }
+}
+
+@keyframes consent-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+.consent__title {
+  margin: 0;
+  color: var(--heading);
+  font-size: var(--text-base);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.consent__text {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.consent__link {
+  border-radius: var(--radius-xs);
+  color: var(--primary-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+
+  @include m.focus-ring;
+}
+
+.consent__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+// Both choices the same size and weight: rejecting is as easy as accepting.
+.consent__btn {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+
+  @include m.focus-ring;
+}
+
+.consent__btn--accept {
+  background: var(--primary);
+  color: var(--on-primary);
+
+  &:hover {
+    background: var(--primary-hover);
+  }
+}
+
+.consent__btn--reject {
+  background: transparent;
+  color: var(--primary-ink);
+
+  &:hover {
+    background: var(--primary-soft);
+  }
+}

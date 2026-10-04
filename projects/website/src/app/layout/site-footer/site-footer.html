@@ -137,6 +137,8 @@
           @for (link of legalLinks; track link.path) {
           <li><a class="rounded-xs text-band-dark-text/70 no-underline transition-colors hover:text-primary focus-visible:shadow-focus focus-visible:outline-none" [routerLink]="link.path">{{ link.label }}</a></li>
           }
+          <!-- Reopens the cookie banner to change the analytics choice. -->
+          <li><button type="button" class="footer__cookie-settings cursor-pointer rounded-xs border-0 bg-transparent p-0 text-sm text-band-dark-text/70 transition-colors hover:text-primary focus-visible:shadow-focus focus-visible:outline-none" (click)="openCookieSettings()">Cookie settings</button></li>
         </ul>
       </nav>
 

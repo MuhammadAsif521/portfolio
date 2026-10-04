@@ -10,5 +10,5 @@ export const environment = {
   siteUrl: 'https://www.asifdev.com',
   siteName: 'Asif Portfolio',
   /** Dev only: show demo projects, testimonials and posts when the API has none (UI review). */
-  demoContent: true,
+  demoContent: false,
 };

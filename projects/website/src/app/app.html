@@ -11,3 +11,10 @@
 @defer (hydrate on viewport) {
   <app-site-footer />
 }
+<!--
+  Cookie banner: client-only (a plain @defer renders nothing on the server), after hydration on idle.
+  It is position: fixed, so showing it never shifts the layout.
+-->
+@defer (on idle) {
+  <app-cookie-consent />
+}

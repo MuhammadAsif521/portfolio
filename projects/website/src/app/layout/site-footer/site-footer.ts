@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
+import { ConsentService } from '@shared/services/consent.service';
 import { BRAND_CONTENT } from '../../content/brand.content';
 import { CONTACT_CONTENT } from '../../content/contact.content';
 import { siteFeature } from '../../core/store/site.feature';
@@ -51,4 +52,11 @@ export class SiteFooter {
     path: LEGAL_LINKS[kind].path,
     label: LEGAL_LINKS[kind].title,
   }));
+
+  private readonly consent = inject(ConsentService);
+
+  /** "Cookie settings": shows the cookie banner again so the visitor can change their choice. */
+  protected openCookieSettings(): void {
+    this.consent.reopen();
+  }
 }

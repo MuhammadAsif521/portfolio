@@ -1,6 +1,6 @@
-import { DOCUMENT } from '@angular/common';
-import { Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { DestroyRef, Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { ConsentService } from '@shared/services/consent.service';
 
 declare global {
@@ -11,87 +11,242 @@ declare global {
 }
 
 export interface AnalyticsConfig {
-  googleAnalyticsId?: string;
-  googleTagManagerId?: string;
+  googleAnalyticsId?: string | null;
+  googleTagManagerId?: string | null;
+}
+
+/** What gets loaded: GTM (GA4 is configured inside the container), gtag.js directly, or nothing. */
+export type AnalyticsSetup = { mode: 'gtm'; id: string } | { mode: 'gtag'; id: string } | { mode: 'off' };
+
+export interface AnalyticsStartOptions {
+  /** URLs (router paths) that never get a page view. */
+  exclude?: (path: string) => boolean;
+}
+
+/** dataLayer event pushed on every page view in GTM mode (GTM: Custom Event trigger with this name). */
+export const VIRTUAL_PAGE_VIEW_EVENT = 'virtual_page_view';
+/** dataLayer event pushed whenever the visitor changes their analytics choice (handy for GTM triggers). */
+export const CONSENT_UPDATE_EVENT = 'cookie_consent_update';
+
+const GTM_ID = /^GTM-[A-Z0-9]{4,12}$/;
+const GA_ID = /^G-[A-Z0-9]{4,16}$/;
+/**
+ * Upper bound on waiting for a new page's <title> before its page view is sent anyway. Pages such as the
+ * blog list set their title only once their API data arrived (which can include reCAPTCHA and a cold
+ * API), hence generous; a view still pending when the tab is hidden or closed is sent at once.
+ */
+export const PAGE_SETTLE_MS = 8_000;
+/** requestIdleCallback timeout: the tag loads by then even on a page that never goes idle. */
+const IDLE_TIMEOUT_MS = 3_000;
+
+/**
+ * Consent Mode v2 defaults: everything optional is denied until the visitor accepts (everywhere, not
+ * only in the EEA — the HTML is cached at the edge, so there is no per-region server decision to make).
+ */
+export const CONSENT_DEFAULTS = {
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied',
+  analytics_storage: 'denied',
+  functionality_storage: 'granted',
+  security_storage: 'granted',
+  wait_for_update: 500,
+} as const;
+
+/** Picks GTM over gtag.js (never both: that would count every page view twice). */
+export function resolveAnalyticsSetup(config: AnalyticsConfig | null | undefined): AnalyticsSetup {
+  const gtm = config?.googleTagManagerId?.trim().toUpperCase() ?? '';
+  const ga = config?.googleAnalyticsId?.trim().toUpperCase() ?? '';
+  if (GTM_ID.test(gtm)) return { mode: 'gtm', id: gtm };
+  if (GA_ID.test(ga)) return { mode: 'gtag', id: ga };
+  return { mode: 'off' };
 }
 
 /**
- * Loads Google Tag Manager / gtag.js — but only when ALL of these hold:
- *  1. running in the browser (never during SSR),
- *  2. the visitor has actively granted analytics cookie consent
- *     (ConsentService.analyticsGranted()),
- *  3. `configure()` has been called with a non-empty googleTagManagerId or
- *     googleAnalyticsId (from site-settings) — no fake/placeholder ID is
- *     ever substituted.
+ * Google Tag Manager / Google Analytics 4 with Google Consent Mode v2 ("advanced" mode).
  *
- * Call `configure()` once site-settings has loaded (see full.ts) — safe to
- * call repeatedly/with the same values. The container script is appended
- * dynamically at runtime (never a static <script> in index.html), so it can
- * never load before consent and never competes with the initial render for
- * bandwidth/parse time.
+ * `start()` (browser only, once, after hydration):
+ *  1. creates `dataLayer` + the `gtag()` stub and pushes `consent default` (all denied) — always the very
+ *     first command, before any Google script exists;
+ *  2. if the visitor accepted on an earlier visit, pushes `consent update` (analytics granted) right away,
+ *     so the first hit of the visit is already a full one;
+ *  3. queues the container start (`gtm.js` event) or gtag `js`/`config` (send_page_view: false);
+ *  4. sends a page view for the current page and one per router navigation (NavigationEnd), once the
+ *     new page set its title (so `page_title` is right), in navigation order;
+ *  5. loads gtm.js or gtag/js on idle after the window `load` event, so it never competes with LCP/TBT.
+ * The tag loads even while consent is denied: Google then only receives cookieless pings (no `_ga`
+ * cookies), which is what Consent Mode is for and what GA4's "data collection active" check needs.
+ * Accept/Reject later turns into `consent update` + a `cookie_consent_update` dataLayer event.
  *
- * If a GTM container id is configured it takes priority (it can also fire
- * GA4 tags itself); gtag.js is only loaded directly when there's a GA4 id
- * but no GTM container configured.
+ * Page views: gtag mode sends `gtag('event', 'page_view', …)`; GTM mode pushes
+ * `{ event: 'virtual_page_view', page_location, page_path, page_title, page_referrer }` for a GA4 event
+ * tag in the container. In GA4, turn off Enhanced measurement → "Page changes based on browser history
+ * events", or SPA navigations are counted twice.
  */
 @Injectable({ providedIn: 'root' })
 export class AnalyticsService {
-  private document = inject(DOCUMENT);
-  private platformId = inject(PLATFORM_ID);
-  private isBrowser = isPlatformBrowser(this.platformId);
-  private consent = inject(ConsentService);
+  private readonly document = inject(DOCUMENT);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly consent = inject(ConsentService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
-  private readonly config = signal<AnalyticsConfig>({});
-  private injected = false;
+  private readonly active = signal<AnalyticsSetup>({ mode: 'off' });
+  private started = false;
+  private lastConsent: boolean | null = null;
+  private lastPage: string | null = null;
+  private lastLocation: string | null = null;
+  private lastTitle: string | null = null;
+  private navigations = 0;
+  private queue: Promise<void> = Promise.resolve();
+
+  /** The setup in use after `start()` ('off' on the server, without ids, or before start). */
+  readonly setup = this.active.asReadonly();
 
   constructor() {
     if (!this.isBrowser) return;
+    // Consent changes after start → Consent Mode update (the initial state is pushed by start()).
     effect(() => {
       const granted = this.consent.analyticsGranted();
-      const { googleAnalyticsId, googleTagManagerId } = this.config();
-      if (!granted || this.injected) return;
-
-      if (googleTagManagerId) {
-        this.injectGtm(googleTagManagerId);
-        this.injected = true;
-      } else if (googleAnalyticsId) {
-        this.injectGtag(googleAnalyticsId);
-        this.injected = true;
-      }
+      if (this.active().mode === 'off' || granted === this.lastConsent) return;
+      this.lastConsent = granted;
+      this.pushConsentUpdate(granted);
+      this.dataLayer().push({ event: CONSENT_UPDATE_EVENT, analytics_storage: granted ? 'granted' : 'denied' });
     });
   }
 
-  /** Feed real site-settings values in. Safe to call on every settings change. */
-  configure(config: AnalyticsConfig): void {
-    this.config.set({
-      googleAnalyticsId: config.googleAnalyticsId || '',
-      googleTagManagerId: config.googleTagManagerId || '',
+  start(config: AnalyticsConfig | null | undefined, options: AnalyticsStartOptions = {}): AnalyticsSetup {
+    if (!this.isBrowser || this.started) return this.active();
+    const setup = resolveAnalyticsSetup(config);
+    if (setup.mode === 'off') return setup;
+    this.started = true;
+
+    const gtag = this.gtag();
+    gtag('consent', 'default', { ...CONSENT_DEFAULTS });
+    gtag('set', 'ads_data_redaction', true);
+    const granted = this.consent.analyticsGranted();
+    this.lastConsent = granted;
+    if (granted) this.pushConsentUpdate(true);
+
+    let src: string;
+    if (setup.mode === 'gtm') {
+      this.dataLayer().push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+      src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(setup.id)}`;
+    } else {
+      gtag('js', new Date());
+      gtag('config', setup.id, { send_page_view: false });
+      src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(setup.id)}`;
+    }
+    this.active.set(setup);
+
+    const exclude = options.exclude ?? (() => false);
+    let first = true; // the landing page already has its final title (server-rendered)
+    const track = (url: string) => {
+      if (!exclude(url)) this.trackPage(url, first);
+      first = false;
+    };
+    track(this.router.url);
+    const sub = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) track(event.urlAfterRedirects);
+    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
+
+    this.whenIdle(() => this.loadScript(src));
+    return setup;
+  }
+
+  /**
+   * Queues a page view for `url` (path + query; fragment-only changes are ignored). Views are sent in
+   * navigation order. After a navigation the view waits until the new page has set its own <title> (it
+   * often does so only once its data arrived), at most PAGE_SETTLE_MS.
+   */
+  private trackPage(url: string, first: boolean): void {
+    const page = url.split('#')[0] || '/';
+    if (page === this.lastPage) return;
+    this.lastPage = page;
+    const seq = ++this.navigations;
+    const location = (this.document.defaultView?.location.origin ?? '') + page;
+    const referrer = this.lastLocation ?? this.document.referrer;
+    this.lastLocation = location;
+
+    this.queue = this.queue.then(async () => {
+      if (!first) await this.titleSettled(seq);
+      const title = this.document.title;
+      this.lastTitle = title;
+      const params = { page_location: location, page_path: page, page_title: title, page_referrer: referrer };
+      const setup = this.active();
+      if (setup.mode === 'gtm') this.dataLayer().push({ event: VIRTUAL_PAGE_VIEW_EVENT, ...params });
+      else if (setup.mode === 'gtag') this.gtag()('event', 'page_view', { ...params, send_to: setup.id });
     });
   }
 
-  private injectGtm(containerId: string): void {
-    const win = window as Window;
-    win.dataLayer = win.dataLayer || [];
-    win.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
-
-    const script = this.document.createElement('script');
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(containerId)}`;
-    this.document.head.appendChild(script);
-    // No <noscript> iframe fallback by design — that variant is meant to run
-    // with no JS at all, which would bypass the consent gate above entirely.
+  /**
+   * Resolves once the title differs from the last page's, another navigation started, the page is being
+   * hidden or closed, or on timeout.
+   */
+  private titleSettled(seq: number): Promise<void> {
+    const startedAt = Date.now();
+    const view = this.document.defaultView as Window;
+    return new Promise((resolve) => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const done = () => {
+        clearTimeout(timer);
+        this.document.removeEventListener('visibilitychange', check);
+        view.removeEventListener('pagehide', done);
+        resolve();
+      };
+      const settled = () =>
+        this.document.title !== this.lastTitle ||
+        seq !== this.navigations ||
+        this.document.visibilityState === 'hidden' ||
+        Date.now() - startedAt >= PAGE_SETTLE_MS;
+      const check = () => {
+        clearTimeout(timer);
+        if (settled()) done();
+        else timer = setTimeout(check, 100);
+      };
+      this.document.addEventListener('visibilitychange', check);
+      view.addEventListener('pagehide', done);
+      check();
+    });
   }
 
-  private injectGtag(measurementId: string): void {
-    const win = window as Window;
-    win.dataLayer = win.dataLayer || [];
-    win.gtag = win.gtag || function gtag(...args: unknown[]) { win.dataLayer!.push(args); };
-    win.gtag('js', new Date());
-    win.gtag('config', measurementId);
+  private pushConsentUpdate(granted: boolean): void {
+    this.gtag()('consent', 'update', { analytics_storage: granted ? 'granted' : 'denied' });
+  }
 
+  private dataLayer(): unknown[] {
+    const view = this.document.defaultView as Window;
+    return (view.dataLayer ??= []);
+  }
+
+  /** The standard gtag stub. It must push the `arguments` object: gtag.js/GTM ignore plain arrays. */
+  private gtag(): (...args: unknown[]) => void {
+    const view = this.document.defaultView as Window;
+    const dataLayer = this.dataLayer();
+    view.gtag ??= function gtag() {
+      // eslint-disable-next-line prefer-rest-params
+      dataLayer.push(arguments);
+    };
+    return view.gtag;
+  }
+
+  private loadScript(src: string): void {
+    if (this.document.querySelector(`script[src="${src}"]`)) return;
     const script = this.document.createElement('script');
     script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+    script.src = src;
     this.document.head.appendChild(script);
+  }
+
+  /** After the window `load` event, then on idle (with a timeout) — off the critical rendering path. */
+  private whenIdle(task: () => void): void {
+    const view = this.document.defaultView as Window;
+    const schedule = () => {
+      if (typeof view.requestIdleCallback === 'function') view.requestIdleCallback(task, { timeout: IDLE_TIMEOUT_MS });
+      else view.setTimeout(task, 1);
+    };
+    if (this.document.readyState === 'complete') schedule();
+    else view.addEventListener('load', schedule, { once: true });
   }
 }

@@ -20,15 +20,17 @@
 
   <!-- Default: title over the image. Hover/focus: frosted panel with the summary. -->
   <div class="project-card__panel">
+    <!-- Title is visually hidden (design shows only the image + summary) but stays for screen readers,
+         the card's aria-labelledby and search engines. -->
     @switch (headingLevel()) {
       @case (2) {
-        <h2 class="project-card__title" [id]="'project-' + p.slug">{{ p.title }}</h2>
+        <h2 class="sr-only" [id]="'project-' + p.slug">{{ p.title }}</h2>
       }
       @case (4) {
-        <h4 class="project-card__title" [id]="'project-' + p.slug">{{ p.title }}</h4>
+        <h4 class="sr-only" [id]="'project-' + p.slug">{{ p.title }}</h4>
       }
       @default {
-        <h3 class="project-card__title" [id]="'project-' + p.slug">{{ p.title }}</h3>
+        <h3 class="sr-only" [id]="'project-' + p.slug">{{ p.title }}</h3>
       }
     }
     <p class="project-card__summary">{{ p.summary }}</p>

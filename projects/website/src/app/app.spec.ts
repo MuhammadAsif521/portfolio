@@ -56,7 +56,7 @@ describe('App shell', () => {
     expect(el.querySelector('main#main')).toBeTruthy();
   });
 
-  it('shows the "AP" mark, the hover credit and the resume link; the brand link name starts with the visible mark', async () => {
+  it('shows the "AP" mark and the hover credit (resume lives in the hero); the brand link name starts with the visible mark', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
@@ -68,7 +68,7 @@ describe('App shell', () => {
     expect(name).toBe('AP, Muhammad Asif, home');
     expect(brand.querySelector('.site-nav__made')?.getAttribute('aria-hidden')).toBe('true');
     expect(el.querySelector('.site-nav__made')?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Made by Asif');
-    expect(el.querySelector<HTMLAnchorElement>('.site-nav__resume')?.href).toBe('https://cdn.test/resume/a.pdf');
+    expect(el.querySelector('.site-nav__resume')).toBeNull(); // the hero's Resume button replaces it
   });
 
   it('lists every section link plus the Blog route', async () => {
@@ -266,14 +266,12 @@ describe('About (Why Hire Me)', () => {
     ]);
   });
 
-  it('links Hire me to #contact and offers the resume from settings', async () => {
+  it('links Hire me to #contact (the resume download lives in the hero)', async () => {
     const fixture = TestBed.createComponent(About);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('.about__cta--outline')?.getAttribute('href')).toBe('/#contact');
-    const resume = el.querySelector('.about__cta--link');
-    expect(resume?.getAttribute('href')).toBe('https://cdn.test/resume/a.pdf');
-    expect(resume?.getAttribute('rel')).toBe('noopener');
+    expect(el.querySelector('.about__cta--link')).toBeNull();
   });
 
   it('keeps the orange block when the portrait is missing', async () => {

@@ -83,6 +83,12 @@
   line-height: var(--leading-relaxed);
 }
 
+.case__meta {
+  margin: 0.75rem 0 0;
+  color: var(--text-subtle);
+  font-size: var(--text-sm);
+}
+
 .case__chips {
   display: flex;
   flex-wrap: wrap;

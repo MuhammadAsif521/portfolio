@@ -61,6 +61,24 @@ export interface ResumeFile {
   generatedAt: string;
 }
 
+/**
+ * GET /public/settings only: the public slice of the resume profile and the current job, used for the
+ * Person JSON-LD (sameAs, knowsAbout, worksFor, alumniOf). Dates are ISO strings.
+ */
+export interface PublicProfile {
+  fullName?: string;
+  headline?: string;
+  location?: string;
+  linkedin?: string;
+  github?: string;
+  skills: string[];
+  skillGroups: { category: string; items: string[] }[];
+  education: { institution: string; degree?: string; field?: string; inProgress: boolean }[];
+  languages: string[];
+  currentPosition?: { company: string; role: string; location?: string; since: string };
+  careerStart?: string;
+}
+
 /** GET /public/settings (and /admin/settings): the singleton plus the active theme. */
 export interface SiteSettings extends Timestamped {
   siteName: string;
@@ -94,6 +112,8 @@ export interface SiteSettings extends Timestamped {
   domain?: string;
   activeThemeId: string;
   activeTheme: ThemePalette | null;
+  /** Public endpoint only (absent on /admin/settings). */
+  profile?: PublicProfile;
 }
 
 // ── Admin auth (cusadmin) ────────────────────────────────────────────────────

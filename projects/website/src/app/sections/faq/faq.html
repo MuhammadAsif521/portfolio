@@ -1,0 +1,20 @@
+<section id="faq" class="faq" aria-labelledby="faq-title">
+  <div class="faq__inner">
+    <h2 id="faq-title" class="faq__title" data-reveal>
+      {{ content.eyebrow }} <span class="faq__accent">{{ content.title }}</span>
+    </h2>
+
+    <div class="faq__list">
+      @for (item of items; track item.question) {
+        <article class="faq__item" data-reveal>
+          <h3 class="faq__question">{{ item.question }}</h3>
+          <p class="faq__answer">
+            @for (part of item.answer; track $index) {
+              @if (part.link; as link) {<a class="faq__link" [routerLink]="link" [fragment]="part.fragment">{{ part.text }}</a>} @else {<ng-container>{{ part.text }}</ng-container>}
+            }
+          </p>
+        </article>
+      }
+    </div>
+  </div>
+</section>

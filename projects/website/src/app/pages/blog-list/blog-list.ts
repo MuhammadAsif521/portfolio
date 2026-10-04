@@ -87,25 +87,33 @@ export class BlogListPage {
       if (this.responseInit && this.outOfRange()) this.responseInit.status = 404;
 
       const base = this.seo.buildUrl('/blog');
+      const canonical = page > 1 && !tag ? `${base}?page=${page}` : base;
+      const title = tag
+        ? `${this.content.title}: ${tag}`
+        : page > 1
+          ? `${this.content.pageTitle}, page ${page}`
+          : this.content.pageTitle;
       this.seo.updateFromRouteData(
         {
-          title: tag ? `${this.content.title}: ${tag}` : page > 1 ? `${this.content.title}, page ${page}` : this.content.title,
-          metaDescription: this.content.intro,
-          ogUrl: page > 1 && !tag ? `${base}?page=${page}` : base,
+          title,
+          metaDescription: page > 1 && !tag ? `${this.content.intro} Page ${page}.` : this.content.intro,
+          ogUrl: canonical,
           robots: tag || failed || this.outOfRange() ? 'noindex, follow' : 'index, follow',
         },
         '/blog',
       );
       // Paginated pages are canonical to themselves; filtered views point at the main list.
       this.seo.updateSeo({
-        canonical: page > 1 && !tag ? `${base}?page=${page}` : base,
-        jsonLd: [
-          ...this.seo.siteJsonLd(),
-          this.seo.buildBreadcrumbJsonLd([
-            { name: 'Home', url: this.seo.buildUrl('/') },
-            { name: this.content.title, url: base },
-          ]),
-        ],
+        canonical,
+        jsonLd: this.seo.blogListNodes({
+          name: this.content.title,
+          description: this.content.intro,
+          path: canonical,
+          posts: (this.result()?.items ?? []).map((post) => ({
+            name: post.title,
+            url: this.seo.buildUrl(`/blog/${post.slug}`),
+          })),
+        }),
       });
     });
   }

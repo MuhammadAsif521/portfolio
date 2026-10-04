@@ -23,8 +23,12 @@
         {{ content.title }} <span class="about__accent">{{ content.accent }}</span>?
       </h2>
 
-      @for (paragraph of content.bio; track $index) {
-        <p class="about__bio" data-reveal>{{ paragraph }}</p>
+      @for (paragraph of bio; track $index) {
+        <p class="about__bio" data-reveal>
+          @for (part of paragraph; track $index) {
+            @if (part.link; as link) {<a class="about__link" [routerLink]="link" [fragment]="part.fragment">{{ part.text }}</a>} @else {<ng-container>{{ part.text }}</ng-container>}
+          }
+        </p>
       }
 
       <dl class="about__stats" data-reveal>
@@ -38,11 +42,11 @@
 
       <div class="about__actions" data-reveal>
         <a class="about__cta about__cta--outline" routerLink="/" fragment="contact">Hire me</a>
-        @if (resumeUrl(); as url) {
+        <!-- @if (resumeUrl(); as url) {
           <a class="about__cta about__cta--link" [href]="url" target="_blank" rel="noopener">
             Download resume <i-lucide name="download" [size]="18" aria-hidden="true" />
           </a>
-        }
+        } -->
       </div>
     </div>
   </div>

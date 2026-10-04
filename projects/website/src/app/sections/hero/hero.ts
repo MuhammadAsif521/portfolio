@@ -42,7 +42,7 @@ export class Hero {
   protected readonly resumeUrl = this.store.selectSignal(siteFeature.selectResumeUrl);
   protected readonly tagline = computed(() => this.description() || HERO_CONTENT.tagline);
 
-  /** Typewriter state. SSR and reduced motion keep the first role, fully typed. */
+  /** Typewriter state. SSR renders the first role, fully typed; reduced motion swaps whole roles instead. */
   protected readonly role = signal<string>(HERO_CONTENT.roles[0]);
   protected readonly typing = signal(false);
   protected readonly portraitVisible = signal(true);
@@ -60,12 +60,27 @@ export class Hero {
           delay: 0.15,
         });
       });
-      if (!prefersReducedMotion()) this.startTypewriter();
+      if (prefersReducedMotion()) this.startRoleSwap();
+      else this.startTypewriter();
     });
   }
 
   protected onPortraitError(): void {
     this.portraitVisible.set(false);
+  }
+
+  /**
+   * Reduce motion (e.g. Android battery saver / "Remove animations"): no letter-by-letter typing, but the
+   * roles still change, one whole role every few seconds, so the headline doesn't look stuck.
+   */
+  private startRoleSwap(): void {
+    if (!this.isBrowser || HERO_CONTENT.roles.length < 2) return;
+    let roleIndex = 0;
+    const timer = setInterval(() => {
+      roleIndex = (roleIndex + 1) % HERO_CONTENT.roles.length;
+      this.role.set(HERO_CONTENT.roles[roleIndex] ?? '');
+    }, HOLD_MS * 2);
+    this.destroyRef.onDestroy(() => clearInterval(timer));
   }
 
   private startTypewriter(): void {

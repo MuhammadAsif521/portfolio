@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 import type { BlogPost } from '@shared/interfaces/public-api.interface';
-import { SeoService } from '@shared/services/seo.service';
+import { SeoService, countWords } from '@shared/services/seo.service';
 import { BLOG_CONTENT } from '../../content/blog.content';
 import { CodeBlocksDirective } from '../../core/code-blocks.directive';
 import { dayMonthYear } from '../../core/dates';
@@ -101,7 +101,20 @@ export class BlogPostPage {
     this.seo.updateSeo({
       ogType: 'article',
       jsonLd: [
-        ...this.seo.siteJsonLd(),
+        ...this.seo.webPageNodes({
+          path,
+          name: post.title,
+          description: post.excerpt,
+          image,
+          datePublished: post.publishedAt,
+          dateModified: post.updatedAt,
+          breadcrumb: [
+            { name: 'Home', url: this.seo.buildUrl('/') },
+            { name: 'Blog', url: this.seo.buildUrl('/blog') },
+            { name: post.title, url },
+          ],
+          extra: { mainEntity: { '@id': `${url}#article` } },
+        }),
         this.seo.buildBlogPostingJsonLd({
           headline: post.title,
           description: post.excerpt,
@@ -111,12 +124,8 @@ export class BlogPostPage {
           dateModified: post.updatedAt,
           keywords: post.tags,
           readingTime: post.readingTime,
+          wordCount: countWords(post.content),
         }),
-        this.seo.buildBreadcrumbJsonLd([
-          { name: 'Home', url: this.seo.buildUrl('/') },
-          { name: 'Blog', url: this.seo.buildUrl('/blog') },
-          { name: post.title, url },
-        ]),
       ],
     });
   }

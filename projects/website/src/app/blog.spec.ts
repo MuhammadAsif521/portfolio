@@ -57,7 +57,8 @@ const page = (data: unknown[], extra: Record<string, number> = {}) => ({
 function jsonLd(): Record<string, any>[] {
   return Array.from(document.querySelectorAll('script[type="application/ld+json"]')).flatMap((node) => {
     const parsed = JSON.parse(node.textContent ?? '[]');
-    return Array.isArray(parsed) ? parsed : [parsed];
+    // One script per page, holding every node in an @graph.
+    return parsed['@graph'] ?? (Array.isArray(parsed) ? parsed : [parsed]);
   });
 }
 
@@ -269,6 +270,9 @@ describe('Blog post page', () => {
       timeRequired: 'PT6M',
     });
     expect(posting?.['author']['@id']).toMatch(/#person$/);
+    expect(posting?.['@id']).toMatch(/\/blog\/ssr-lessons#article$/);
+    expect(posting?.['mainEntityOfPage']['@id']).toMatch(/\/blog\/ssr-lessons#webpage$/);
+    expect(posting?.['wordCount']).toBe(5); // "Why SSR Faster first paint."
     const crumbs = jsonLd().find((schema) => schema['@type'] === 'BreadcrumbList');
     expect(crumbs?.['itemListElement'].map((item: { name: string }) => item.name)).toEqual([
       'Home',

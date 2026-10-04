@@ -6,6 +6,7 @@ import type { Project } from '@shared/interfaces/public-api.interface';
 import { SeoService } from '@shared/services/seo.service';
 import { PROJECTS_CONTENT } from '../../content/projects.content';
 import { CodeBlocksDirective } from '../../core/code-blocks.directive';
+import { dayMonthYear } from '../../core/dates';
 import { PROJECT_COVER_SIZES } from '../../core/image-sizes';
 import { ContentActions, contentFeature } from '../../core/store/content.feature';
 import { LoadError } from '../../ui/load-error/load-error';
@@ -43,6 +44,8 @@ export class ProjectDetailPage {
   /** The full document failed to load (not a 404): error box with "Try again", kept while retrying. */
   protected readonly failed = computed(() => !this.view().doc && !this.notFound() && this.view().error !== null);
   protected readonly retrying = computed(() => this.view().status === 'loading');
+  /** When the case study was last edited (shown as "Last updated"; a freshness signal for readers and crawlers). */
+  protected readonly updated = computed(() => dayMonthYear(this.head()?.updatedAt ?? this.head()?.publishedAt));
 
   constructor() {
     // Load-if-needed for the current slug. During SSR the render waits for it (pendingUntilEvent in the effect).
@@ -91,7 +94,20 @@ export class ProjectDetailPage {
     const url = this.seo.buildUrl(path);
     this.seo.updateSeo({
       jsonLd: [
-        ...this.seo.siteJsonLd(),
+        ...this.seo.webPageNodes({
+          path,
+          name: project.title,
+          description: project.summary,
+          image,
+          datePublished: project.publishedAt,
+          dateModified: project.updatedAt,
+          // No /projects index page exists (the list lives at /#projects), so the trail is Home → project.
+          breadcrumb: [
+            { name: 'Home', url: this.seo.buildUrl('/') },
+            { name: project.title, url },
+          ],
+          extra: { mainEntity: { '@id': `${url}#work` } },
+        }),
         this.seo.buildCreativeWorkJsonLd({
           name: project.title,
           description: project.summary,
@@ -100,12 +116,8 @@ export class ProjectDetailPage {
           datePublished: project.publishedAt,
           dateModified: project.updatedAt,
           keywords: project.techStack,
+          repoUrl: project.repoUrl,
         }),
-        // No /projects index page exists (the list lives at /#projects), so the trail is Home → project.
-        this.seo.buildBreadcrumbJsonLd([
-          { name: 'Home', url: this.seo.buildUrl('/') },
-          { name: project.title, url },
-        ]),
       ],
     });
   }

@@ -83,6 +83,21 @@
   line-height: 1.4;
 }
 
+// Internal links in the bio (to the case studies it mentions).
+.about__link {
+  color: var(--primary-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+
+  &:hover {
+    color: var(--primary);
+  }
+
+  @include m.focus-ring;
+}
+
 .about__stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

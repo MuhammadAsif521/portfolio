@@ -84,15 +84,18 @@ export class LegalPage {
         },
         page.path,
       );
-      // updateSeo only touches the fields it is given, so this just adds the breadcrumb to the JSON-LD.
+      // updateSeo only touches the fields it is given, so this just sets the page's JSON-LD nodes.
       this.seo.updateSeo({
-        jsonLd: [
-          ...this.seo.siteJsonLd(),
-          this.seo.buildBreadcrumbJsonLd([
+        jsonLd: this.seo.webPageNodes({
+          path: page.path,
+          name: page.title,
+          description: page.metaDescription,
+          dateModified: this.published() ? this.settings()?.updatedAt : undefined,
+          breadcrumb: [
             { name: LEGAL_UI.breadcrumbHome, url: this.seo.buildUrl('/') },
             { name: page.title, url: this.seo.buildUrl(page.path) },
-          ]),
-        ],
+          ],
+        }),
       });
     });
   }

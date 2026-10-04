@@ -13,6 +13,7 @@ export const PROJECTS_CONTENT = {
   },
   detail: {
     backLabel: 'All projects',
+    updatedLabel: 'Last updated',
     architectureTitle: 'Architecture',
     galleryTitle: 'Gallery',
     liveLabel: 'Visit live site',

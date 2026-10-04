@@ -1,0 +1,58 @@
+@use 'styles/mixins' as m;
+
+:host {
+  display: block;
+  background: var(--band-a);
+}
+
+.missing {
+  display: grid;
+  justify-items: start;
+  gap: 1.25rem;
+  max-width: 48rem;
+  margin-inline: auto;
+  padding: clamp(3rem, 2rem + 4vw, 6rem) var(--container-gutter);
+}
+
+.missing__title {
+  margin: 0;
+  font-size: clamp(2rem, 1.4rem + 2vw, 3rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--heading);
+}
+
+.missing__text {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-lead);
+  line-height: var(--leading-relaxed);
+}
+
+.missing__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.missing__link {
+  display: inline-flex;
+  padding: 0.7rem 1.4rem;
+  border: 1.5px solid var(--heading);
+  border-radius: var(--radius-pill);
+  color: var(--heading);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-normal);
+
+  @include m.focus-ring;
+
+  &:hover {
+    border-color: var(--primary);
+    color: var(--primary-ink);
+  }
+}

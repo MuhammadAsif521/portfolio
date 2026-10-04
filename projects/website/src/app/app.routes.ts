@@ -37,5 +37,9 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/legal/legal-page').then((m) => m.LegalPage),
     data: { kind: 'cookies' },
   },
-  { path: '**', redirectTo: '' },
+  // Everything else: a real 404 page (status 404, noindex), not a redirect to the home page.
+  {
+    path: '**',
+    loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFoundPage),
+  },
 ];

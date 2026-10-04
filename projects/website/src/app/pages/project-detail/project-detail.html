@@ -18,6 +18,9 @@
         }
         <h1 class="case__title">{{ p.title }}</h1>
         <p class="case__lead">{{ p.summary }}</p>
+        @if (updated(); as u) {
+          <p class="case__meta">{{ content.updatedLabel }} <time [attr.datetime]="u.iso">{{ u.label }}</time></p>
+        }
 
         @if (p.techStack.length) {
           <ul class="case__chips" aria-label="Tech stack">

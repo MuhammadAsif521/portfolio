@@ -185,7 +185,8 @@ describe('Project case study page', () => {
   function jsonLd(): Record<string, any>[] {
     return Array.from(document.querySelectorAll('script[type="application/ld+json"]')).flatMap((node) => {
       const parsed = JSON.parse(node.textContent ?? '[]');
-      return Array.isArray(parsed) ? parsed : [parsed];
+      // One script per page, holding every node in an @graph.
+      return parsed['@graph'] ?? (Array.isArray(parsed) ? parsed : [parsed]);
     });
   }
 

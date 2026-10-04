@@ -17,6 +17,8 @@ export const BLOG_CONTENT = {
   },
   list: {
     title: 'Blog',
+    /** <title> of /blog (page 1, no tag filter); the site name is appended. */
+    pageTitle: 'Angular & Node.js Blog',
     intro: 'Notes from building production Angular and Node systems: architecture, SSR, performance and the details that ship.',
     pageSize: 9,
     allTags: 'All',

@@ -1,5 +1,4 @@
-@let s = state();
-<div class="blog-list" [attr.aria-busy]="s.status === 'loading'">
+<div class="blog-list" [attr.aria-busy]="list().status === 'loading'">
   <nav class="blog-list__crumbs" aria-label="Breadcrumb">
     <ol>
       <li><a routerLink="/">Home</a></li>
@@ -22,9 +21,9 @@
   </header>
 
   @if (result(); as r) {
-    @if (r.data.length) {
+    @if (r.items.length) {
       <ul class="blog-list__grid">
-        @for (post of r.data; track post._id) {
+        @for (post of r.items; track post._id) {
           <li><app-post-card [post]="post" [headingLevel]="2" /></li>
         }
       </ul>
@@ -65,16 +64,14 @@
         }
       </div>
     }
-  } @else if (s.status === 'loading') {
+  } @else if (failed()) {
+    <app-load-error [heading]="content.errorTitle" [text]="list().error" [retrying]="retrying()" (retry)="load()" />
+  } @else {
     <ul class="blog-list__grid" aria-hidden="true">
       @for (n of [1, 2, 3]; track n) {
         <li class="blog-list__bone"></li>
       }
     </ul>
     <p class="sr-only" role="status">Loading posts…</p>
-  } @else {
-    <div class="blog-list__empty">
-      <p>{{ content.errorTitle }}</p>
-    </div>
   }
 </div>

@@ -37,10 +37,15 @@
 .marquee__track {
   display: flex;
   width: max-content;
+  animation: marquee-scroll var(--marquee-duration, 30s) linear infinite;
+  will-change: transform;
 
-  @include m.motion-safe {
-    animation: marquee-scroll var(--marquee-duration, 30s) linear infinite;
-    will-change: transform;
+  // Reduce motion (iOS Reduce Motion, Android "Remove animations"/battery saver, Windows animation
+  // effects off): keep the strip moving, but three times slower. !important (with this class's higher
+  // specificity) beats the global reduced-motion reset in _overrides.scss that would otherwise stop it.
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: calc(var(--marquee-duration, 30s) * 3) !important;
+    animation-iteration-count: infinite !important;
   }
 
   // Pause on hover for real mouse pointers only. On touch screens a tap leaves :hover "stuck" on the
@@ -70,15 +75,6 @@
   padding: 0;
   list-style: none;
 
-  // Reduced motion: one still line, centred and clipped by the band like the static Figma.
-  @media (prefers-reduced-motion: reduce) {
-    justify-content: center;
-    width: 106vw;
-
-    &--copy {
-      display: none;
-    }
-  }
 }
 
 .marquee__item {

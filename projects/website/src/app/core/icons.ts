@@ -11,6 +11,7 @@ import ChevronDown from 'lucide/dist/esm/icons/chevron-down.mjs';
 import ChevronLeft from 'lucide/dist/esm/icons/chevron-left.mjs';
 import ChevronRight from 'lucide/dist/esm/icons/chevron-right.mjs';
 import ChevronUp from 'lucide/dist/esm/icons/chevron-up.mjs';
+import CircleAlert from 'lucide/dist/esm/icons/circle-alert.mjs';
 import CircleCheck from 'lucide/dist/esm/icons/circle-check.mjs';
 import Code from 'lucide/dist/esm/icons/code.mjs';
 import Container from 'lucide/dist/esm/icons/container.mjs';
@@ -29,6 +30,7 @@ import Moon from 'lucide/dist/esm/icons/moon.mjs';
 import PenLine from 'lucide/dist/esm/icons/pen-line.mjs';
 import Phone from 'lucide/dist/esm/icons/phone.mjs';
 import RadioTower from 'lucide/dist/esm/icons/radio-tower.mjs';
+import RefreshCw from 'lucide/dist/esm/icons/refresh-cw.mjs';
 import ScrollText from 'lucide/dist/esm/icons/scroll-text.mjs';
 import SendHorizontal from 'lucide/dist/esm/icons/send-horizontal.mjs';
 import Server from 'lucide/dist/esm/icons/server.mjs';
@@ -58,6 +60,7 @@ const WEBSITE_ICONS: Readonly<Record<string, IconNode[]>> = {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  CircleAlert,
   CircleCheck,
   Code,
   Container,
@@ -76,6 +79,7 @@ const WEBSITE_ICONS: Readonly<Record<string, IconNode[]>> = {
   PenLine,
   Phone,
   RadioTower,
+  RefreshCw,
   ScrollText,
   SendHorizontal,
   Server,

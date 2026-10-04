@@ -13,6 +13,8 @@ import { publicSessionInterceptor } from '@shared/interceptors/public-session.in
 import { routes } from './app.routes';
 import { provideWebsiteIcons } from './core/icons';
 import { provideSiteInitializer } from './core/site-initializer';
+import { isContentRequest } from './core/store/content-endpoints';
+import { provideContentState } from './core/store/content.state';
 import { siteEffects } from './core/store/site.effects';
 import { siteFeature } from './core/store/site.feature';
 import { uiFeature } from './core/store/ui.feature';
@@ -32,17 +34,25 @@ export const appConfig: ApplicationConfig = {
     // browser API calls at all (and needs no public session or reCAPTCHA).
     // ApiService sends withCredentials, which Angular excludes by default. Including it is safe here:
     // SSR requests carry only X-SSR-Key (no visitor cookies), so every cached response is public data.
+    // Content endpoints are left out: their data reaches the browser as NgRx state instead
+    // (core/store/content.state.ts), so shipping the responses as well would double the page size.
     provideClientHydration(
-      withHttpTransferCacheOptions({ includePostRequests: false, includeRequestsWithCredentials: true }),
+      withHttpTransferCacheOptions({
+        includePostRequests: false,
+        includeRequestsWithCredentials: true,
+        filter: (req) => !isContentRequest(req.url),
+      }),
       // @defer (hydrate on …) blocks are server-rendered but load their code only when needed (footer).
       withIncrementalHydration(),
     ),
 
-    // NgRx (brief): site settings + UI state (scroll-spy section, mobile menu).
+    // NgRx (brief): site settings, UI state (scroll-spy section, mobile menu) and the content cache
+    // (projects, posts, testimonials, experience: loaded once, reused for CONTENT_TTL_MS).
     provideStore(),
     provideState(siteFeature),
     provideState(uiFeature),
     provideEffects(siteEffects),
+    provideContentState(),
     // Development builds only: `ngDevMode` is false in production builds, so the devtools code is dropped.
     ...(typeof ngDevMode === 'undefined' || ngDevMode ? [provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })] : []),
 

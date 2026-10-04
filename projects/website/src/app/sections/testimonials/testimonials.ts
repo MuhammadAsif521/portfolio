@@ -1,12 +1,10 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, computed, inject } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
-import type { Testimonial, TestimonialSource } from '@shared/interfaces/public-api.interface';
-import { PublicApiService } from '@shared/services/public-api.service';
-import { catchError, of } from 'rxjs';
+import type { TestimonialSource } from '@shared/interfaces/public-api.interface';
 import { TESTIMONIALS_CONTENT } from '../../content/testimonials.content';
-import { DEMO_CONTENT, DEMO_TESTIMONIALS, orDemo } from '../../core/demo-content';
 import { disposeWith, revealOnScroll } from '../../core/motion';
+import { ContentActions, contentFeature } from '../../core/store/content.feature';
 import { Carousel } from '../../ui/carousel/carousel';
 
 /** "AB" from "Ada Byron"; one letter for single names. */
@@ -32,22 +30,21 @@ export class Testimonials {
   protected readonly initials = initials;
   protected readonly stars = [1, 2, 3, 4, 5];
 
-  /** [] on failure too: a missing band is better than an error in the middle of the page. */
-  protected readonly items = toSignal(
-    inject(PublicApiService)
-      .getTestimonials()
-      .pipe(
-        catchError(() => of([] as Testimonial[])),
-        orDemo<Testimonial>(DEMO_TESTIMONIALS, inject(DEMO_CONTENT)),
-      ),
-    { initialValue: [] as Testimonial[] },
-  );
+  private readonly store = inject(Store);
+  private readonly slot = this.store.selectSignal(contentFeature.selectTestimonials);
+
+  /**
+   * [] while loading and on failure: a missing band is better than an error in the middle of the page.
+   * A failed load is retried the next time the home page is visited (the cache never keeps errors).
+   */
+  protected readonly items = computed(() => this.slot().items ?? []);
 
   protected sourceLabel(source: TestimonialSource): string {
     return TESTIMONIALS_CONTENT.sourceLabels[source] ?? TESTIMONIALS_CONTENT.sourceLabels.other;
   }
 
   constructor() {
+    this.store.dispatch(ContentActions.loadTestimonials());
     afterNextRender(() => {
       const root = this.host.nativeElement;
       const section = root.querySelector('section');

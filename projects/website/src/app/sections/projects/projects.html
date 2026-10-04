@@ -28,6 +28,14 @@
           <p class="projects__summary">{{ p.summary }}</p>
         </div>
       }
+    } @else if (failed()) {
+      <app-load-error
+        class="projects__error"
+        heading="Could not load the projects"
+        [text]="list().error"
+        [retrying]="retrying()"
+        (retry)="load()"
+      />
     } @else if (!loading()) {
       <div class="projects__empty" data-reveal>
         <p class="projects__empty-title">{{ content.empty.title }}</p>

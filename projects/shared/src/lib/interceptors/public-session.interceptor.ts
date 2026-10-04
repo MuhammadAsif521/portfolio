@@ -11,9 +11,31 @@ import { catchError, from, switchMap, tap, throwError, type Observable } from 'r
 import { API_BASE_URL, SSR_API_KEY } from '@shared/config/api.tokens';
 import {
   PUBLIC_SESSION_ERROR_CODES,
+  PUBLIC_SESSION_UNAVAILABLE,
   PublicSessionService,
   SKIP_PUBLIC_SESSION,
+  type PublicSessionFailure,
 } from '@shared/services/public-session.service';
+
+const UNAVAILABLE_MESSAGES: Record<PublicSessionFailure, string> = {
+  recaptcha: 'Could not verify this browser (reCAPTCHA did not load or answer). Please try again.',
+  network: 'Could not reach the server to start a session. Please check your connection and try again.',
+  rejected: 'The server did not accept this browser session. Please try again.',
+};
+
+/**
+ * The error a public request fails with when no session could be established: an HttpErrorResponse
+ * (so callers handle it like any API error, and getError() shows the message) that is clearly not a
+ * 404 and not a real API answer.
+ */
+export function publicSessionUnavailable(url: string, reason: PublicSessionFailure | null): HttpErrorResponse {
+  return new HttpErrorResponse({
+    url,
+    status: 0,
+    statusText: 'Public session unavailable',
+    error: { status: false, code: PUBLIC_SESSION_UNAVAILABLE, message: UNAVAILABLE_MESSAGES[reason ?? 'network'] },
+  });
+}
 
 /**
  * Knows which GET URLs the server-rendered page shipped in Angular's HTTP transfer cache, while that cache
@@ -59,6 +81,9 @@ function readTransferCacheUrls(state: TransferState): Set<string> {
  *  - SSR: adds X-SSR-Key (server-only secret) — no session, no reCAPTCHA on the server.
  *  - Browser: adds `Authorization: Bearer <session token>`, adopts renewed tokens from
  *    X-Session-Token, and on a 401 PUBLIC_SESSION_* re-establishes the session and retries once.
+ *    Concurrent requests share one establishment (PublicSessionService.getToken()).
+ *  - Browser, no session could be established (reCAPTCHA blocked, offline…): the request is not sent
+ *    (it could only answer 401); it fails with a PUBLIC_SESSION_UNAVAILABLE HttpErrorResponse instead.
  *  - Browser, during hydration: requests the server already answered (transfer cache) go through
  *    without a session, so a server-rendered first view needs no session and no reCAPTCHA at all.
  * verify-session itself is excluded via the SKIP_PUBLIC_SESSION context flag.
@@ -83,24 +108,30 @@ export const publicSessionInterceptor: HttpInterceptorFn = (req, next) => {
       }),
     );
 
-  const retryOnSessionError = (err: unknown): Observable<HttpEvent<unknown>> => {
-    const code = err instanceof HttpErrorResponse ? (err.error as { code?: string } | null)?.code : undefined;
-    if (err instanceof HttpErrorResponse && err.status === 401 && code && PUBLIC_SESSION_ERROR_CODES.has(code)) {
-      // Expired or rejected (e.g. the visitor's IP changed): get a fresh session, retry once.
-      session.invalidate();
-      return from(session.getToken()).pipe(switchMap((token) => send(req, token)));
-    }
-    return throwError(() => err);
-  };
+  /** Runs `then` with a session token, or fails clearly when none can be established. */
+  const withSession = (then: (token: string) => Observable<HttpEvent<unknown>>): Observable<HttpEvent<unknown>> =>
+    from(session.getToken()).pipe(
+      switchMap((token) => (token ? then(token) : throwError(() => publicSessionUnavailable(req.url, session.failure())))),
+    );
+
+  const retryOnSessionError =
+    (sentToken: string | null) =>
+    (err: unknown): Observable<HttpEvent<unknown>> => {
+      const code = err instanceof HttpErrorResponse ? (err.error as { code?: string } | null)?.code : undefined;
+      if (err instanceof HttpErrorResponse && err.status === 401 && code && PUBLIC_SESSION_ERROR_CODES.has(code)) {
+        // Expired or rejected (e.g. the visitor's IP changed): get a fresh session, retry once. Passing
+        // the token that failed keeps a session another request has already renewed.
+        session.invalidate(sentToken);
+        return withSession((token) => send(req, token));
+      }
+      return throwError(() => err);
+    };
 
   // Served from the SSR transfer cache (the next interceptor): no token needed. Should the cache miss
   // after all (e.g. different query params), the API answers 401 and the normal session flow takes over.
   if (req.method === 'GET' && !session.currentToken() && inject(HydrationCacheProbe).has(req.url)) {
-    return send(req, null).pipe(catchError(retryOnSessionError));
+    return send(req, null).pipe(catchError(retryOnSessionError(null)));
   }
 
-  return from(session.getToken()).pipe(
-    switchMap((token) => send(req, token)),
-    catchError(retryOnSessionError),
-  );
+  return withSession((token) => send(req, token).pipe(catchError(retryOnSessionError(token))));
 };

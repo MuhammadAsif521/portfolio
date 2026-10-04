@@ -1,0 +1,23 @@
+<div class="load-error" role="alert" [attr.aria-busy]="retrying()">
+  <i-lucide class="load-error__icon" name="circle-alert" [size]="22" aria-hidden="true" />
+  <div class="load-error__body">
+    @if (pageHeading()) {
+      <h1 class="load-error__title">{{ heading() }}</h1>
+    } @else {
+      <p class="load-error__title">{{ heading() }}</p>
+    }
+    <p class="load-error__text">{{ retrying() ? 'Trying again…' : (text() ?? 'Please check your connection and try again.') }}</p>
+    <div class="load-error__actions">
+      <button
+        type="button"
+        class="load-error__retry"
+        [attr.aria-disabled]="retrying() ? 'true' : null"
+        (click)="onRetry()"
+      >
+        <i-lucide name="refresh-cw" [size]="16" [class.is-spinning]="retrying()" aria-hidden="true" />
+        {{ retrying() ? 'Retrying…' : 'Try again' }}
+      </button>
+      <ng-content />
+    </div>
+  </div>
+</div>

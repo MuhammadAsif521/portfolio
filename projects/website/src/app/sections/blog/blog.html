@@ -17,6 +17,8 @@
           <li data-reveal><app-post-card [post]="post" /></li>
         }
       </ul>
+    } @else if (failed()) {
+      <app-load-error heading="Could not load the latest posts" [text]="list().error" [retrying]="retrying()" (retry)="load()" />
     } @else if (showUpcoming()) {
       <ul class="blog__grid" [attr.aria-label]="content.upcomingLabel">
         @for (topic of content.upcoming; track topic) {

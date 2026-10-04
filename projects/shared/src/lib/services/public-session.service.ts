@@ -16,6 +16,12 @@ export const PUBLIC_SESSION_ERROR_CODES = new Set([
   'PUBLIC_SESSION_INVALID',
 ]);
 
+/** Why the last attempt to establish a session failed (see PublicSessionService.failure()). */
+export type PublicSessionFailure = 'recaptcha' | 'network' | 'rejected';
+
+/** Error code the interceptor reports when no session could be established (never sent by the API). */
+export const PUBLIC_SESSION_UNAVAILABLE = 'PUBLIC_SESSION_UNAVAILABLE';
+
 const RECAPTCHA_ACTION = 'public_session';
 /** Refresh a little before expiry so an in-flight request never carries a dead token. */
 const EXPIRY_MARGIN_MS = 30_000;
@@ -35,6 +41,11 @@ const EXPIRY_HINT_KEY = 'public-session-expires-at';
  *        the server returns the existing session (Google is never called);
  *     3. only otherwise is reCAPTCHA loaded (lazily) and executed.
  * - Renewed tokens from the X-Session-Token response header are adopted automatically.
+ * - Concurrent callers share one establishment (one verify-session / reCAPTCHA run), and a 401 for a
+ *   token that has already been replaced does not throw the new one away (see invalidate()).
+ * - When no session can be established, getToken() resolves null and failure() says why; the
+ *   interceptor then fails the request with a clear PUBLIC_SESSION_UNAVAILABLE error instead of sending
+ *   it without a token (which could only answer 401).
  * - On the server (SSR) this service is inert: the interceptor sends X-SSR-Key instead.
  */
 @Injectable({ providedIn: 'root' })
@@ -47,16 +58,29 @@ export class PublicSessionService {
   private token: string | null = null;
   private expiresAt = 0;
   private pending: Promise<string | null> | null = null;
+  private lastFailure: PublicSessionFailure | null = null;
   private readonly injector = inject(Injector);
 
   /** A usable session token, establishing one if needed. Always null during SSR. */
   getToken(): Promise<string | null> {
     if (!this.isBrowser) return Promise.resolve(null);
     if (this.token && this.expiresAt - Date.now() > EXPIRY_MARGIN_MS) return Promise.resolve(this.token);
-    this.pending ??= this.establish().finally(() => {
-      this.pending = null;
-    });
+    this.pending ??= this.establish()
+      .catch((err: unknown) => {
+        // e.g. the reCAPTCHA chunk failed to load (offline): report it like any other failure.
+        console.error('[PublicSessionService] could not establish a session', err);
+        this.lastFailure = 'network';
+        return null;
+      })
+      .finally(() => {
+        this.pending = null;
+      });
     return this.pending;
+  }
+
+  /** Why the last establishment failed; null after a success. */
+  failure(): PublicSessionFailure | null {
+    return this.lastFailure;
   }
 
   /** The in-memory token if it is still usable, without establishing one (never runs reCAPTCHA). */
@@ -69,11 +93,17 @@ export class PublicSessionService {
     if (!token || !Number.isFinite(expiresInSeconds) || expiresInSeconds <= 0) return;
     this.token = token;
     this.expiresAt = Date.now() + expiresInSeconds * 1000;
+    this.lastFailure = null;
     this.writeHint(this.expiresAt);
   }
 
-  /** Drops the current token (after a 401 PUBLIC_SESSION_*), so the next getToken() re-establishes. */
-  invalidate(): void {
+  /**
+   * Drops the current token after a 401 PUBLIC_SESSION_*, so the next getToken() re-establishes.
+   * Pass the token the failed request carried: if another request has already replaced it (concurrent
+   * 401s), the fresh token is kept and no second reCAPTCHA runs. Without an argument it always clears.
+   */
+  invalidate(failedToken?: string | null): void {
+    if (failedToken !== undefined && failedToken !== this.token) return;
     this.token = null;
     this.expiresAt = 0;
     this.writeHint(null);
@@ -87,15 +117,21 @@ export class PublicSessionService {
     }
 
     // 3. No usable session: run reCAPTCHA (retry once — the first call can race a cold script load).
+    let failure: PublicSessionFailure = 'recaptcha';
     for (let attempt = 1; attempt <= 2; attempt++) {
       const recaptchaToken = await this.runRecaptcha();
-      if (!recaptchaToken) continue;
+      if (!recaptchaToken) {
+        failure = 'recaptcha';
+        continue;
+      }
       const token = await this.verify(recaptchaToken).catch((err: unknown) => {
         console.error('[PublicSessionService] verify-session failed', err);
+        failure = err instanceof HttpErrorResponse && err.status >= 400 && err.status < 500 ? 'rejected' : 'network';
         return null;
       });
       if (token) return token;
     }
+    this.lastFailure = failure;
     return null;
   }
 

@@ -3,10 +3,13 @@ import { RESPONSE_INIT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { provideMockStore } from '@ngrx/store/testing';
+import { provideTestStore } from './testing/store.testing';
 import { PublicApiService } from '@shared/services/public-api.service';
 import { DEMO_CONTENT } from './core/demo-content';
-import { of, throwError } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Subject, of, throwError } from 'rxjs';
+import { vi } from 'vitest';
+import { ContentActions } from './core/store/content.feature';
 import { PROJECTS_CONTENT } from './content/projects.content';
 import { PROJECT_COVER_SIZES } from './core/image-sizes';
 import { ProjectDetailPage } from './pages/project-detail/project-detail';
@@ -24,7 +27,7 @@ function setup(api: Partial<PublicApiService>, responseInit?: ResponseInit, demo
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
-      provideMockStore({ initialState }),
+      provideTestStore(initialState),
       { provide: PublicApiService, useValue: api },
       // Demo content is dev-only UI review data; these tests cover real API behaviour.
       { provide: DEMO_CONTENT, useValue: demo },
@@ -120,9 +123,41 @@ describe('Projects section', () => {
     expect(el.querySelector('app-project-card')).toBeNull();
   });
 
-  it('shows the empty state when the API fails', async () => {
-    const el = await render(() => throwError(() => new Error('down')));
-    expect(el.querySelector('.projects__empty-cta')?.getAttribute('href')).toBe('/#contact');
+  it('shows a friendly error with "Try again" (not the empty state) when the API fails, and retries', async () => {
+    const listProjects = vi
+      .fn()
+      .mockReturnValueOnce(throwError(() => new Error('down')))
+      .mockReturnValueOnce(of(page([projectCard('back')])));
+    setup({ listProjects } as unknown as Partial<PublicApiService>);
+    const fixture = TestBed.createComponent(Projects);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelector('.projects__empty')).toBeNull();
+    const box = el.querySelector('app-load-error [role="alert"]')!;
+    expect(box.textContent).toContain('Could not load the projects');
+    const retry = box.querySelector<HTMLButtonElement>('button')!;
+    expect(retry.textContent?.trim()).toBe('Try again');
+    expect(retry.type).toBe('button');
+
+    retry.click();
+    await fixture.whenStable();
+    expect(listProjects).toHaveBeenCalledTimes(2);
+    expect(el.querySelector('app-load-error')).toBeNull();
+    expect(el.querySelector('app-project-card h3')?.textContent).toBe('Project back');
+  });
+
+  it('renders from the store on a revisit without asking the API again', async () => {
+    const listProjects = vi.fn(() => of(page([projectCard('cached')])));
+    setup({ listProjects } as unknown as Partial<PublicApiService>);
+    const first = TestBed.createComponent(Projects);
+    await first.whenStable();
+    first.destroy();
+
+    const again = TestBed.createComponent(Projects);
+    again.detectChanges(); // first render, synchronously from the store
+    expect((again.nativeElement as HTMLElement).querySelector('app-project-card h3')?.textContent).toBe('Project cached');
+    expect(listProjects).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -224,9 +259,55 @@ describe('Project case study page', () => {
     expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex, follow');
   });
 
-  it('uses 503, not 404, when the API itself is failing', async () => {
+  it('uses 503, not 404, when the API itself is failing, with "Try again" and a way back', async () => {
     const { el, responseInit } = await render(() => throwError(() => new HttpErrorResponse({ status: 500 })));
     expect(responseInit.status).toBe(503);
     expect(el.querySelector('h1')?.textContent).toBe(PROJECTS_CONTENT.detail.errorTitle);
+    expect(el.querySelector('app-load-error button')?.textContent?.trim()).toBe('Try again');
+    expect(el.querySelector('app-load-error a')?.getAttribute('href')).toBe('/#projects');
+  });
+
+  it('"Try again" reloads a failed case study', async () => {
+    const getProject = vi
+      .fn()
+      .mockReturnValueOnce(throwError(() => new HttpErrorResponse({ status: 0 })))
+      .mockReturnValueOnce(of(project));
+    setup({ getProject } as unknown as Partial<PublicApiService>);
+    const fixture = TestBed.createComponent(ProjectDetailPage);
+    fixture.componentRef.setInput('slug', 'city-of-new-britain');
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    el.querySelector<HTMLButtonElement>('app-load-error button')!.click();
+    await fixture.whenStable();
+    expect(getProject).toHaveBeenCalledTimes(2);
+    expect(el.querySelector('.case__content h2')?.textContent).toBe('Challenge');
+  });
+
+  it('renders the list card at once (title, summary, cover) while the full case study loads', async () => {
+    const full = new Subject<typeof project>();
+    setup({ getProject: () => full } as unknown as Partial<PublicApiService>);
+    TestBed.inject(Store).dispatch(
+      ContentActions.loadProjectListSuccess({
+        key: 'limit=12',
+        result: page([{ ...projectCard('city-of-new-britain'), coverImage: project.coverImage }]) as never,
+        loadedAt: Date.now(),
+      }),
+    );
+    const fixture = TestBed.createComponent(ProjectDetailPage);
+    fixture.componentRef.setInput('slug', 'city-of-new-britain');
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelector('h1')?.textContent).toBe('Project city-of-new-britain');
+    expect(el.querySelector('.case__lead')?.textContent).toBe('Summary of city-of-new-britain');
+    expect(el.querySelector('img.case__cover')?.getAttribute('src')).toBe('https://cdn.test/c.webp');
+    expect(el.querySelector('.case__content')).toBeNull();
+    expect(el.querySelector('[role="status"]')?.textContent).toContain('Loading');
+
+    full.next(project);
+    full.complete();
+    await fixture.whenStable();
+    expect(el.querySelector('.case__content h2')?.textContent).toBe('Challenge');
   });
 });

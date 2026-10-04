@@ -1,30 +1,14 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  RESPONSE_INIT,
-  computed,
-  effect,
-  inject,
-  input,
-} from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, RESPONSE_INIT, computed, effect, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 import type { Project } from '@shared/interfaces/public-api.interface';
-import { PublicApiService } from '@shared/services/public-api.service';
 import { SeoService } from '@shared/services/seo.service';
-import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { PROJECTS_CONTENT } from '../../content/projects.content';
 import { CodeBlocksDirective } from '../../core/code-blocks.directive';
-import { DEMO_CONTENT, DEMO_PROJECTS } from '../../core/demo-content';
 import { PROJECT_COVER_SIZES } from '../../core/image-sizes';
-
-type ProjectState =
-  | { status: 'loading' }
-  | { status: 'loaded'; project: Project }
-  | { status: 'not-found' }
-  | { status: 'error' };
+import { ContentActions, contentFeature } from '../../core/store/content.feature';
+import { LoadError } from '../../ui/load-error/load-error';
 
 /**
  * /projects/:slug case study (brief, Parts 4/5). Rendered on the server with the project's own SEO,
@@ -32,7 +16,7 @@ type ProjectState =
  */
 @Component({
   selector: 'app-project-detail',
-  imports: [RouterLink, IconComponent, CodeBlocksDirective],
+  imports: [RouterLink, IconComponent, CodeBlocksDirective, LoadError],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,57 +25,50 @@ export class ProjectDetailPage {
   /** Bound from the route by withComponentInputBinding(). */
   readonly slug = input.required<string>();
 
-  private readonly api = inject(PublicApiService);
+  private readonly store = inject(Store);
   private readonly seo = inject(SeoService);
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
-  private readonly demo = inject(DEMO_CONTENT);
 
   protected readonly content = PROJECTS_CONTENT.detail;
   protected readonly coverSizes = PROJECT_COVER_SIZES;
 
-  protected readonly state = toSignal(
-    toObservable(this.slug).pipe(
-      switchMap((slug) =>
-        this.api.getProject(slug).pipe(
-          map((project): ProjectState => ({ status: 'loaded', project })),
-          catchError((err: unknown) => {
-            // Development only: demo projects open their own (demo) case study.
-            const demo = this.demo ? DEMO_PROJECTS.find((item) => item.slug === slug) : undefined;
-            if (demo) return of<ProjectState>({ status: 'loaded', project: demo });
-            return of<ProjectState>(
-              err instanceof HttpErrorResponse && err.status === 404 ? { status: 'not-found' } : { status: 'error' },
-            );
-          }),
-          startWith<ProjectState>({ status: 'loading' }),
-        ),
-      ),
-    ),
-    { initialValue: { status: 'loading' } as ProjectState },
-  );
+  /** This slug from the content cache: the full case study, or its list card as a preview while it loads. */
+  private readonly projectFor = this.store.selectSignal(contentFeature.selectProjectFor);
+  protected readonly view = computed(() => this.projectFor()(this.slug()));
 
-  protected readonly project = computed(() => {
-    const state = this.state();
-    return state.status === 'loaded' ? state.project : null;
-  });
+  protected readonly project = computed(() => this.view().doc);
+  protected readonly notFound = computed(() => this.view().notFound && !this.view().doc);
+  /** What the header renders: the full document, else the card (title, summary, cover) from the home list. */
+  protected readonly head = computed(() => (this.notFound() ? null : (this.view().doc ?? this.view().preview)));
+  /** The full document failed to load (not a 404): error box with "Try again", kept while retrying. */
+  protected readonly failed = computed(() => !this.view().doc && !this.notFound() && this.view().error !== null);
+  protected readonly retrying = computed(() => this.view().status === 'loading');
 
   constructor() {
-    effect(() => {
-      const state = this.state();
-      const path = `/projects/${this.slug()}`;
+    // Load-if-needed for the current slug. During SSR the render waits for it (pendingUntilEvent in the effect).
+    effect(() => this.load());
 
-      if (state.status === 'loaded') {
-        this.applySeo(state.project, path);
-      } else if (state.status === 'not-found' || state.status === 'error') {
-        if (this.responseInit) this.responseInit.status = state.status === 'not-found' ? 404 : 503;
+    effect(() => {
+      const path = `/projects/${this.slug()}`;
+      const project = this.project();
+
+      if (project) {
+        this.applySeo(project, path);
+      } else if (this.notFound() || this.failed()) {
+        if (this.responseInit) this.responseInit.status = this.notFound() ? 404 : 503;
         this.seo.updateFromRouteData(
           {
-            title: state.status === 'not-found' ? this.content.notFoundTitle : this.content.errorTitle,
+            title: this.notFound() ? this.content.notFoundTitle : this.content.errorTitle,
             robots: 'noindex, follow',
           },
           path,
         );
       }
     });
+  }
+
+  protected load(): void {
+    this.store.dispatch(ContentActions.loadProject({ slug: this.slug() }));
   }
 
   private applySeo(project: Project, path: string): void {

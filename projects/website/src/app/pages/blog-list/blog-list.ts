@@ -1,20 +1,13 @@
 import { ChangeDetectionStrategy, Component, RESPONSE_INIT, computed, effect, inject, input } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
-import type { PaginatedResponse } from '@shared/interfaces/auth.interface';
-import type { BlogPostCard } from '@shared/interfaces/public-api.interface';
-import { PublicApiService } from '@shared/services/public-api.service';
+import type { BlogListQuery } from '@shared/interfaces/public-api.interface';
 import { SeoService } from '@shared/services/seo.service';
-import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { BLOG_CONTENT } from '../../content/blog.content';
-import { DEMO_CONTENT, DEMO_POSTS } from '../../core/demo-content';
+import { ContentActions, contentFeature } from '../../core/store/content.feature';
+import { LoadError } from '../../ui/load-error/load-error';
 import { PostCard } from '../../ui/post-card/post-card';
-
-type ListState =
-  | { status: 'loading' }
-  | { status: 'loaded'; result: PaginatedResponse<BlogPostCard> }
-  | { status: 'error' };
 
 /** "2" → 2; anything else (missing, "0", "abc", "-3") → 1. */
 export function pageNumber(value: string | undefined): number {
@@ -31,10 +24,11 @@ export function tagFilter(value: string | undefined): string | null {
 /**
  * /blog (brief, Part 4): paginated post list with crawlable ?page= links and an optional ?tag= filter.
  * Filtered views are noindex (they duplicate the main list); a page past the end answers 404.
+ * Pages come from the NgRx content cache, so going back to a visited page renders instantly.
  */
 @Component({
   selector: 'app-blog-list',
-  imports: [RouterLink, IconComponent, PostCard],
+  imports: [RouterLink, IconComponent, PostCard, LoadError],
   templateUrl: './blog-list.html',
   styleUrl: './blog-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,44 +38,34 @@ export class BlogListPage {
   readonly page = input<string>();
   readonly tag = input<string>();
 
-  private readonly api = inject(PublicApiService);
+  private readonly store = inject(Store);
   private readonly seo = inject(SeoService);
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
-  private readonly demo = inject(DEMO_CONTENT);
 
   protected readonly content = BLOG_CONTENT.list;
   protected readonly currentPage = computed(() => pageNumber(this.page()));
   protected readonly currentTag = computed(() => tagFilter(this.tag()));
-  private readonly query = computed(() => ({ page: this.currentPage(), tag: this.currentTag() }));
-
-  protected readonly state = toSignal(
-    toObservable(this.query).pipe(
-      switchMap(({ page, tag }) =>
-        this.api.listPosts({ page, limit: BLOG_CONTENT.list.pageSize, ...(tag ? { tag: [tag] } : {}) }).pipe(
-          map((result): ListState =>
-            result.data.length || page > 1 || !this.demo
-              ? { status: 'loaded', result }
-              : { status: 'loaded', result: this.demoPage(tag) },
-          ),
-          catchError(() =>
-            of<ListState>(this.demo && page === 1 ? { status: 'loaded', result: this.demoPage(tag) } : { status: 'error' }),
-          ),
-          startWith<ListState>({ status: 'loading' }),
-        ),
-      ),
-    ),
-    { initialValue: { status: 'loading' } as ListState },
-  );
-
-  protected readonly result = computed(() => {
-    const state = this.state();
-    return state.status === 'loaded' ? state.result : null;
+  private readonly query = computed((): BlogListQuery => {
+    const tag = this.currentTag();
+    return { page: this.currentPage(), limit: BLOG_CONTENT.list.pageSize, ...(tag ? { tag: [tag] } : {}) };
   });
+
+  private readonly listFor = this.store.selectSignal(contentFeature.selectPostListFor);
+  protected readonly list = computed(() => this.listFor()(this.query()));
+
+  /** The loaded page (also while it refreshes in the background); null while loading or failed. */
+  protected readonly result = computed(() => {
+    const list = this.list();
+    return list.status === 'loaded' ? list : null;
+  });
+  /** The load failed: error box with "Try again" (kept, as "Retrying…", while the retry runs). */
+  protected readonly failed = computed(() => !this.result() && this.list().error !== null);
+  protected readonly retrying = computed(() => this.list().status === 'loading');
 
   /** Past the last page (only possible with a hand-typed or stale ?page=). */
   protected readonly outOfRange = computed(() => {
     const result = this.result();
-    return !!result && result.data.length === 0 && this.currentPage() > 1;
+    return !!result && result.items.length === 0 && this.currentPage() > 1;
   });
 
   protected readonly pages = computed(() => {
@@ -90,13 +74,16 @@ export class BlogListPage {
   });
 
   constructor() {
+    // Load-if-needed whenever ?page / ?tag change; the effect skips pages that are cached and fresh.
+    effect(() => this.load());
+
     effect(() => {
-      const state = this.state();
-      if (state.status === 'loading') return;
+      const failed = this.failed();
+      if (!this.result() && !failed) return; // still loading
       const page = this.currentPage();
       const tag = this.currentTag();
 
-      if (this.responseInit && state.status === 'error') this.responseInit.status = 503;
+      if (this.responseInit && failed) this.responseInit.status = 503;
       if (this.responseInit && this.outOfRange()) this.responseInit.status = 404;
 
       const base = this.seo.buildUrl('/blog');
@@ -105,7 +92,7 @@ export class BlogListPage {
           title: tag ? `${this.content.title}: ${tag}` : page > 1 ? `${this.content.title}, page ${page}` : this.content.title,
           metaDescription: this.content.intro,
           ogUrl: page > 1 && !tag ? `${base}?page=${page}` : base,
-          robots: tag || state.status === 'error' || this.outOfRange() ? 'noindex, follow' : 'index, follow',
+          robots: tag || failed || this.outOfRange() ? 'noindex, follow' : 'index, follow',
         },
         '/blog',
       );
@@ -123,10 +110,8 @@ export class BlogListPage {
     });
   }
 
-  /** Development only: the demo posts as a one-page result (optionally filtered by tag). */
-  private demoPage(tag: string | null): PaginatedResponse<BlogPostCard> {
-    const data = DEMO_POSTS.filter((post) => !tag || post.tags.includes(tag));
-    return { data, total: data.length, limit: BLOG_CONTENT.list.pageSize, page: 1, pages: data.length ? 1 : 0 };
+  protected load(): void {
+    this.store.dispatch(ContentActions.loadPostList({ query: this.query() }));
   }
 
   /** Query params for a page link; page 1 and "no tag" are omitted so URLs stay canonical. */

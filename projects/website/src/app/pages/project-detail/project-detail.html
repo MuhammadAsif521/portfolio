@@ -1,16 +1,16 @@
-@let s = state();
-<div class="case" [attr.aria-busy]="s.status === 'loading'">
+<div class="case" [attr.aria-busy]="!project() && view().status === 'loading'">
   <nav class="case__crumbs" aria-label="Breadcrumb">
     <ol>
       <li><a routerLink="/">Home</a></li>
       <li><a routerLink="/" fragment="projects">Projects</a></li>
-      @if (project(); as p) {
+      @if (head(); as p) {
         <li aria-current="page">{{ p.title }}</li>
       }
     </ol>
   </nav>
 
-  @if (project(); as p) {
+  @if (head(); as p) {
+    <!-- The full case study, or (client-side navigation) its card from the list while the rest loads. -->
     <article class="case__article">
       <header class="case__header">
         @if (p.client) {
@@ -76,16 +76,17 @@
         </section>
       }
 
+      @if (project(); as full) {
       <!-- Sanitized on the server (sanitize-html allowlist) and again by Angular's [innerHTML]. -->
-      @if (p.content) {
-        <div class="case__content prose" [innerHTML]="p.content" [appCodeBlocks]="p.content"></div>
+      @if (full.content) {
+        <div class="case__content prose" [innerHTML]="full.content" [appCodeBlocks]="full.content"></div>
       }
 
-      @if (p.gallery.length) {
+      @if (full.gallery.length) {
         <section class="case__block" aria-labelledby="case-gallery">
           <h2 id="case-gallery" class="case__heading">{{ content.galleryTitle }}</h2>
           <div class="case__gallery">
-            @for (image of p.gallery; track image.key) {
+            @for (image of full.gallery; track image.key) {
               <figure class="case__shot">
                 <img
                   [src]="image.url"
@@ -103,6 +104,16 @@
           </div>
         </section>
       }
+      } @else if (failed()) {
+        <app-load-error class="case__content" [heading]="content.errorTitle" [text]="view().error" [retrying]="retrying()" (retry)="load()" />
+      } @else {
+        <div class="case__skeleton" aria-hidden="true">
+          <span class="case__bone case__bone--text"></span>
+          <span class="case__bone case__bone--text"></span>
+          <span class="case__bone case__bone--text"></span>
+        </div>
+        <p class="sr-only" role="status">Loading the case study…</p>
+      }
     </article>
 
     <aside class="case__cta" aria-labelledby="case-cta-title">
@@ -112,20 +123,24 @@
         {{ content.ctaLabel }} <i-lucide name="arrow-up-right" [size]="18" aria-hidden="true" />
       </a>
     </aside>
-  } @else if (s.status === 'loading') {
+  } @else if (notFound()) {
+    <div class="case__missing">
+      <h1 class="case__title">{{ content.notFoundTitle }}</h1>
+      <p class="case__lead">{{ content.notFoundText }}</p>
+      <a class="case__btn case__btn--primary" routerLink="/" fragment="projects">{{ content.backLabel }}</a>
+    </div>
+  } @else if (failed()) {
+    <div class="case__missing">
+      <app-load-error [heading]="content.errorTitle" [text]="view().error" [pageHeading]="true" [retrying]="retrying()" (retry)="load()">
+        <a class="case__back" routerLink="/" fragment="projects">{{ content.backLabel }}</a>
+      </app-load-error>
+    </div>
+  } @else {
     <div class="case__skeleton" aria-hidden="true">
       <span class="case__bone case__bone--title"></span>
       <span class="case__bone case__bone--text"></span>
       <span class="case__bone case__bone--cover"></span>
     </div>
     <p class="sr-only" role="status">Loading project…</p>
-  } @else {
-    <div class="case__missing">
-      <h1 class="case__title">{{ s.status === 'not-found' ? content.notFoundTitle : content.errorTitle }}</h1>
-      @if (s.status === 'not-found') {
-        <p class="case__lead">{{ content.notFoundText }}</p>
-      }
-      <a class="case__btn case__btn--primary" routerLink="/" fragment="projects">{{ content.backLabel }}</a>
-    </div>
   }
 </div>

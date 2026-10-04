@@ -3,10 +3,12 @@ import { RESPONSE_INIT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { provideMockStore } from '@ngrx/store/testing';
+import { provideTestStore } from './testing/store.testing';
 import { PublicApiService } from '@shared/services/public-api.service';
 import { DEMO_CONTENT } from './core/demo-content';
-import { of, throwError } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Subject, of, throwError } from 'rxjs';
+import { ContentActions } from './core/store/content.feature';
 import { vi } from 'vitest';
 import { BLOG_CONTENT } from './content/blog.content';
 import { dayMonthYear } from './core/dates';
@@ -22,12 +24,7 @@ function setup(api: Record<string, unknown>, responseInit?: ResponseInit, demo =
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
-      provideMockStore({
-        initialState: {
-          site: { settings: { siteName: 'Muhammad Asif' }, status: 'loaded', error: null },
-          ui: { activeSection: 'home', menuOpen: false },
-        },
-      }),
+      provideTestStore({ site: { settings: { siteName: 'Muhammad Asif' }, status: 'loaded', error: null } }),
       { provide: PublicApiService, useValue: api },
       // Demo content is dev-only UI review data; these tests cover real API behaviour.
       { provide: DEMO_CONTENT, useValue: demo },
@@ -120,6 +117,18 @@ describe('Blog section (home)', () => {
     expect(el.querySelector('.blog__grid a')).toBeNull();
     expect(el.querySelector('.blog__all')).toBeNull();
   });
+
+  it('shows "Try again" instead of the upcoming topics when the API fails', async () => {
+    const listPosts = vi.fn().mockReturnValueOnce(throwError(() => new Error('down'))).mockReturnValueOnce(of(page([card('one')])));
+    setup({ listPosts });
+    const fixture = TestBed.createComponent(Blog);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.blog__upcoming')).toBeNull();
+    el.querySelector<HTMLButtonElement>('app-load-error button')!.click();
+    await fixture.whenStable();
+    expect(el.querySelectorAll('app-post-card').length).toBe(1);
+  });
 });
 
 describe('Blog list page', () => {
@@ -167,6 +176,27 @@ describe('Blog list page', () => {
     TestBed.resetTestingModule();
     const down = await render(vi.fn(() => throwError(() => new Error('down'))));
     expect(down.responseInit.status).toBe(503);
+    expect(down.el.querySelector('app-load-error')?.textContent).toContain(BLOG_CONTENT.list.errorTitle);
+  });
+
+  it('"Try again" reloads a failed page; visited pages come back from the cache', async () => {
+    const listPosts = vi
+      .fn()
+      .mockReturnValueOnce(throwError(() => new Error('down')))
+      .mockReturnValue(of(page([card('a')])));
+    setup({ listPosts }, {});
+    const fixture = TestBed.createComponent(BlogListPage);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    el.querySelector<HTMLButtonElement>('app-load-error button')!.click();
+    await fixture.whenStable();
+    expect(el.querySelectorAll('app-post-card').length).toBe(1);
+    fixture.destroy();
+
+    const again = TestBed.createComponent(BlogListPage);
+    await again.whenStable();
+    expect((again.nativeElement as HTMLElement).querySelectorAll('app-post-card').length).toBe(1);
+    expect(listPosts).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -245,6 +275,42 @@ describe('Blog post page', () => {
       'Blog',
       'Post ssr-lessons',
     ]);
+  });
+
+  it('renders the card from a list at once while the full post loads', async () => {
+    const full = new Subject<typeof post>();
+    setup({ getPost: () => full }, {});
+    TestBed.inject(Store).dispatch(
+      ContentActions.loadPostListSuccess({ key: 'limit=3', result: page([card('ssr-lessons')]) as never, loadedAt: Date.now() }),
+    );
+    const fixture = TestBed.createComponent(BlogPostPage);
+    fixture.componentRef.setInput('slug', 'ssr-lessons');
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('h1')?.textContent).toBe('Post ssr-lessons');
+    expect(el.querySelector('.post__lead')?.textContent).toBe('Excerpt of ssr-lessons');
+    expect(el.querySelector('.post__content')).toBeNull();
+
+    full.next(post);
+    full.complete();
+    await fixture.whenStable();
+    expect(el.querySelector('.post__content h2')?.textContent).toBe('Why SSR');
+  });
+
+  it('a failed post shows "Try again" (503) and loads on retry', async () => {
+    const getPost = vi.fn().mockReturnValueOnce(throwError(() => new HttpErrorResponse({ status: 500 }))).mockReturnValueOnce(of(post));
+    const responseInit: ResponseInit = {};
+    setup({ getPost }, responseInit);
+    const fixture = TestBed.createComponent(BlogPostPage);
+    fixture.componentRef.setInput('slug', 'ssr-lessons');
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(responseInit.status).toBe(503);
+    expect(el.querySelector('h1')?.textContent).toBe(BLOG_CONTENT.post.errorTitle);
+    expect(el.querySelector('app-load-error a')?.getAttribute('href')).toBe('/blog');
+    el.querySelector<HTMLButtonElement>('app-load-error button')!.click();
+    await fixture.whenStable();
+    expect(el.querySelector('h1')?.textContent).toBe('Post ssr-lessons');
   });
 
   it('answers unknown slugs with 404 + noindex', async () => {

@@ -1,16 +1,16 @@
-@let s = state();
-<div class="post" [attr.aria-busy]="s.status === 'loading'">
+<div class="post" [attr.aria-busy]="!post() && view().status === 'loading'">
   <nav class="post__crumbs" aria-label="Breadcrumb">
     <ol>
       <li><a routerLink="/">Home</a></li>
       <li><a routerLink="/blog">Blog</a></li>
-      @if (post(); as p) {
+      @if (head(); as p) {
         <li aria-current="page">{{ p.title }}</li>
       }
     </ol>
   </nav>
 
-  @if (post(); as p) {
+  @if (head(); as p) {
+    <!-- The full post, or (client-side navigation) its card from a list while the content loads. -->
     <article class="post__article">
       <header class="post__header">
         @if (p.tags.length) {
@@ -54,8 +54,19 @@
         />
       }
 
-      <!-- Sanitized on the server (sanitize-html allowlist) and again by Angular's [innerHTML]. -->
-      <div class="post__content prose" [innerHTML]="p.content" [appCodeBlocks]="p.content"></div>
+      @if (post(); as full) {
+        <!-- Sanitized on the server (sanitize-html allowlist) and again by Angular's [innerHTML]. -->
+        <div class="post__content prose" [innerHTML]="full.content" [appCodeBlocks]="full.content"></div>
+      } @else if (failed()) {
+        <app-load-error class="post__content" [heading]="content.errorTitle" [text]="view().error" [retrying]="retrying()" (retry)="load()" />
+      } @else {
+        <div class="post__skeleton" aria-hidden="true">
+          <span class="post__bone post__bone--text"></span>
+          <span class="post__bone post__bone--text"></span>
+          <span class="post__bone post__bone--text"></span>
+        </div>
+        <p class="sr-only" role="status">Loading the post…</p>
+      }
 
       <footer class="post__footer">
         <a class="post__back" routerLink="/blog">
@@ -71,20 +82,24 @@
         {{ content.ctaLabel }} <i-lucide name="arrow-up-right" [size]="18" aria-hidden="true" />
       </a>
     </aside>
-  } @else if (s.status === 'loading') {
+  } @else if (notFound()) {
+    <div class="post__missing">
+      <h1 class="post__title">{{ content.notFoundTitle }}</h1>
+      <p class="post__lead">{{ content.notFoundText }}</p>
+      <a class="post__btn" routerLink="/blog">{{ content.backLabel }}</a>
+    </div>
+  } @else if (failed()) {
+    <div class="post__missing">
+      <app-load-error [heading]="content.errorTitle" [text]="view().error" [pageHeading]="true" [retrying]="retrying()" (retry)="load()">
+        <a class="post__back-link" routerLink="/blog">{{ content.backLabel }}</a>
+      </app-load-error>
+    </div>
+  } @else {
     <div class="post__skeleton" aria-hidden="true">
       <span class="post__bone post__bone--title"></span>
       <span class="post__bone post__bone--text"></span>
       <span class="post__bone post__bone--cover"></span>
     </div>
     <p class="sr-only" role="status">Loading post…</p>
-  } @else {
-    <div class="post__missing">
-      <h1 class="post__title">{{ s.status === 'not-found' ? content.notFoundTitle : content.errorTitle }}</h1>
-      @if (s.status === 'not-found') {
-        <p class="post__lead">{{ content.notFoundText }}</p>
-      }
-      <a class="post__btn" routerLink="/blog">{{ content.backLabel }}</a>
-    </div>
   }
 </div>

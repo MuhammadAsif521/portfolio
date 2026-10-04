@@ -283,3 +283,16 @@
   gap: 1.25rem;
   padding: clamp(2rem, 1rem + 4vw, 5rem) 0;
 }
+
+// Back link next to "Try again" when the case study failed to load.
+.case__back {
+  color: var(--primary-ink);
+  font-weight: 600;
+  text-underline-offset: 0.2em;
+
+  &:hover {
+    color: var(--primary);
+  }
+
+  @include m.focus-ring;
+}

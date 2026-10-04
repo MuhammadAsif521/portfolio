@@ -4,7 +4,8 @@ import { PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL, SSR_API_KEY } from '@shared/config/api.tokens';
-import { PublicSessionService } from '@shared/services/public-session.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { PUBLIC_SESSION_UNAVAILABLE, PublicSessionService } from '@shared/services/public-session.service';
 import { publicSessionInterceptor } from './public-session.interceptor';
 
 const API = 'https://api.test/api/v1';
@@ -156,5 +157,83 @@ describe('publicSessionInterceptor', () => {
     await flushMicrotasks();
     backend.expectOne(`${API}/public/projects/missing`).flush({ status: false, code: 'NOT_FOUND' }, { status: 404, statusText: 'Not Found' });
     expect(await done).toBe(404);
+  });
+
+  it('fails clearly, without sending the request, when no session can be established', async () => {
+    const { http, backend, session } = setup('browser');
+    vi.spyOn(session, 'getToken').mockResolvedValue(null);
+    vi.spyOn(session, 'failure').mockReturnValue('recaptcha');
+    const done = firstValueFrom(http.get(`${API}/public/projects/x`)).catch((err: unknown) => err);
+    await flushMicrotasks();
+
+    backend.expectNone(`${API}/public/projects/x`); // no request that could only answer 401
+    const err = (await done) as HttpErrorResponse;
+    expect(err).toBeInstanceOf(HttpErrorResponse);
+    expect(err.status).toBe(0);
+    expect(err.error.code).toBe(PUBLIC_SESSION_UNAVAILABLE);
+    expect(err.error.message).toMatch(/reCAPTCHA/);
+  });
+
+  it('concurrent requests share one session establishment', async () => {
+    localStorage.setItem('public-session-expires-at', String(Date.now() + 10 * 60_000));
+    const { http, backend } = setup('browser');
+    const a = firstValueFrom(http.get(`${API}/public/projects`));
+    const b = firstValueFrom(http.get(`${API}/public/blog`));
+    const c = firstValueFrom(http.get(`${API}/public/testimonials`));
+    await flushMicrotasks();
+
+    backend
+      .expectOne(`${API}/public/verify-session`) // exactly one
+      .flush({ status: true, data: { sessionToken: 'shared', expiresIn: 600, reused: true } });
+    await flushMicrotasks();
+    for (const path of ['projects', 'blog', 'testimonials']) {
+      const req = backend.expectOne(`${API}/public/${path}`);
+      expect(req.request.headers.get('Authorization')).toBe('Bearer shared');
+      req.flush({ status: true, data: [] });
+    }
+    await Promise.all([a, b, c]);
+  });
+
+  it('a late 401 for an already replaced token keeps the fresh session (no second establishment)', async () => {
+    const { session } = setup('browser');
+    session.accept('fresh', 1200);
+    session.invalidate('stale');
+    expect(session.currentToken()).toBe('fresh');
+    session.invalidate('fresh');
+    expect(session.currentToken()).toBeNull();
+  });
+
+  it('retries only once, and reports the session problem when re-establishing fails', async () => {
+    const { http, backend, session } = setup('browser');
+    session.accept('stale-token', 1200);
+    const done = firstValueFrom(http.get(`${API}/public/blog`)).catch((err: unknown) => err);
+    await flushMicrotasks();
+
+    vi.spyOn(session, 'getToken').mockResolvedValueOnce(null);
+    vi.spyOn(session, 'failure').mockReturnValue('network');
+    backend
+      .expectOne(`${API}/public/blog`)
+      .flush({ status: false, code: 'PUBLIC_SESSION_INVALID' }, { status: 401, statusText: 'Unauthorized' });
+    await flushMicrotasks();
+
+    backend.expectNone(`${API}/public/blog`);
+    const err = (await done) as HttpErrorResponse;
+    expect(err.error.code).toBe(PUBLIC_SESSION_UNAVAILABLE);
+    expect(err.error.message).toMatch(/connection/);
+  });
+
+  it('a second PUBLIC_SESSION_* 401 after the retry is passed through (single retry)', async () => {
+    const { http, backend, session } = setup('browser');
+    session.accept('stale-token', 1200);
+    const done = firstValueFrom(http.get(`${API}/public/blog`)).catch((err: { status: number }) => err.status);
+    await flushMicrotasks();
+
+    vi.spyOn(session, 'getToken').mockResolvedValue('fresh-token');
+    backend.expectOne(`${API}/public/blog`).flush({ status: false, code: 'PUBLIC_SESSION_INVALID' }, { status: 401, statusText: 'Unauthorized' });
+    await flushMicrotasks();
+    backend.expectOne(`${API}/public/blog`).flush({ status: false, code: 'PUBLIC_SESSION_INVALID' }, { status: 401, statusText: 'Unauthorized' });
+    await flushMicrotasks();
+    backend.expectNone(`${API}/public/blog`);
+    expect(await done).toBe(401);
   });
 });

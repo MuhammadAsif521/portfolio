@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { PublicApiService } from '@shared/services/public-api.service';
 import { DEMO_CONTENT } from './core/demo-content';
+import { provideTestStore } from './testing/store.testing';
 import { of, throwError } from 'rxjs';
 import { MARQUEE_CONTENT } from './content/testimonials.content';
 import { Marquee, marqueeDuration } from './sections/marquee/marquee';
@@ -12,6 +13,7 @@ function setup(api: Partial<PublicApiService> = {}, demo = false) {
     ({ matches: query.includes('reduce'), media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList);
   TestBed.configureTestingModule({
     providers: [
+      provideTestStore(),
       { provide: PublicApiService, useValue: api },
       // Demo content is dev-only UI review data; these tests cover real API behaviour.
       { provide: DEMO_CONTENT, useValue: demo },

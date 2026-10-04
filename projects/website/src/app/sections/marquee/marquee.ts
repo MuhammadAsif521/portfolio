@@ -21,7 +21,7 @@ export function marqueeDuration(trackWidth: number, speed: number = MARQUEE_CONT
  * :hover stuck and freeze it). The browser only fine-tunes the duration so the speed is
  * MARQUEE_CONTENT.speed px/s at any width, re-measuring once web fonts load and on resize.
  * With the OS "reduce motion" setting (iOS: Reduce Motion; Android: Remove animations, which some
- * battery savers switch on; Windows: Animation effects off) it deliberately stays still.
+ * battery savers switch on; Windows: Animation effects off) it keeps moving, three times slower.
  */
 @Component({
   selector: 'app-marquee',

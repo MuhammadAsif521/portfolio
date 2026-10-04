@@ -1,11 +1,11 @@
 import { InjectionToken } from '@angular/core';
 import { environment } from '@shared/environment/environment';
 import type { BlogPost, Project, Testimonial } from '@shared/interfaces/public-api.interface';
-import { map, type OperatorFunction } from 'rxjs';
 
 /*
  * Demo content for UI review in development (environment.demoContent — false in production, so none of
- * this is ever shown on the live site). Used only when the API returns nothing. Projects are the
+ * this is ever shown on the live site). Used only when the API returns nothing
+ * (or fails), by the content effects (core/store/content.effects.ts). Projects are the
  * brief's real projects (Part 5); testimonials are clearly labelled placeholders, never presented as
  * real quotes; posts are the brief's planned topics.
  */
@@ -102,7 +102,3 @@ export const DEMO_CONTENT = new InjectionToken<boolean>('DEMO_CONTENT', {
   factory: () => environment.demoContent,
 });
 
-/** Replaces an empty API result with demo items when demo content is enabled. */
-export function orDemo<T>(demo: readonly T[], enabled: boolean): OperatorFunction<T[], T[]> {
-  return map((items) => (items.length || !enabled ? items : [...demo]));
-}

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { provideMockStore } from '@ngrx/store/testing';
+import { provideTestStore } from './testing/store.testing';
 import { App } from './app';
 import { Hero } from './sections/hero/hero';
 import { ThemeToggle } from './layout/theme-toggle/theme-toggle';
@@ -37,7 +37,7 @@ function setup() {
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
-      provideMockStore({ initialState }),
+      provideTestStore(initialState),
       // The footer's email box injects it; sections that fetch data override it per test.
       { provide: PublicApiService, useValue: {} },
     ],

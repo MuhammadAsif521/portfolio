@@ -8,13 +8,11 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import type { Experience as ExperienceDoc } from '@shared/interfaces/public-api.interface';
-import { PublicApiService } from '@shared/services/public-api.service';
-import { catchError, of } from 'rxjs';
+import { Store } from '@ngrx/store';
 import { EXPERIENCE_CONTENT, type TimelineEntry } from '../../content/experience.content';
 import { disposeWith, drawTimeline, revealOnScroll } from '../../core/motion';
 import { ScrollSpyDirective } from '../../core/scroll-spy.directive';
+import { ContentActions, contentFeature } from '../../core/store/content.feature';
 
 // UTC so SSR and the browser print the same month whatever their time zones.
 const MONTH_YEAR = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric', timeZone: 'UTC' });
@@ -42,20 +40,17 @@ export class Experience {
   protected readonly content = EXPERIENCE_CONTENT;
   protected readonly monthYear = monthYear;
 
-  /** null until the API answers; [] when it fails (the fallback then stays). Resolved during SSR. */
-  private readonly live = toSignal(
-    inject(PublicApiService)
-      .getExperience()
-      .pipe(catchError(() => of([] as ExperienceDoc[]))),
-    { initialValue: null },
-  );
+  private readonly store = inject(Store);
+  /** Loaded during SSR; the built-in entries stay while it loads, when it is empty or when it fails. */
+  private readonly slot = this.store.selectSignal(contentFeature.selectExperience);
 
   protected readonly entries = computed<readonly TimelineEntry[]>(() => {
-    const live = this.live();
+    const live = this.slot().items;
     return live?.length ? live : EXPERIENCE_CONTENT.fallback;
   });
 
   constructor() {
+    this.store.dispatch(ContentActions.loadExperience());
     afterNextRender(() => {
       const root = this.host.nativeElement;
       const section = root.querySelector('section');

@@ -64,9 +64,16 @@
         <a class="hero__cta hero__cta--primary" routerLink="/" fragment="projects">
           Projects <i-lucide class="hero__cta-icon" name="arrow-up-right" [size]="24" aria-hidden="true" />
         </a>
-        <a class="hero__cta hero__cta--ghost" routerLink="/" fragment="contact">
-          Hire me <i-lucide class="hero__cta-icon" name="arrow-up-right" [size]="24" aria-hidden="true" />
-        </a>
+        @if (resumeUrl(); as url) {
+          <!-- Published CV (served from R2 with Content-Disposition: attachment, so it downloads). -->
+          <a class="hero__cta hero__cta--ghost" [href]="url" download target="_blank" rel="noopener">
+            Resume <i-lucide class="hero__cta-icon" name="download" [size]="24" aria-hidden="true" />
+          </a>
+        } @else {
+          <a class="hero__cta hero__cta--ghost" routerLink="/" fragment="contact">
+            Hire me <i-lucide class="hero__cta-icon" name="arrow-up-right" [size]="24" aria-hidden="true" />
+          </a>
+        }
       </div>
     </div>
   </div>

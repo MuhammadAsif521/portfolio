@@ -39,6 +39,7 @@ export class Hero {
   protected readonly stars = Array.from({ length: HERO_CONTENT.stat.rating });
 
   private readonly description = this.store.selectSignal(siteFeature.selectDescription);
+  protected readonly resumeUrl = this.store.selectSignal(siteFeature.selectResumeUrl);
   protected readonly tagline = computed(() => this.description() || HERO_CONTENT.tagline);
 
   /** Typewriter state. SSR and reduced motion keep the first role, fully typed. */

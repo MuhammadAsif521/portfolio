@@ -16,6 +16,7 @@ import { PublicApiService } from '@shared/services/public-api.service';
 import { SeoService } from '@shared/services/seo.service';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { PROJECTS_CONTENT } from '../../content/projects.content';
+import { CodeBlocksDirective } from '../../core/code-blocks.directive';
 import { DEMO_CONTENT, DEMO_PROJECTS } from '../../core/demo-content';
 
 type ProjectState =
@@ -30,7 +31,7 @@ type ProjectState =
  */
 @Component({
   selector: 'app-project-detail',
-  imports: [RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent, CodeBlocksDirective],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

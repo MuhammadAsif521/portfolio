@@ -26,7 +26,11 @@
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  cursor: grab;
+
+  // The grab cursor only when there is something to drag (links inside keep their own pointer).
+  &--draggable {
+    cursor: grab;
+  }
 
   &::-webkit-scrollbar {
     display: none;

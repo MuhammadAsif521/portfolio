@@ -146,12 +146,17 @@ describe('Services', () => {
     expect(slides[0]?.querySelector('h3')?.textContent).toBe(SERVICES_CONTENT.items[0].title);
   });
 
-  it('links each card to its home-page section', async () => {
+  it('keeps the service cards informational: no links, buttons, tab stops or arrow icons', async () => {
     const fixture = TestBed.createComponent(Services);
     await fixture.whenStable();
-    const links = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('a.service-card__link'));
-    expect(links.map((a) => a.getAttribute('href'))).toEqual(SERVICES_CONTENT.items.map((i) => `/#${i.target}`));
-    expect(links.every((a) => a.getAttribute('aria-label'))).toBe(true);
+    const cards = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.service-card'));
+    expect(cards.length).toBe(SERVICES_CONTENT.items.length);
+    for (const card of cards) {
+      expect(card.querySelector('a, button, [routerLink], [tabindex]')).toBeNull();
+      expect(card.closest('a, button')).toBeNull();
+      expect(card.querySelector('[name^="arrow"]')).toBeNull();
+      expect(card.querySelector('.service-card__badge')?.getAttribute('aria-hidden')).toBe('true');
+    }
   });
 
   it('keeps the dots hidden until the track is measured as overflowing', async () => {

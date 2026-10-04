@@ -1,4 +1,4 @@
-import { inject, provideAppInitializer } from '@angular/core';
+import { RESPONSE_INIT, inject, provideAppInitializer } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { filter, firstValueFrom, of, timeout } from 'rxjs';
 import { SiteActions, siteFeature } from './store/site.feature';
@@ -14,12 +14,21 @@ const SETTINGS_TIMEOUT_MS = 4_000;
 export function provideSiteInitializer() {
   return provideAppInitializer(() => {
     const store = inject(Store);
+    const responseInit = inject(RESPONSE_INIT, { optional: true }); // server only
     store.dispatch(SiteActions.loadSettings());
     return firstValueFrom(
       store.select(siteFeature.selectStatus).pipe(
         filter((status) => status === 'loaded' || status === 'error'),
         timeout({ first: SETTINGS_TIMEOUT_MS, with: () => of('error' as const) }),
       ),
-    ).then(() => undefined);
+    ).then((status) => {
+      // A page rendered with fallback defaults (API down or cold-starting) must not be kept by the CDN
+      // (see server.ts): the next request should try the API again.
+      if (status !== 'loaded' && responseInit) {
+        const headers = new Headers(responseInit.headers);
+        headers.set('Cache-Control', 'no-store');
+        responseInit.headers = headers;
+      }
+    });
   });
 }

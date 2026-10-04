@@ -6,12 +6,15 @@
           <li class="marquee__item">{{ item }}</li>
         }
       </ul>
-      <!-- Second copy only makes the loop seamless; screen readers get the list once. -->
-      <ul class="marquee__list marquee__list--copy" aria-hidden="true">
-        @for (item of content.items; track item) {
-          <li class="marquee__item">{{ item }}</li>
-        }
-      </ul>
+      <!-- Copies only make the loop seamless; screen readers get the list once. Four lists in all, so the
+           half the track moves by (two lists) is wider than the strip even on very wide screens. -->
+      @for (copy of copies; track copy) {
+        <ul class="marquee__list marquee__list--copy" aria-hidden="true">
+          @for (item of content.items; track item) {
+            <li class="marquee__item">{{ item }}</li>
+          }
+        </ul>
+      }
     </div>
   </div>
 </div>

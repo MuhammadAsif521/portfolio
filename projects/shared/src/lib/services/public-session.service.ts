@@ -1,11 +1,10 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpContext, HttpContextToken, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, Injector, PLATFORM_ID, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL } from '@shared/config/api.tokens';
 import type { ApiResponse } from '@shared/interfaces/auth.interface';
 import type { VerifySessionData } from '@shared/interfaces/public-api.interface';
-import { RecaptchaService } from './recaptcha.service';
 
 /** Marks the session service's own requests so the interceptor doesn't try to authorise them. */
 export const SKIP_PUBLIC_SESSION = new HttpContextToken<boolean>(() => false);
@@ -48,7 +47,7 @@ export class PublicSessionService {
   private token: string | null = null;
   private expiresAt = 0;
   private pending: Promise<string | null> | null = null;
-  private readonly recaptcha = inject(RecaptchaService);
+  private readonly injector = inject(Injector);
 
   /** A usable session token, establishing one if needed. Always null during SSR. */
   getToken(): Promise<string | null> {
@@ -58,6 +57,11 @@ export class PublicSessionService {
       this.pending = null;
     });
     return this.pending;
+  }
+
+  /** The in-memory token if it is still usable, without establishing one (never runs reCAPTCHA). */
+  currentToken(): string | null {
+    return this.token && this.expiresAt - Date.now() > EXPIRY_MARGIN_MS ? this.token : null;
   }
 
   /** Adopts a token the server sent back (verify-session body or X-Session-Token renewal). */
@@ -84,7 +88,7 @@ export class PublicSessionService {
 
     // 3. No usable session: run reCAPTCHA (retry once — the first call can race a cold script load).
     for (let attempt = 1; attempt <= 2; attempt++) {
-      const recaptchaToken = await this.recaptcha.execute(RECAPTCHA_ACTION);
+      const recaptchaToken = await this.runRecaptcha();
       if (!recaptchaToken) continue;
       const token = await this.verify(recaptchaToken).catch((err: unknown) => {
         console.error('[PublicSessionService] verify-session failed', err);
@@ -93,6 +97,12 @@ export class PublicSessionService {
       if (token) return token;
     }
     return null;
+  }
+
+  /** reCAPTCHA's code (and Google's script) loads only here, when a visitor first needs a new session. */
+  private async runRecaptcha(): Promise<string | null> {
+    const { RecaptchaService } = await import('./recaptcha.service');
+    return this.injector.get(RecaptchaService).execute(RECAPTCHA_ACTION);
   }
 
   private async verify(recaptchaToken: string | null): Promise<string | null> {

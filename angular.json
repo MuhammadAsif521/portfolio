@@ -36,11 +36,6 @@
                 "output": "assets"
               },
               {
-                "glob": "**/*",
-                "input": "node_modules/intl-tel-input/dist/img",
-                "output": "assets/intl-tel-input/img"
-              },
-              {
                 "glob": "robots.txt",
                 "input": "projects/website/src",
                 "output": "/"
@@ -62,8 +57,7 @@
               }
             ],
             "styles": [
-              "projects/shared/src/lib/styles.scss",
-              "node_modules/intl-tel-input/dist/css/intlTelInput.css"
+              "projects/shared/src/lib/styles.scss"
             ],
             "server": "projects/website/src/main.server.ts",
             "outputMode": "server",

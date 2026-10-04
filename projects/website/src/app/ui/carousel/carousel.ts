@@ -16,6 +16,9 @@ import {
   viewChild,
 } from '@angular/core';
 
+/** Pixels a mouse press must travel before it counts as a drag (and its click is suppressed). */
+export const DRAG_THRESHOLD = 5;
+
 export interface CarouselSlideContext<T> {
   $implicit: T;
   index: number;
@@ -116,33 +119,52 @@ export class Carousel<T> {
       this.active.set(1);
     }
 
-    // Mouse drag (touch and pens already scroll natively).
+    // Mouse drag (touch and pens already scroll natively, and the browser never turns a swipe into a
+    // click). A press only becomes a drag once it moves past DRAG_THRESHOLD; only then is the pointer
+    // captured. Capturing on pointerdown would retarget the click to the track, so a plain click on a
+    // card link would do nothing.
+    let pointerId: number | null = null;
     let startX = 0;
     let startScroll = 0;
+    let dragged = false; // the current/last press was a drag: swallow the click it ends with
+    let clearDragged = 0;
     const onPointerDown = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse' || event.button !== 0 || !this.overflowing()) return;
+      dragged = false;
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      if (track.scrollWidth - track.clientWidth <= 2) return; // nothing to drag
+      pointerId = event.pointerId;
       startX = event.clientX;
       startScroll = track.scrollLeft;
-      this.dragging.set(true);
-      track.setPointerCapture(event.pointerId);
     };
     const onPointerMove = (event: PointerEvent) => {
-      if (!this.dragging()) return;
-      track.scrollLeft = startScroll - (event.clientX - startX);
+      if (pointerId === null || event.pointerId !== pointerId) return;
+      const dx = event.clientX - startX;
+      if (!this.dragging()) {
+        if (Math.abs(dx) < DRAG_THRESHOLD) return;
+        this.dragging.set(true);
+        dragged = true;
+        track.setPointerCapture?.(pointerId);
+      }
+      track.scrollLeft = startScroll - dx;
     };
     const onPointerUp = (event: PointerEvent) => {
-      if (!this.dragging()) return;
+      if (pointerId === null || event.pointerId !== pointerId) return;
+      pointerId = null;
+      if (!this.dragging()) return; // a plain click: let it through untouched
       this.dragging.set(false);
-      if (track.hasPointerCapture(event.pointerId)) track.releasePointerCapture(event.pointerId);
+      if (track.hasPointerCapture?.(event.pointerId)) track.releasePointerCapture(event.pointerId);
       this.goTo(this.nearestIndex(track)); // settle on a slide, as the snap would
+      // The click (if any) is dispatched right after pointerup; forget the drag once it has passed so a
+      // later keyboard "click" (Enter on a link) is never swallowed.
+      clearTimeout(clearDragged);
+      clearDragged = window.setTimeout(() => (dragged = false));
     };
     // A drag shouldn't also count as a click on a card link.
     const onClickCapture = (event: MouseEvent) => {
-      if (Math.abs(track.scrollLeft - startScroll) > 6 && startScroll !== -1) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      startScroll = -1;
+      if (!dragged) return;
+      dragged = false;
+      event.preventDefault();
+      event.stopPropagation();
     };
     track.addEventListener('pointerdown', onPointerDown);
     track.addEventListener('pointermove', onPointerMove);
@@ -152,6 +174,7 @@ export class Carousel<T> {
 
     this.destroyRef.onDestroy(() => {
       cancelAnimationFrame(frame);
+      clearTimeout(clearDragged);
       resize?.disconnect();
       track.removeEventListener('scroll', onScroll);
       track.removeEventListener('pointerdown', onPointerDown);

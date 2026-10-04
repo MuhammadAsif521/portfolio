@@ -12,7 +12,7 @@
     "build:website": "ng build --project=website",
     "build:cusadmin": "ng build --project=cusadmin",
     "serve:ssr:website": "node dist/website/server/server.mjs",
-    "build:vercel": "ng build website && ng build cusadmin --base-href /cusadmin/ && node -e \"require('fs').cpSync('dist/cusadmin/browser','dist/website/browser/cusadmin',{recursive:true})\""
+    "build:vercel": "ng build website && ng build cusadmin --base-href /cusadmin/ && node scripts/vercel-output.mjs"
   },
   "private": true,
   "packageManager": "npm@12.0.1",

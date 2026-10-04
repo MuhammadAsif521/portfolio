@@ -52,15 +52,10 @@
         }
       </div>
 
-      <a
-        class="service-card__link"
-        routerLink="/"
-        [fragment]="item.target"
-        [attr.aria-label]="(item.target === 'contact' ? 'Discuss ' : 'See projects for ') + item.title"
-        draggable="false"
-      >
-        <i-lucide name="arrow-up-right" [size]="40" [stroke]="2.5" aria-hidden="true" />
-      </a>
+      <!-- Decorative badge in the notch (Figma's navy circle). Not a link: services have no page of their own. -->
+      <span class="service-card__badge" aria-hidden="true">
+        <i-lucide [name]="item.icon" [size]="36" [stroke]="2" />
+      </span>
     </div>
   </article>
 </ng-template>

@@ -3,7 +3,7 @@ import { PublicApiService } from '@shared/services/public-api.service';
 import { DEMO_CONTENT } from './core/demo-content';
 import { of, throwError } from 'rxjs';
 import { MARQUEE_CONTENT } from './content/testimonials.content';
-import { Marquee } from './sections/marquee/marquee';
+import { Marquee, marqueeDuration } from './sections/marquee/marquee';
 import { Testimonials, initials } from './sections/testimonials/testimonials';
 
 function setup(api: Partial<PublicApiService> = {}, demo = false) {
@@ -92,18 +92,18 @@ describe('Testimonials', () => {
 });
 
 describe('Marquee', () => {
-  it('exposes the skills once to screen readers and hides the loop copy', async () => {
+  it('exposes the skills once to screen readers and hides the loop copies', async () => {
     setup();
     const fixture = TestBed.createComponent(Marquee);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
     const lists = el.querySelectorAll('ul');
-    expect(lists.length).toBe(2);
+    expect(lists.length).toBe(4); // two lists per half of the -50% loop
     expect(lists[0]?.getAttribute('aria-label')).toBe(MARQUEE_CONTENT.label);
     expect(Array.from(lists[0]!.querySelectorAll('li')).map((li) => li.textContent)).toEqual([
       ...MARQUEE_CONTENT.items,
     ]);
-    expect(lists[1]?.getAttribute('aria-hidden')).toBe('true');
+    expect(Array.from(lists).slice(1).every((list) => list.getAttribute('aria-hidden') === 'true')).toBe(true);
   });
 
   it('is a CSS-driven loop with no pause button (JS only tunes the speed)', async () => {
@@ -113,5 +113,19 @@ describe('Marquee', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('.marquee__track')).toBeTruthy();
     expect(el.querySelector('button')).toBeNull();
+  });
+});
+
+describe('marqueeDuration', () => {
+  it('keeps the CSS fallback (null) when the track is not measurable yet', () => {
+    for (const width of [0, -10, Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(marqueeDuration(width)).toBeNull();
+    }
+    expect(marqueeDuration(1000, 0)).toBeNull();
+  });
+
+  it('moves at the configured speed, never faster than one loop per 8s on narrow strips', () => {
+    expect(marqueeDuration(2330, 240)).toBe(8); // phone: 1165px per loop would be under 5s
+    expect(marqueeDuration(9600, 240)).toBe(20); // 4800px per loop at 240px/s
   });
 });

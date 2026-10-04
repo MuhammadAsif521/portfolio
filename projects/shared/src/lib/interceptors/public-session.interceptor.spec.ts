@@ -1,6 +1,6 @@
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { PLATFORM_ID } from '@angular/core';
+import { PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL, SSR_API_KEY } from '@shared/config/api.tokens';
@@ -112,6 +112,38 @@ describe('publicSessionInterceptor', () => {
     expect(invalidate).toHaveBeenCalledTimes(1);
     await flushMicrotasks();
     const retry = backend.expectOne(`${API}/public/experience`);
+    expect(retry.request.headers.get('Authorization')).toBe('Bearer fresh-token');
+    retry.flush({ status: true, data: [] });
+    await done;
+  });
+
+  it('hydration: a GET the server shipped in the transfer cache needs no session (no reCAPTCHA)', async () => {
+    const { http, backend } = setup('browser');
+    // What the SSR transfer cache stores: { b: body, u: request URL, ... } under a hashed key.
+    TestBed.inject(TransferState).set(makeStateKey<object>('cached-settings'), { b: { status: true }, u: `${API}/public/settings` });
+    const done = firstValueFrom(http.get(`${API}/public/settings`));
+    await flushMicrotasks();
+
+    backend.expectNone(`${API}/public/verify-session`);
+    const req = backend.expectOne(`${API}/public/settings`);
+    expect(req.request.headers.has('Authorization')).toBe(false);
+    req.flush({ status: true, data: {} });
+    await done;
+    expect(document.querySelector('script[src*="recaptcha"]')).toBeNull();
+  });
+
+  it('hydration: a cache miss still falls back to the session flow on 401', async () => {
+    const { http, backend, session } = setup('browser');
+    TestBed.inject(TransferState).set(makeStateKey<object>('cached-blog'), { b: { status: true }, u: `${API}/public/blog` });
+    vi.spyOn(session, 'getToken').mockResolvedValueOnce('fresh-token');
+    const done = firstValueFrom(http.get(`${API}/public/blog`, { params: { limit: 3 } }));
+    await flushMicrotasks();
+
+    backend
+      .expectOne((r) => r.url === `${API}/public/blog`)
+      .flush({ status: false, code: 'PUBLIC_SESSION_REQUIRED' }, { status: 401, statusText: 'Unauthorized' });
+    await flushMicrotasks();
+    const retry = backend.expectOne((r) => r.url === `${API}/public/blog`);
     expect(retry.request.headers.get('Authorization')).toBe('Bearer fresh-token');
     retry.flush({ status: true, data: [] });
     await done;

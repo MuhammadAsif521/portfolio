@@ -1,8 +1,15 @@
 import { NgClass, NgStyle } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, Input, OnChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, InjectionToken, Input, OnChanges } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
-type IconNode = [string, Record<string, string>];
+export type IconNode = [string, Record<string, string>];
+
+/**
+ * Optional preset of Lucide icons keyed by export name (PascalCase, e.g. { ArrowUpRight }). Icons found here
+ * render synchronously (server and browser alike); any other name still lazy-loads the full Lucide set
+ * (~440 kB), so an app that lists the icons it uses never downloads that chunk.
+ */
+export const LUCIDE_ICONS = new InjectionToken<Readonly<Record<string, IconNode[]>>>('LUCIDE_ICONS');
  
 let lucideModule: Promise<Record<string, IconNode[]>> | null = null;
 function loadLucide(): Promise<Record<string, IconNode[]>> {
@@ -19,6 +26,7 @@ function loadLucide(): Promise<Record<string, IconNode[]>> {
 export class IconComponent implements OnChanges {
     private sanitizer = inject(DomSanitizer);
     private cdr = inject(ChangeDetectorRef);
+    private readonly presetIcons = inject(LUCIDE_ICONS, { optional: true });
 
     @Input() name = '';
     @Input() color = 'currentColor';
@@ -67,7 +75,14 @@ export class IconComponent implements OnChanges {
             return;
         }
 
-        const name = this.name; 
+        const name = this.name;
+        if (this.presetIcons?.[this.toPascalCase(name)]) {
+            this.svgIcon = this.renderIcon(name, this.presetIcons);
+            return;
+        }
+        if (this.presetIcons && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+            console.warn(`[IconComponent] "${name}" is not in LUCIDE_ICONS: loading the full Lucide set. Add it to the app's icon list.`);
+        }
         loadLucide().then(icons => {
             if (this.name !== name) return;
             this.svgIcon = this.renderIcon(name, icons);
@@ -98,7 +113,7 @@ export class IconComponent implements OnChanges {
             .join('');
     }
 
-    private renderIcon(name: string, icons: Record<string, IconNode[]>): SafeHtml {
+    private renderIcon(name: string, icons: Readonly<Record<string, IconNode[]>>): SafeHtml {
         const key = this.toPascalCase(name);
         const children = icons[key];
 

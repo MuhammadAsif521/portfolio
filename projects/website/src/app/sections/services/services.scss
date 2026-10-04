@@ -2,7 +2,7 @@
 
 // Figma "My Services": dark band textured with section-bg (rounded corners), floating 3D blobs, glass
 // cards (416×508): frosted card with title header + divider, stacked "screen" with a notched corner and
-// a navy arrow button. Hover: the whole glass card turns primary, the border disappears.
+// a navy icon badge. The cards are informational (no destination), so they have no hover/click state.
 
 .services {
   position: relative;
@@ -176,15 +176,6 @@
     backdrop-filter: blur(18px) saturate(120%);
     -webkit-backdrop-filter: blur(18px) saturate(120%);
     pointer-events: none;
-    transition:
-      background-color var(--transition-normal),
-      border-color var(--transition-normal);
-  }
-
-  &:hover::before,
-  &:focus-within::before {
-    border-color: transparent;
-    background-color: var(--primary);
   }
 }
 
@@ -200,12 +191,6 @@
   font-size: var(--fs-h3);
   font-weight: 500;
   line-height: 1.15;
-  transition: color var(--transition-normal);
-
-  .service-card:hover &,
-  .service-card:focus-within & {
-    color: var(--on-primary);
-  }
 }
 
 .service-card__media {
@@ -306,21 +291,12 @@
   font-weight: 500;
 }
 
-// Navy circle in the notch (Figma: 114px, white ↗).
-.service-card__link {
+// Navy circle in the notch (Figma: 114px). Decorative: it shows the service's icon, not an arrow, since
+// the cards don't navigate anywhere.
+.service-card__badge {
   @include m.notch-button;
 
   z-index: 1;
   background: var(--navy);
   color: var(--on-navy);
-  transition:
-    background-color var(--transition-normal),
-    transform var(--transition-normal);
-
-  .service-card:hover &,
-  &:focus-visible {
-    transform: rotate(45deg);
-  }
-
-  @include m.focus-ring;
 }

@@ -76,7 +76,7 @@
       <div class="min-w-0">
         @if (html(); as content) {
           <!-- Sanitised by Angular before the TOC ids are added (see LegalPage). -->
-          <article class="legal-content prose max-w-[72ch] break-words" [innerHTML]="content"></article>
+          <article class="legal-content prose max-w-[72ch] break-words" [innerHTML]="content" [appCodeBlocks]="content"></article>
         } @else {
           <!-- The Site Settings field is empty (the page is also noindex). -->
           <section class="flex max-w-[72ch] items-start gap-4 rounded-2xl border border-dashed border-border bg-surface p-6 sm:p-8"

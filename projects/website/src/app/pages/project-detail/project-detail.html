@@ -75,7 +75,7 @@
 
       <!-- Sanitized on the server (sanitize-html allowlist) and again by Angular's [innerHTML]. -->
       @if (p.content) {
-        <div class="case__content prose" [innerHTML]="p.content"></div>
+        <div class="case__content prose" [innerHTML]="p.content" [appCodeBlocks]="p.content"></div>
       }
 
       @if (p.gallery.length) {

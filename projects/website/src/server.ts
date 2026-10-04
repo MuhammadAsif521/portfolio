@@ -80,12 +80,35 @@ app.get(crawlerFiles, async (req, res, next) => {
 });
 
 // ── SSR Handler ────────────────────────────────────────────────
+/*
+ * Edge caching for rendered pages. Every page is public: SSR reads the API with X-SSR-Key only (no visitor
+ * cookies or headers), and the theme preference is applied in the browser. Vercel's CDN keeps a page for
+ * 5 minutes and then serves it stale while re-rendering in the background (for up to a day), so visitors
+ * rarely wait for the function or the API (which cold-starts on Render's free tier). Admin edits appear
+ * within ~5 minutes; a deploy purges the cache.
+ * `Vercel-CDN-Cache-Control` is read by Vercel only: browsers and Cloudflare still revalidate every time.
+ * Not cached: non-200 responses (404/503 pages, redirects) and pages that already set Cache-Control,
+ * e.g. a render that fell back to defaults because the API was unreachable (site-initializer.ts).
+ * Override with SSR_CDN_CACHE_CONTROL (empty string turns it off).
+ */
+const cdnCacheControl = process.env['SSR_CDN_CACHE_CONTROL'] ?? 'max-age=300, stale-while-revalidate=86400';
+
 app.use((req, res, next) => {
   angularApp
     .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
+    .then((response) => {
+      if (!response) return next();
+      if (
+        cdnCacheControl &&
+        (req.method === 'GET' || req.method === 'HEAD') &&
+        response.status === 200 &&
+        !response.headers.has('cache-control') &&
+        response.headers.get('content-type')?.startsWith('text/html')
+      ) {
+        response.headers.set('Vercel-CDN-Cache-Control', cdnCacheControl);
+      }
+      return writeResponseToNodeResponse(response, res);
+    })
     .catch(next);
 });
 

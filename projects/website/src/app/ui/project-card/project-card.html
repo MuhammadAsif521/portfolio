@@ -31,9 +31,10 @@
     <p class="project-card__summary">{{ p.summary }}</p>
   </div>
 
-  <!-- One link covering the card (stretched via ::after) keeps a single tab stop per project. -->
+  <!-- One real link covering the card (stretched via ::after): the whole card navigates, a single tab stop
+       per project, crawlable, and its accessible name is the project title. -->
   <a class="project-card__link" [routerLink]="link()" draggable="false">
-    <span class="sr-only">Read the {{ p.title }} case study</span>
+    <span class="sr-only">{{ p.title }}</span>
     <span class="project-card__arrow" aria-hidden="true"><i-lucide name="arrow-right" [size]="28" /></span>
   </a>
 </article>

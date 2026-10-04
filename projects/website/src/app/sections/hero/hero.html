@@ -33,7 +33,7 @@
     </blockquote>
 
     <div class="hero__stat" data-hero-anim>
-      <p class="hero__stars" [attr.aria-label]="content.stat.rating + ' out of 5 stars'">
+      <p class="hero__stars" role="img" [attr.aria-label]="content.stat.rating + ' out of 5 stars'">
         @for (star of stars; track $index) {
           <i-lucide name="star" [size]="26" fill="currentColor" [stroke]="0" aria-hidden="true" />
         }
@@ -48,6 +48,8 @@
         <img
           class="hero__image"
           [src]="content.portrait.src"
+          [srcset]="content.portrait.srcset"
+          [sizes]="content.portrait.sizes"
           [alt]="content.portrait.alt"
           [width]="content.portrait.width"
           [height]="content.portrait.height"

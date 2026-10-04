@@ -9,6 +9,7 @@ import { PublicApiService } from '@shared/services/public-api.service';
 import { SeoService } from '@shared/services/seo.service';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { BLOG_CONTENT } from '../../content/blog.content';
+import { CodeBlocksDirective } from '../../core/code-blocks.directive';
 import { DEMO_CONTENT, DEMO_POSTS } from '../../core/demo-content';
 import { dayMonthYear } from '../../core/dates';
 import { siteFeature } from '../../core/store/site.feature';
@@ -25,7 +26,7 @@ type PostState =
  */
 @Component({
   selector: 'app-blog-post',
-  imports: [RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent, CodeBlocksDirective],
   templateUrl: './blog-post.html',
   styleUrl: './blog-post.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

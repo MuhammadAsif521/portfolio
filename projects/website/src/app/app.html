@@ -1,4 +1,5 @@
-@if (isBrowser) {
+<!-- Toasts only ever come from user actions, so the toaster (ngx-sonner) loads once the page is idle. -->
+@defer (on idle) {
   <ngx-sonner-toaster [position]="toaster.position" [duration]="toaster.duration" [closeButton]="toaster.closeButton"
     [richColors]="toaster.richColors" />
 }

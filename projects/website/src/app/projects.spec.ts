@@ -67,9 +67,22 @@ describe('Projects section', () => {
       'Project a',
       'Project b',
     ]);
-    expect(slides[0]?.querySelector('a')?.getAttribute('href')).toBe('/projects/flagship');
-    expect(slides[0]?.querySelector('a .sr-only')?.textContent).toBe('Read the Project flagship case study');
     expect(slides[0]?.querySelector('.project-card__summary')?.textContent).toBe('Summary of flagship');
+  });
+
+  it('makes each whole card one real link to its case study, named by the project title', async () => {
+    const el = await render(() => of(page([projectCard('flagship'), projectCard('a')])));
+    const cards = Array.from(el.querySelectorAll('[aria-roledescription="slide"] .project-card'));
+    for (const [i, slug] of ['flagship', 'a'].entries()) {
+      const links = cards[i]!.querySelectorAll('a');
+      expect(links.length).toBe(1); // a single tab stop per card
+      const link = links[0]!;
+      expect(link.getAttribute('href')).toBe(`/projects/${slug}`);
+      // Accessible name (and crawlable anchor text) is just the title; the arrow ring is decorative.
+      expect(link.textContent?.trim()).toBe(`Project ${slug}`);
+      expect(link.querySelector('.project-card__arrow')?.getAttribute('aria-hidden')).toBe('true');
+      expect(link.classList).toContain('project-card__link'); // its ::after covers the whole card
+    }
   });
 
   it("shows the active project's tech chips (max six), title link and summary below the carousel", async () => {

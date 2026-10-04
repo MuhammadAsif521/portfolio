@@ -52,7 +52,7 @@
       }
 
       <!-- Sanitized on the server (sanitize-html allowlist) and again by Angular's [innerHTML]. -->
-      <div class="post__content prose" [innerHTML]="p.content"></div>
+      <div class="post__content prose" [innerHTML]="p.content" [appCodeBlocks]="p.content"></div>
 
       <footer class="post__footer">
         <a class="post__back" routerLink="/blog">

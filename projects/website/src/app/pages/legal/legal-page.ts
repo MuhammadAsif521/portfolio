@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 import { SeoService } from '@shared/services/seo.service';
+import { CodeBlocksDirective } from '../../core/code-blocks.directive';
 import { dayMonthYear } from '../../core/dates';
 import { siteFeature } from '../../core/store/site.feature';
 import { withHeadingIds } from './legal-html';
@@ -26,7 +27,7 @@ export function hasText(html: string | undefined | null): html is string {
  */
 @Component({
   selector: 'app-legal-page',
-  imports: [RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent, CodeBlocksDirective],
   templateUrl: './legal-page.html',
   styleUrl: './legal-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -265,11 +265,12 @@
   min-height: 0; // grid items default to min-height: auto (the image's intrinsic height)
   max-height: 100%;
 
-  // Desktop (Figma): the figure is taller than the arc and cropped by the band below, head at the
-  // second headline line.
+  // Desktop (Figma): the figure is taller than the arc and cropped by the band below, the head just
+  // below the second headline line (the waist-up photo's head is large, so it must not cover the role).
   @include m.up(lg) {
     align-self: start;
-    height: 135%;
+    margin-top: 4.5rem;
+    height: 112%;
     max-height: none;
   }
   object-fit: contain;

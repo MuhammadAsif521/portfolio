@@ -48,12 +48,12 @@ export const ABOUT_CONTENT = {
   ],
   /** Its own waist-up image (the hero uses the full-length cut-out). Replace the file to use another photo. */
   portrait: {
-    src: '/assets/images/about-portrait.webp',
+    src: '/assets/images/about-portrait-842.webp',
     /** Rendered at most 408 CSS px wide (.about__portrait), so 1x screens get the 320px file. */
-    srcset: '/assets/images/about-portrait-sm.webp 320w, /assets/images/about-portrait.webp 493w',
+    srcset: '/assets/images/about-portrait-480.webp 480w, /assets/images/about-portrait-842.webp 842w',
     sizes: '(min-width: 440px) 408px, calc(100vw - 2rem)',
     alt: 'Portrait of Muhammad Asif',
-    width: 493,
-    height: 640,
+    width: 842,
+    height: 1056,
   },
 } as const;

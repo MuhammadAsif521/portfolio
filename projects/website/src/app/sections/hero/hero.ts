@@ -14,7 +14,7 @@ import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 import { HERO_CONTENT } from '../../content/hero.content';
-import { prefersReducedMotion, withMotion } from '../../core/motion';
+import { withMotion } from '../../core/motion';
 import { ScrollSpyDirective } from '../../core/scroll-spy.directive';
 import { siteFeature } from '../../core/store/site.feature';
 
@@ -42,7 +42,7 @@ export class Hero {
   protected readonly resumeUrl = this.store.selectSignal(siteFeature.selectResumeUrl);
   protected readonly tagline = computed(() => this.description() || HERO_CONTENT.tagline);
 
-  /** Typewriter state. SSR renders the first role, fully typed; reduced motion swaps whole roles instead. */
+  /** Typewriter state. SSR renders the first role, fully typed; the browser then types/erases the roles. */
   protected readonly role = signal<string>(HERO_CONTENT.roles[0]);
   protected readonly typing = signal(false);
   protected readonly portraitVisible = signal(true);
@@ -60,27 +60,13 @@ export class Hero {
           delay: 0.15,
         });
       });
-      if (prefersReducedMotion()) this.startRoleSwap();
-      else this.startTypewriter();
+      // Typewriter everywhere (also with reduce motion: it is small text, no movement or parallax).
+      this.startTypewriter();
     });
   }
 
   protected onPortraitError(): void {
     this.portraitVisible.set(false);
-  }
-
-  /**
-   * Reduce motion (e.g. Android battery saver / "Remove animations"): no letter-by-letter typing, but the
-   * roles still change, one whole role every few seconds, so the headline doesn't look stuck.
-   */
-  private startRoleSwap(): void {
-    if (!this.isBrowser || HERO_CONTENT.roles.length < 2) return;
-    let roleIndex = 0;
-    const timer = setInterval(() => {
-      roleIndex = (roleIndex + 1) % HERO_CONTENT.roles.length;
-      this.role.set(HERO_CONTENT.roles[roleIndex] ?? '');
-    }, HOLD_MS * 2);
-    this.destroyRef.onDestroy(() => clearInterval(timer));
   }
 
   private startTypewriter(): void {

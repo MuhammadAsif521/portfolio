@@ -14,12 +14,12 @@ export const HERO_CONTENT = {
   stat: { value: '7+', label: 'Production Apps Shipped', rating: 5 },
   /** Transparent cut-out portrait (WebP/PNG). Leave the file out and the orange arc shows alone. */
   portrait: {
-    src: '/assets/images/portrait.webp',
-    /** The hero's LCP image: phones get the 320px file (the figure is ~150-250 CSS px wide below lg). */
-    srcset: '/assets/images/portrait-sm.webp 320w, /assets/images/portrait.webp 433w',
-    sizes: '(min-width: 1024px) 433px, calc(5rem + 20vw)',
+    src: '/assets/images/portrait-894.webp',
+    /** The hero's LCP image: ~190-300 CSS px wide below lg, 426px from lg; 2x screens get the full 894px file. */
+    srcset: '/assets/images/portrait-480.webp 480w, /assets/images/portrait-768.webp 768w, /assets/images/portrait-894.webp 894w',
+    sizes: '(min-width: 1024px) 426px, calc(6.25rem + 25vw)',
     alt: 'Muhammad Asif',
-    width: 433,
-    height: 865,
+    width: 894,
+    height: 1429,
   },
 } as const;

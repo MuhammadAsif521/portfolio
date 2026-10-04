@@ -8,6 +8,7 @@ import { PublicApiService } from '@shared/services/public-api.service';
 import { DEMO_CONTENT } from './core/demo-content';
 import { of, throwError } from 'rxjs';
 import { PROJECTS_CONTENT } from './content/projects.content';
+import { PROJECT_COVER_SIZES } from './core/image-sizes';
 import { ProjectDetailPage } from './pages/project-detail/project-detail';
 import { Projects } from './sections/projects/projects';
 
@@ -168,6 +169,28 @@ describe('Project case study page', () => {
     expect(live.getAttribute('rel')).toBe('noopener noreferrer');
     expect(el.querySelector('.case__cta a')?.getAttribute('href')).toBe('/#contact');
     expect(responseInit.status).toBeUndefined();
+  });
+
+  it('serves the cover (the LCP image) eagerly at high priority, responsive when the API sends a srcset', async () => {
+    const srcset = 'https://cdn.test/c-w480.webp 480w, https://cdn.test/c-w960.webp 960w, https://cdn.test/c.webp 1600w';
+    const { el } = await render(() =>
+      of({ ...project, coverImage: { ...project.coverImage, width: 1600, height: 900, variants: [480, 960], srcset } }),
+    );
+    const cover = el.querySelector<HTMLImageElement>('img.case__cover')!;
+    expect(cover.getAttribute('srcset')).toBe(srcset);
+    expect(cover.getAttribute('sizes')).toBe(PROJECT_COVER_SIZES);
+    expect(cover.getAttribute('src')).toBe('https://cdn.test/c.webp');
+    expect(cover.getAttribute('fetchpriority')).toBe('high');
+    expect(cover.getAttribute('loading')).toBeNull();
+  });
+
+  it('falls back to the plain cover src for images stored before variants existed', async () => {
+    const { el } = await render(() => of(project));
+    const cover = el.querySelector<HTMLImageElement>('img.case__cover')!;
+    expect(cover.getAttribute('src')).toBe('https://cdn.test/c.webp');
+    expect(cover.hasAttribute('srcset')).toBe(false);
+    expect(cover.hasAttribute('sizes')).toBe(false);
+    expect([cover.getAttribute('width'), cover.getAttribute('height')]).toEqual(['1600', '900']);
   });
 
   it('sets the title and CreativeWork + BreadcrumbList JSON-LD', async () => {

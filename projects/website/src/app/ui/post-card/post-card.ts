@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 import type { BlogPostCard } from '@shared/interfaces/public-api.interface';
 import { dayMonthYear } from '../../core/dates';
+import { POST_CARD_SIZES } from '../../core/image-sizes';
 import { siteFeature } from '../../core/store/site.feature';
 
 /** Blog teaser (Figma: notched cover with navy arrow, tag chip, author · date, title) linking to /blog/:slug. */
@@ -22,4 +23,5 @@ export class PostCard {
   protected readonly date = computed(() => dayMonthYear(this.post().publishedAt));
   protected readonly tag = computed(() => this.post().tags[0] ?? null);
   protected readonly link = computed(() => ['/blog', this.post().slug]);
+  protected readonly sizes = POST_CARD_SIZES;
 }

@@ -1,8 +1,9 @@
 <section id="services" class="services" appSpySection aria-labelledby="services-title">
   <!-- Figma: 3D orange blobs floating over the textured band (decorative). -->
-  <img class="services__blob services__blob--left" src="/assets/images/blob.webp" alt="" width="640" height="639" loading="lazy" decoding="async" aria-hidden="true" />
-  <img class="services__blob services__blob--top" src="/assets/images/blob.webp" alt="" width="640" height="639" loading="lazy" decoding="async" aria-hidden="true" />
-  <img class="services__blob services__blob--right" src="/assets/images/blob.webp" alt="" width="640" height="639" loading="lazy" decoding="async" aria-hidden="true" />
+  <!-- Blobs: srcset/sizes mirror the clamp() widths in services.scss (left 10-18rem, top 6-10rem, right 12-24rem). -->
+  <img class="services__blob services__blob--left" src="/assets/images/blob-320.webp" srcset="/assets/images/blob-160.webp 160w, /assets/images/blob-320.webp 320w, /assets/images/blob-480.webp 480w, /assets/images/blob.webp 640w" sizes="(min-width: 1600px) 18rem, calc(6rem + 12vw)" alt="" width="640" height="639" loading="lazy" decoding="async" aria-hidden="true" />
+  <img class="services__blob services__blob--top" src="/assets/images/blob-160.webp" srcset="/assets/images/blob-160.webp 160w, /assets/images/blob-320.webp 320w, /assets/images/blob-480.webp 480w, /assets/images/blob.webp 640w" sizes="(min-width: 1600px) 10rem, calc(4rem + 6vw)" alt="" width="640" height="639" loading="lazy" decoding="async" aria-hidden="true" />
+  <img class="services__blob services__blob--right" src="/assets/images/blob-320.webp" srcset="/assets/images/blob-160.webp 160w, /assets/images/blob-320.webp 320w, /assets/images/blob-480.webp 480w, /assets/images/blob.webp 640w" sizes="(min-width: 1600px) 24rem, (max-width: 533px) 12rem, calc(6rem + 18vw)" alt="" width="640" height="639" loading="lazy" decoding="async" aria-hidden="true" />
 
   <div class="services__inner">
     <header class="services__heading">

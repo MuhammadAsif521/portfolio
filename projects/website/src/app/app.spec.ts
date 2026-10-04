@@ -56,12 +56,17 @@ describe('App shell', () => {
     expect(el.querySelector('main#main')).toBeTruthy();
   });
 
-  it('shows the "AP" mark (named after the site for screen readers), the hover credit and the resume link', async () => {
+  it('shows the "AP" mark, the hover credit and the resume link; the brand link name starts with the visible mark', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('.site-nav__mark')?.textContent?.trim()).toBe('AP');
-    expect(el.querySelector('.site-nav__brand')?.getAttribute('aria-label')).toBe('Muhammad Asif, home');
+    const brand = el.querySelector('.site-nav__brand')!;
+    // Label-in-name (WCAG 2.5.3): no aria-label overriding the visible "AP"; the name starts with it.
+    expect(brand.hasAttribute('aria-label')).toBe(false);
+    const name = [brand.querySelector('.site-nav__mark'), brand.querySelector('.sr-only')].map((n) => n?.textContent).join('');
+    expect(name).toBe('AP, Muhammad Asif, home');
+    expect(brand.querySelector('.site-nav__made')?.getAttribute('aria-hidden')).toBe('true');
     expect(el.querySelector('.site-nav__made')?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Made by Asif');
     expect(el.querySelector<HTMLAnchorElement>('.site-nav__resume')?.href).toBe('https://cdn.test/resume/a.pdf');
   });

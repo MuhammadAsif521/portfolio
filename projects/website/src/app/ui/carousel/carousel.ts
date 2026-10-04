@@ -59,6 +59,8 @@ export class Carousel<T> {
   readonly active = model(0);
   /** false until measured in the browser, so SSR and wide screens don't show pointless dots. */
   protected readonly overflowing = signal(false);
+  /** true once measured: until then (SSR, first paint) the track stays a tab stop in case it scrolls. */
+  protected readonly measured = signal(false);
   protected readonly dragging = signal(false);
   /** Scroll position at either end (prev/next buttons disable there). */
   protected readonly atStart = signal(true);
@@ -84,6 +86,19 @@ export class Carousel<T> {
     this.goTo(Math.min(Math.max(this.active() + delta, 0), this.count() - 1));
   }
 
+  /**
+   * The track is a tab stop while it scrolls (a scrollable region must be keyboard reachable, and
+   * slides without links would otherwise be unreachable): Left/Right/Home/End move between slides.
+   */
+  protected onKeydown(event: KeyboardEvent): void {
+    if (event.target !== event.currentTarget) return; // keys inside a slide (links, buttons) are theirs
+    const targets: Record<string, number> = { ArrowLeft: this.active() - 1, ArrowRight: this.active() + 1, Home: 0, End: this.count() - 1 };
+    const index = targets[event.key];
+    if (index === undefined) return;
+    event.preventDefault();
+    this.goTo(Math.min(Math.max(index, 0), this.count() - 1));
+  }
+
   private updateEnds(track: HTMLElement): void {
     this.atStart.set(track.scrollLeft <= 2);
     this.atEnd.set(track.scrollLeft + track.clientWidth >= track.scrollWidth - 2);
@@ -95,6 +110,7 @@ export class Carousel<T> {
 
     const measure = () => {
       this.overflowing.set(track.scrollWidth - track.clientWidth > 2);
+      this.measured.set(true);
       this.updateEnds(track);
       this.active.set(this.nearestIndex(track));
     };

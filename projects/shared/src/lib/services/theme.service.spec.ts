@@ -132,6 +132,14 @@ describe('ThemeService', () => {
       expect(html().style.getPropertyValue('--on-primary')).toBe('#141414');
     });
 
+    it('writes AA-shaded primary text colours for light and dark surfaces', () => {
+      mockSystemDark(false);
+      createService().applyBrand({ primary: '#D97706', secondary: '#141414', accent: '#FF9A5C' });
+      const style = html().style;
+      expect(style.getPropertyValue('--primary-ink-light')).toBe('#A75C05'); // 3.2:1 → 4.56:1 on #F2F4F7
+      expect(style.getPropertyValue('--primary-ink-dark')).toBe('#D97706'); // already passes on #1F1F1F
+    });
+
     it('ignores invalid colours (keeps the CSS defaults)', () => {
       mockSystemDark(false);
       createService().applyBrand({ primary: 'red; background: url(x)', secondary: '#141414', accent: '#FF9A5C' });

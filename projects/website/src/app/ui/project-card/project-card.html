@@ -1,14 +1,17 @@
 @let p = project();
 <article class="project-card" [attr.aria-labelledby]="'project-' + p.slug">
   @if (p.coverImage; as cover) {
+    <!-- loading/sizes/srcset are bound before src so the browser picks one candidate, lazily. -->
     <img
       class="project-card__image"
-      [src]="cover.url"
-      [alt]="cover.alt"
-      [attr.width]="cover.width ?? 1266"
-      [attr.height]="cover.height ?? 742"
       [attr.loading]="eager() ? null : 'lazy'"
       decoding="async"
+      [attr.sizes]="cover.srcset ? sizes : null"
+      [attr.srcset]="cover.srcset ?? null"
+      [src]="cover.url"
+      [alt]="cover.alt"
+      [attr.width]="cover.width ?? 1600"
+      [attr.height]="cover.height ?? 900"
       draggable="false"
     />
   } @else {

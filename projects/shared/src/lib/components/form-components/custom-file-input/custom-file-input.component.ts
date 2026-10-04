@@ -14,6 +14,8 @@ export interface FileCropConfig {
 
 interface FilePreviewItem {
   url: string;
+  /** Stored images with responsive variants: lets the 2.5rem thumbnail load the smallest copy. */
+  srcset?: string;
   name: string;
   isBlob: boolean;
   size?: number;
@@ -96,6 +98,8 @@ const EXECUTABLE_SIGNATURES = ['4d5a', '7f454c46', 'feedface', 'cafebabe'];
               <div class="fc-file-thumb">
                 @if (isImageUrl(item.url)) {
                   <img
+                    [attr.sizes]="item.srcset ? '2.5rem' : null"
+                    [attr.srcset]="item.srcset ?? null"
                     [src]="item.url"
                     alt="preview"
                     (error)="onImgError($event)"
@@ -242,11 +246,15 @@ export class CustomFileInputComponent implements OnInit, OnChanges, OnDestroy {
     if (this.selectedFiles.length > 0) return;
 
     const items = Array.isArray(this.patchedImages) ? this.patchedImages : [this.patchedImages];
-    // Stored images may be a path, an absolute URL, or an image object ({ key, url, alt }).
+    // Stored images may be a path, an absolute URL, or an image object ({ key, url, alt, srcset? }).
+    const srcsets = new Map<string, string>();
     const entries = items
-      .map((item: unknown) =>
-        item && typeof item === 'object' && !(item instanceof File) ? (item as { url?: string }).url : item,
-      )
+      .map((item: unknown) => {
+        if (!item || typeof item !== 'object' || item instanceof File) return item;
+        const { url, srcset } = item as { url?: string; srcset?: string };
+        if (url && srcset) srcsets.set(url, srcset);
+        return url;
+      })
       .filter((item: unknown): item is string | File => !!item);
 
     this.previews = entries.map((item: string | File) =>
@@ -259,6 +267,7 @@ export class CustomFileInputComponent implements OnInit, OnChanges, OnDestroy {
         }
         : {
           url: /^(https?:|blob:|data:)/i.test(item) ? item : `${this.imageBaseUrl}/${item.replace(/^\//, '')}`,
+          ...(srcsets.has(item) ? { srcset: srcsets.get(item) } : {}),
           name: item.split('/').pop() || item,
           isBlob: false,
         },

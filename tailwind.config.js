@@ -24,6 +24,8 @@ module.exports = {
                     soft: token('primary-soft'),
                     muted: token('primary-muted'),
                     container: token('primary-soft'),
+                    // Primary as text on page surfaces (AA-shaded per theme and mode)
+                    ink: color('primary-ink'),
                 },
                 secondary: { DEFAULT: color('secondary'), hover: color('secondary-hover') },
                 accent: color('accent'),

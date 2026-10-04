@@ -29,7 +29,7 @@
 }
 
 .contact__accent {
-  color: var(--primary);
+  color: var(--primary-ink);
 }
 
 .contact__quick {
@@ -72,7 +72,7 @@
   cursor: pointer;
 
   &:hover {
-    color: var(--primary);
+    color: var(--primary-ink);
   }
 
   @include m.focus-ring;

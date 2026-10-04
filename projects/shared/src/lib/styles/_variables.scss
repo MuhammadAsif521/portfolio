@@ -30,6 +30,12 @@
   --on-secondary: #ffffff;
   --on-accent: #141414;
 
+  // Primary as text on page surfaces (links, accents, "back" links): the primary shaded just enough for
+  // 4.5:1 on the light (#F2F4F7) / dark (#1F1F1F) surfaces — ThemeService recomputes both per palette
+  // (color.util readableShade). Use var(--primary-ink); on dark bands keep var(--primary).
+  --primary-ink-light: #aa5927;
+  --primary-ink-dark: #fd853a;
+
   // Derived brand shades (follow any runtime palette automatically)
   --primary-hover: color-mix(in srgb, var(--primary) 88%, #000000);
   --primary-active: color-mix(in srgb, var(--primary) 78%, #000000);
@@ -164,8 +170,9 @@
   --ink: #171717; // hero headline, nav bar
   --text: #344054;
   --text-muted: #667085;
-  --text-subtle: #98a2b3;
+  --text-subtle: #667085; // AA (4.5:1) on --band-b too; was #98a2b3 (2.3-2.6:1)
   --text-inverse: #ffffff;
+  --primary-ink: var(--primary-ink-light);
 
   // Lines
   --border: #eaecf0;
@@ -236,8 +243,9 @@
   --ink: #fafafa;
   --text: #e4e7ec;
   --text-muted: #98a2b3;
-  --text-subtle: #667085;
+  --text-subtle: #808a9c; // AA on --surface-muted (4.7:1); was #667085 (3.6-3.9:1)
   --text-inverse: #141414;
+  --primary-ink: var(--primary-ink-dark);
 
   --border: #2a2a2a;
   --border-strong: #3a3a3a;

@@ -33,3 +33,29 @@ export function contrastRatio(a: string, b: string): number {
 export function readableTextOn(background: string): typeof LIGHT_TEXT | typeof DARK_TEXT {
   return contrastRatio(background, LIGHT_TEXT) >= contrastRatio(background, DARK_TEXT) ? LIGHT_TEXT : DARK_TEXT;
 }
+
+/** Page surfaces that brand-coloured text sits on: the lightest-contrast light surface (#F2F4F7 band) and
+ *  the lightest dark-mode surface (#1F1F1F). Keep in sync with --band-b / --surface-muted. */
+export const LIGHT_SURFACE = '#F2F4F7';
+export const DARK_SURFACE = '#1F1F1F';
+
+function toHex(rgb: readonly number[]): string {
+  return `#${rgb.map((c) => Math.round(c * 255).toString(16).padStart(2, '0')).join('')}`.toUpperCase();
+}
+
+/**
+ * `color` itself when it already reaches `minRatio` against `background`, otherwise the smallest
+ * sRGB mix towards black (light backgrounds) or white (dark backgrounds) that does — the same mix
+ * as CSS `color-mix(in srgb, …)`. Used for brand-coloured text (links, accents) on page surfaces,
+ * so any admin palette stays legible without changing the brand colour itself.
+ */
+export function readableShade(color: string, background: string, minRatio = 4.5): string {
+  const base = channels(color);
+  const target = relativeLuminance(background) > 0.18 ? 0 : 1;
+  for (let step = 0; step <= 100; step++) {
+    const t = step / 100;
+    const hex = toHex(base.map((c) => c * (1 - t) + target * t));
+    if (contrastRatio(hex, background) >= minRatio) return hex;
+  }
+  return target === 0 ? '#000000' : '#FFFFFF';
+}

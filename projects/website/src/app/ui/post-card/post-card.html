@@ -5,12 +5,14 @@
       @if (p.coverImage; as cover) {
         <img
           class="post-card__image"
-          [src]="cover.url"
-          [alt]="cover.alt"
-          [attr.width]="cover.width ?? 832"
-          [attr.height]="cover.height ?? 862"
           loading="lazy"
           decoding="async"
+          [attr.sizes]="cover.srcset ? sizes : null"
+          [attr.srcset]="cover.srcset ?? null"
+          [src]="cover.url"
+          [alt]="cover.alt"
+          [attr.width]="cover.width ?? 1600"
+          [attr.height]="cover.height ?? 900"
         />
       } @else {
         <div class="post-card__placeholder" aria-hidden="true">

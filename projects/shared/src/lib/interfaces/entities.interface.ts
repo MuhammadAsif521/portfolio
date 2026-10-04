@@ -8,6 +8,11 @@ export interface Timestamped {
 /**
  * An uploaded image. The API stores the R2 key and always adds an absolute CDN `url`, so templates can
  * bind `url` directly (asset-url.pipe passes absolute URLs through unchanged).
+ *
+ * Images uploaded (or backfilled) since responsive variants exist also carry `variants` (widths of the
+ * `-w480.webp` / `-w960.webp` copies) and a ready-made `srcset` ("…-w480.webp 480w, …, <url> 1600w").
+ * Older data has neither: bind `[attr.srcset]="image.srcset ?? null"` so `src` alone is used then.
+ * Both are server-owned — never send them back (portfolio-node's imageInput rejects them).
  */
 export interface AssetImage {
   key: string;
@@ -15,6 +20,8 @@ export interface AssetImage {
   alt: string;
   width?: number;
   height?: number;
+  variants?: number[];
+  srcset?: string;
 }
 
 export interface GalleryImage extends AssetImage {

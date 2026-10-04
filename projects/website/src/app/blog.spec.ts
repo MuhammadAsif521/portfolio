@@ -10,6 +10,7 @@ import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { BLOG_CONTENT } from './content/blog.content';
 import { dayMonthYear } from './core/dates';
+import { POST_COVER_SIZES } from './core/image-sizes';
 import { BlogListPage, pageNumber, tagFilter } from './pages/blog-list/blog-list';
 import { BlogPostPage } from './pages/blog-post/blog-post';
 import { Blog } from './sections/blog/blog';
@@ -199,6 +200,29 @@ describe('Blog post page', () => {
     expect(el.querySelector('.post__content img')?.getAttribute('onerror')).toBeNull();
     expect(el.querySelector('.post__cta a')?.getAttribute('href')).toBe('/#contact');
     expect(responseInit.status).toBeUndefined();
+  });
+
+  it('serves the cover (the LCP image) eagerly at high priority, responsive when the API sends a srcset', async () => {
+    const srcset = 'https://cdn.test/c-w480.webp 480w, https://cdn.test/c-w960.webp 960w, https://cdn.test/c.webp 1600w';
+    const { el } = await render(() =>
+      of({ ...post, coverImage: { ...post.coverImage, width: 1600, height: 900, variants: [480, 960], srcset } }),
+    );
+    const cover = el.querySelector<HTMLImageElement>('img.post__cover')!;
+    expect(cover.getAttribute('srcset')).toBe(srcset);
+    expect(cover.getAttribute('sizes')).toBe(POST_COVER_SIZES);
+    expect(cover.getAttribute('src')).toBe('https://cdn.test/c.webp');
+    expect(cover.getAttribute('fetchpriority')).toBe('high');
+    expect(cover.getAttribute('loading')).toBeNull();
+    expect([cover.getAttribute('width'), cover.getAttribute('height')]).toEqual(['1600', '900']);
+  });
+
+  it('falls back to the plain cover src for images stored before variants existed', async () => {
+    const { el } = await render(() => of(post));
+    const cover = el.querySelector<HTMLImageElement>('img.post__cover')!;
+    expect(cover.getAttribute('src')).toBe('https://cdn.test/c.webp');
+    expect(cover.hasAttribute('srcset')).toBe(false);
+    expect(cover.hasAttribute('sizes')).toBe(false);
+    expect([cover.getAttribute('width'), cover.getAttribute('height')]).toEqual(['1600', '900']);
   });
 
   it('emits og:type article, BlogPosting and a Home › Blog › post breadcrumb', async () => {

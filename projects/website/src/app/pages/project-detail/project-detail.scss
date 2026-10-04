@@ -47,7 +47,7 @@
     text-decoration: none;
 
     &:hover {
-      color: var(--primary);
+      color: var(--primary-ink);
     }
   }
 
@@ -60,7 +60,7 @@
 
 .case__client {
   margin: 0 0 0.75rem;
-  color: var(--primary);
+  color: var(--primary-ink);
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -136,7 +136,7 @@
 
     &:hover {
       border-color: var(--primary);
-      color: var(--primary);
+      color: var(--primary-ink);
     }
   }
 }

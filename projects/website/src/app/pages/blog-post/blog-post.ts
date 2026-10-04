@@ -12,6 +12,7 @@ import { BLOG_CONTENT } from '../../content/blog.content';
 import { CodeBlocksDirective } from '../../core/code-blocks.directive';
 import { DEMO_CONTENT, DEMO_POSTS } from '../../core/demo-content';
 import { dayMonthYear } from '../../core/dates';
+import { POST_COVER_SIZES } from '../../core/image-sizes';
 import { siteFeature } from '../../core/store/site.feature';
 
 type PostState =
@@ -40,6 +41,7 @@ export class BlogPostPage {
   private readonly demo = inject(DEMO_CONTENT);
 
   protected readonly content = BLOG_CONTENT.post;
+  protected readonly coverSizes = POST_COVER_SIZES;
   protected readonly author = inject(Store).selectSignal(siteFeature.selectSiteName);
 
   protected readonly state = toSignal(

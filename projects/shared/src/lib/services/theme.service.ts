@@ -1,6 +1,6 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { DestroyRef, Injectable, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
-import { isHexColor, readableTextOn } from '../utils/color.util';
+import { DARK_SURFACE, LIGHT_SURFACE, isHexColor, readableShade, readableTextOn } from '../utils/color.util';
 
 /** The mode actually rendered. */
 export type ThemeMode = 'light' | 'dark';
@@ -141,6 +141,11 @@ export class ThemeService {
         this.root.style.setProperty(`--${key}`, valid[key]);
         this.root.style.setProperty(`--on-${key}`, readableTextOn(valid[key]));
       }
+    }
+    // Brand-coloured text on page surfaces (links, accents): the primary, shaded only as far as AA needs.
+    if (valid.primary) {
+      this.root.style.setProperty('--primary-ink-light', readableShade(valid.primary, LIGHT_SURFACE));
+      this.root.style.setProperty('--primary-ink-dark', readableShade(valid.primary, DARK_SURFACE));
     }
     if (valid.primary && valid.secondary && valid.accent) this.brand.set(valid as BrandPalette);
   }

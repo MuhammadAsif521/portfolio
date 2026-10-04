@@ -40,14 +40,17 @@
       </header>
 
       @if (p.coverImage; as cover) {
+        <!-- Above the fold: the page's LCP image, so it is fetched eagerly at high priority. -->
         <img
           class="post__cover"
+          fetchpriority="high"
+          decoding="async"
+          [attr.sizes]="cover.srcset ? coverSizes : null"
+          [attr.srcset]="cover.srcset ?? null"
           [src]="cover.url"
           [alt]="cover.alt"
           [attr.width]="cover.width ?? 1600"
           [attr.height]="cover.height ?? 900"
-          fetchpriority="high"
-          decoding="async"
         />
       }
 

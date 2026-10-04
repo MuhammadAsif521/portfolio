@@ -15,5 +15,13 @@ export const ABOUT_CONTENT = {
     { value: '4', suffix: '', label: 'Public sites on one multi-tenant backend' },
   ],
   /** Its own waist-up image (the hero uses the full-length cut-out). Replace the file to use another photo. */
-  portrait: { src: '/assets/images/about-portrait.webp', alt: 'Portrait of Muhammad Asif', width: 493, height: 640 },
+  portrait: {
+    src: '/assets/images/about-portrait.webp',
+    /** Rendered at most 408 CSS px wide (.about__portrait), so 1x screens get the 320px file. */
+    srcset: '/assets/images/about-portrait-sm.webp 320w, /assets/images/about-portrait.webp 493w',
+    sizes: '(min-width: 440px) 408px, calc(100vw - 2rem)',
+    alt: 'Portrait of Muhammad Asif',
+    width: 493,
+    height: 640,
+  },
 } as const;

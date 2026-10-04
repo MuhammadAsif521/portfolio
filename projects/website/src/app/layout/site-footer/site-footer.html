@@ -22,7 +22,7 @@
       <div class="footer__main">
 
         <!-- Logo + Name -->
-        <a class="footer__logo" routerLink="/" fragment="home" [attr.aria-label]="siteName() + ', home'">
+        <a class="footer__logo" routerLink="/" fragment="home">
           @if (logo(); as image) {
           <img class="footer__logo-img" [src]="image.url" alt="" [attr.width]="image.width || 32" [attr.height]="image.height || 32" loading="lazy" />
           } @else {
@@ -31,9 +31,8 @@
           </span>
           }
 
-          <span class="footer__name">
-            {{ siteName() }}
-          </span>
+          <!-- No aria-label: named by the visible site name (label-in-name), "Muhammad Asif, home". -->
+          <span class="footer__name">{{ siteName() }}<span class="sr-only">, home</span></span>
         </a>
 
 

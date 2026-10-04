@@ -57,4 +57,30 @@ describe('uploadImageFields', () => {
     expect(out['diagram']).toEqual({ key: 'projects/old.webp', alt: 'Old' });
     expect(out['logo']).toBeNull();
   });
+
+  it('never sends the server-owned variants / srcset back (the API rejects them)', async () => {
+    const stored = {
+      key: 'projects/2026/10/c.webp',
+      url: 'https://cdn/c.webp',
+      alt: 'Cover',
+      width: 1600,
+      height: 900,
+      variants: [480, 960],
+      srcset: 'https://cdn/c-w480.webp 480w, https://cdn/c-w960.webp 960w, https://cdn/c.webp 1600w',
+    };
+    const fresh = { ...uploaded, variants: [480], srcset: 'https://cdn/x-w480.webp 480w, https://cdn/x.webp 800w' };
+    const svcWithVariants = { uploadImage: vi.fn(() => of(fresh)) } as unknown as ResourceService;
+    const out = await firstValueFrom(
+      uploadImageFields(
+        svcWithVariants,
+        [
+          { name: 'coverImage', folder: 'projects' },
+          { name: 'diagram', folder: 'projects', alt: 'Diagram' },
+        ],
+        { coverImage: stored, diagram: [new File(['x'], 'd.png', { type: 'image/png' })] },
+      ),
+    );
+    expect(out['coverImage']).toEqual({ key: stored.key, alt: 'Cover', width: 1600, height: 900 });
+    expect(out['diagram']).toEqual({ key: uploaded.key, alt: 'Title', width: 800, height: 600 });
+  });
 });

@@ -1,4 +1,4 @@
-import { contrastRatio, DARK_TEXT, isHexColor, LIGHT_TEXT, readableTextOn, relativeLuminance } from './color.util';
+import { contrastRatio, DARK_SURFACE, DARK_TEXT, isHexColor, LIGHT_SURFACE, LIGHT_TEXT, readableShade, readableTextOn, relativeLuminance } from './color.util';
 
 describe('color.util', () => {
   it('validates #RRGGBB colours only', () => {
@@ -22,5 +22,26 @@ describe('color.util', () => {
     expect(readableTextOn('#FF9A5C')).toBe(DARK_TEXT); // default accent
     expect(readableTextOn('#1D4ED8')).toBe(LIGHT_TEXT); // a deep blue admin theme
     expect(contrastRatio('#FF7A3D', readableTextOn('#FF7A3D'))).toBeGreaterThan(4.5);
+  });
+});
+
+describe('readableShade', () => {
+  it('keeps a colour that already passes and shades one that does not, just past AA', () => {
+    expect(readableShade('#1D4ED8', LIGHT_SURFACE)).toBe('#1D4ED8');
+    const ink = readableShade('#D97706', LIGHT_SURFACE);
+    expect(ink).not.toBe('#D97706');
+    expect(contrastRatio(ink, LIGHT_SURFACE)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(ink, LIGHT_SURFACE)).toBeLessThan(5);
+  });
+
+  it('lightens towards white on dark surfaces', () => {
+    const ink = readableShade('#1D4ED8', DARK_SURFACE);
+    expect(relativeLuminance(ink)).toBeGreaterThan(relativeLuminance('#1D4ED8'));
+    expect(contrastRatio(ink, DARK_SURFACE)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('matches the CSS defaults for the Default theme', () => {
+    expect(readableShade('#FD853A', LIGHT_SURFACE)).toBe('#AA5927');
+    expect(readableShade('#FD853A', DARK_SURFACE)).toBe('#FD853A');
   });
 });

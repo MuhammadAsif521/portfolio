@@ -18,6 +18,7 @@ import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { PROJECTS_CONTENT } from '../../content/projects.content';
 import { CodeBlocksDirective } from '../../core/code-blocks.directive';
 import { DEMO_CONTENT, DEMO_PROJECTS } from '../../core/demo-content';
+import { PROJECT_COVER_SIZES } from '../../core/image-sizes';
 
 type ProjectState =
   | { status: 'loading' }
@@ -46,6 +47,7 @@ export class ProjectDetailPage {
   private readonly demo = inject(DEMO_CONTENT);
 
   protected readonly content = PROJECTS_CONTENT.detail;
+  protected readonly coverSizes = PROJECT_COVER_SIZES;
 
   protected readonly state = toSignal(
     toObservable(this.slug).pipe(

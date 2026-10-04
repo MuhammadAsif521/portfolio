@@ -16,13 +16,16 @@
         }
       </ul>
 
-      <a class="site-nav__brand" routerLink="/" fragment="home" (click)="onSectionClick($event, left[0])" [attr.aria-label]="siteName() + ', home'">
+      <a class="site-nav__brand" routerLink="/" fragment="home" (click)="onSectionClick($event, left[0])">
         @if (logo(); as image) {
           <img class="site-nav__logo-img" [src]="image.url" [alt]="''" [attr.width]="image.width || 32" [attr.height]="image.height || 32" />
         } @else {
-          <span class="site-nav__mark" aria-hidden="true">{{ brand.mark }}</span>
+          <span class="site-nav__mark">{{ brand.mark }}</span>
         }
-        <!-- Revealed on hover / keyboard focus -->
+        <!-- No aria-label: the name starts with the visible "AP" (label-in-name), "AP, Muhammad Asif, home";
+             with a logo image (alt="") it is "Muhammad Asif, home". -->
+        <span class="sr-only">{{ logo() ? '' : ', ' }}{{ siteName() }}, home</span>
+        <!-- Hover / focus credit (decorative) -->
         <span class="site-nav__made" aria-hidden="true">{{ brand.madeBy }} <strong>{{ brand.author }}</strong></span>
       </a>
 

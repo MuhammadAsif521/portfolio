@@ -44,7 +44,7 @@
     text-decoration: none;
 
     &:hover {
-      color: var(--primary);
+      color: var(--primary-ink);
     }
   }
 }
@@ -125,7 +125,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  color: var(--primary);
+  color: var(--primary-ink);
   font-weight: 600;
   text-decoration: none;
 

@@ -6,7 +6,7 @@
       <nav aria-label="Breadcrumb">
         <ol class="m-0 flex list-none flex-wrap items-center gap-2 p-0 text-sm text-muted">
           <li>
-            <a class="rounded-xs text-muted no-underline transition-colors hover:text-primary focus-visible:shadow-focus focus-visible:outline-none"
+            <a class="rounded-xs text-muted no-underline transition-colors hover:text-primary-ink focus-visible:shadow-focus focus-visible:outline-none"
               routerLink="/">{{ ui.breadcrumbHome }}</a>
           </li>
           <li aria-hidden="true" class="text-subtle">/</li>
@@ -49,7 +49,7 @@
               <ol class="m-0 grid list-none gap-1 p-0">
                 @for (item of toc(); track item.id) {
                   <li>
-                    <a class="block rounded-sm py-1.5 text-sm text-text no-underline hover:text-primary focus-visible:shadow-focus focus-visible:outline-none"
+                    <a class="block rounded-sm py-1.5 text-sm text-text no-underline hover:text-primary-ink focus-visible:shadow-focus focus-visible:outline-none"
                       [attr.href]="p.path + '#' + item.id" (click)="jump($event, item.id)">{{ item.label }}</a>
                   </li>
                 }

@@ -1,17 +1,20 @@
 <div class="carousel" [class.carousel--centered]="centered()" role="region" aria-roledescription="carousel" [attr.aria-label]="label()">
-  <ul
+  <!-- APG carousel pattern: a labelled region whose slides are "n of m" groups. Plain divs (not ul/li),
+       since role="group" is not allowed on li; the arrows and dots sit outside the track. -->
+  <div
     #track
     class="carousel__track"
     [class.carousel__track--draggable]="overflowing()"
     [class.carousel__track--dragging]="dragging()"
-    tabindex="-1"
+    [attr.tabindex]="overflowing() || !measured() ? 0 : -1"
+    (keydown)="onKeydown($event)"
   >
     @for (item of items(); track $index; let i = $index) {
-      <li class="carousel__slide" role="group" aria-roledescription="slide" [attr.aria-label]="(i + 1) + ' of ' + count()">
+      <div class="carousel__slide" role="group" aria-roledescription="slide" [attr.aria-label]="(i + 1) + ' of ' + count()">
         <ng-container [ngTemplateOutlet]="slide()" [ngTemplateOutletContext]="{ $implicit: item, index: i }" />
-      </li>
+      </div>
     }
-  </ul>
+  </div>
 
   <div class="carousel__nav" [class.carousel__nav--on-dark]="onDark()" [hidden]="!overflowing()">
     <!-- Arrows: large screens only (touch and trackpads swipe) -->

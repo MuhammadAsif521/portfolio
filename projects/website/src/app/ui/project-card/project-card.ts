@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 import type { ProjectCard as ProjectCardData } from '@shared/interfaces/public-api.interface';
+import { PROJECT_CARD_SIZES } from '../../core/image-sizes';
 
 /**
  * Portfolio slide (Figma: 633×371 image card, big white title bottom-left, outlined orange arrow ring
@@ -23,4 +24,5 @@ export class ProjectCard {
   readonly eager = input(false);
 
   protected readonly link = computed(() => ['/projects', this.project().slug]);
+  protected readonly sizes = PROJECT_CARD_SIZES;
 }

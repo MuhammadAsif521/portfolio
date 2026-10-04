@@ -32,6 +32,52 @@ function pointer(target: Element, type: string, clientX: number, pointerType: Po
   target.dispatchEvent(event);
 }
 
+describe('Carousel semantics (APG carousel pattern)', () => {
+  it('is a labelled carousel region of "n of m" slide groups, with no list markup', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    const region = el.querySelector('[role="region"]')!;
+    expect(region.getAttribute('aria-roledescription')).toBe('carousel');
+    expect(region.getAttribute('aria-label')).toBe('Test');
+
+    const slides = Array.from(el.querySelectorAll('.carousel__slide'));
+    expect(slides.map((s) => s.tagName)).toEqual(['DIV', 'DIV', 'DIV']);
+    for (const [i, slide] of slides.entries()) {
+      expect(slide.getAttribute('role')).toBe('group');
+      expect(slide.getAttribute('aria-roledescription')).toBe('slide');
+      expect(slide.getAttribute('aria-label')).toBe(`${i + 1} of 3`);
+    }
+    // Only slides inside the track; controls live outside it.
+    const track = el.querySelector('.carousel__track')!;
+    expect(Array.from(track.children).every((c) => c.classList.contains('carousel__slide'))).toBe(true);
+    expect(el.querySelector('ul, li')).toBeNull();
+  }, 30_000);
+
+  it('moves between slides with the arrow keys once the track is focused', async () => {
+    window.matchMedia = ((query: string) =>
+      ({ matches: query.includes('reduce'), media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList);
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+    const carousel = fixture.debugElement.children[0]!.componentInstance as Carousel<string>;
+    const track = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('.carousel__track')!;
+    track.scrollTo = vi.fn() as unknown as typeof track.scrollTo;
+    const key = (k: string) => track.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true }));
+
+    key('ArrowRight');
+    expect(carousel.active()).toBe(1);
+    key('End');
+    expect(carousel.active()).toBe(2);
+    key('ArrowRight'); // clamped at the last slide
+    expect(carousel.active()).toBe(2);
+    key('Home');
+    expect(carousel.active()).toBe(0);
+  }, 30_000);
+});
+
 describe('Carousel drag vs click', () => {
   let track: HTMLElement;
   let link: HTMLAnchorElement;

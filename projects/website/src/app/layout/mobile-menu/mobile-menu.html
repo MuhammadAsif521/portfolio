@@ -5,12 +5,14 @@
 -->
 <div class="mobile-menu__top">
   <div class="mobile-menu__bar">
-    <a class="mobile-menu__brand" routerLink="/" fragment="home" (click)="sectionClick.emit({ event: $event, link: links[0] })" [attr.aria-label]="siteName() + ', home'">
+    <a class="mobile-menu__brand" routerLink="/" fragment="home" (click)="sectionClick.emit({ event: $event, link: links[0] })">
       @if (logo(); as image) {
         <img class="mobile-menu__logo" [src]="image.url" [alt]="''" [attr.width]="image.width || 32" [attr.height]="image.height || 32" />
       } @else {
-        <span class="mobile-menu__mark" aria-hidden="true">{{ brand.mark }}</span>
+        <span class="mobile-menu__mark">{{ brand.mark }}</span>
       }
+      <!-- No aria-label: named "AP, Muhammad Asif, home" (starts with the visible mark; label-in-name). -->
+      <span class="sr-only">{{ logo() ? '' : ', ' }}{{ siteName() }}, home</span>
     </a>
     <app-theme-toggle [onDark]="true" />
     <button #closeButton type="button" class="mobile-menu__close" aria-label="Close menu" (click)="closeRequest.emit()">

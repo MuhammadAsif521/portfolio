@@ -74,21 +74,49 @@ app.get(llmsAliases, (_req, res) => {
   res.redirect(301, '/llms.txt');
 });
 
-app.get([...crawlerFiles, indexNowKeyFile], async (req, res, next) => {
+/**
+ * The API runs on a free tier that sleeps: a cold start can outlast the serverless timeout, and Search
+ * Console then reports "Sitemap could not be read". So (1) Vercel's CDN keeps a good copy for an hour and
+ * serves it stale while revalidating / when the API errors, (2) this instance keeps its last good copy,
+ * and (3) with nothing to fall back on the answer is a 503 + Retry-After (crawlers retry), never HTML.
+ */
+const CRAWLER_CDN_CACHE = 'max-age=3600, stale-while-revalidate=604800, stale-if-error=604800';
+const UPSTREAM_TIMEOUT_MS = 25_000;
+const lastGood = new Map<string, { status: number; headers: [string, string][]; body: Buffer }>();
+
+app.get([...crawlerFiles, indexNowKeyFile], async (req, res) => {
+  const forwarded = ['content-type', 'cache-control', 'etag', 'location', 'x-robots-tag'];
   try {
     // Never follow upstream redirects: the visitor (or crawler) must see them itself.
     const upstream = await fetch(`${apiOrigin}${req.path}`, {
       redirect: 'manual',
-      headers: req.headers['if-none-match'] ? { 'If-None-Match': String(req.headers['if-none-match']) } : {},
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     });
+    if (upstream.status >= 500) throw new Error(`upstream ${upstream.status}`);
+    const headers = forwarded
+      .map((name) => [name, upstream.headers.get(name)] as const)
+      .filter((pair): pair is [string, string] => pair[1] !== null);
+    const body = Buffer.from(await upstream.arrayBuffer());
+    if (upstream.status === 200) lastGood.set(req.path, { status: 200, headers, body });
+
     res.status(upstream.status);
-    for (const header of ['content-type', 'cache-control', 'etag', 'location', 'x-robots-tag']) {
-      const value = upstream.headers.get(header);
-      if (value) res.setHeader(header, value);
-    }
-    res.send(Buffer.from(await upstream.arrayBuffer()));
+    for (const [name, value] of headers) res.setHeader(name, value);
+    if (upstream.status === 200) res.setHeader('Vercel-CDN-Cache-Control', CRAWLER_CDN_CACHE);
+    res.send(body);
   } catch (err) {
-    next(err);
+    const cached = lastGood.get(req.path);
+    if (cached) {
+      res.status(cached.status);
+      for (const [name, value] of cached.headers) res.setHeader(name, value);
+      res.setHeader('Vercel-CDN-Cache-Control', 'max-age=60'); // retry the API soon
+      res.send(cached.body);
+      return;
+    }
+    console.warn(`[crawler-files] ${req.path}: API unavailable (${err instanceof Error ? err.message : 'error'})`);
+    res
+      .status(503)
+      .set({ 'Retry-After': '120', 'Cache-Control': 'no-store', 'Content-Type': 'text/plain; charset=utf-8' })
+      .send('Temporarily unavailable, please retry.');
   }
 });
 

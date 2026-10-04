@@ -3,6 +3,7 @@ import {
   Input,
   OnInit,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   EventEmitter,
   Output,
@@ -18,7 +19,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable, of, type Subscription } from 'rxjs';
 import {  } from '@angular/common'; 
 import { CustomDateComponentComponent } from '@shared/components/form-components/custom-date-component/custom-date-component.component';
 import { CustomFileInputComponent } from '@shared/components/form-components/custom-file-input/custom-file-input.component';
@@ -153,7 +154,7 @@ export interface FormFieldConfig {
     CustomTimeComponent
 ],
 })
-export class DynamicReactiveFormComponent implements OnInit, OnChanges {
+export class DynamicReactiveFormComponent implements OnInit, OnChanges, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   @Input() config!: FormFieldConfig;
@@ -168,26 +169,44 @@ export class DynamicReactiveFormComponent implements OnInit, OnChanges {
   label$!: Observable<any>;
 
 
+  private showWhenSub?: Subscription;
+
   ngOnInit(): void {
     this.label$ = of(this.config.label);
     this.initControl();
-
-    if (this.config.showWhen) {
-      this.formGroup
-        .get(this.config.showWhen.field)
-        ?.valueChanges.subscribe(() => {
-          if (!this.isVisible()) {
-            this.control.reset();
-          }
-          this.cdr.markForCheck(); // 👈 add this
-        });
-    }
+    this.watchShowWhen();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['config'] && this.control) {
+    // A page may replace its FormGroup (e.g. re-built from the saved data after "Save"). Re-resolve the
+    // control, otherwise this field keeps writing into the old, detached form and later edits are lost.
+    const rebound = ['formGroup', 'parentArray', 'arrayIndex'].some(
+      (key) => changes[key] && !changes[key].firstChange,
+    );
+    if (rebound) {
+      this.initControl();
+      this.watchShowWhen();
+      this.cdr.markForCheck();
+    } else if (changes['config'] && this.control) {
       this.updateDisabledState();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.showWhenSub?.unsubscribe();
+  }
+
+  private watchShowWhen(): void {
+    this.showWhenSub?.unsubscribe();
+    if (!this.config.showWhen) return;
+    this.showWhenSub = this.formGroup
+      .get(this.config.showWhen.field)
+      ?.valueChanges.subscribe(() => {
+        if (!this.isVisible()) {
+          this.control.reset();
+        }
+        this.cdr.markForCheck();
+      });
   }
 
   private initControl(): void {

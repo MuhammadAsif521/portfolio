@@ -50,7 +50,7 @@ export const FAQ_CONTENT = {
         {
           text: 'I am based in Pakistan and work on Pakistan Standard Time (PKT, UTC+5). I already work with clients abroad: the ',
         },
-        { text: 'City of New Britain ecosystem', link: '/projects/city-of-new-britain-digital-ecosystem' },
+        // { text: 'City of New Britain ecosystem', link: '/projects/city-of-new-britain-digital-ecosystem' },
         { text: ' serves a city in Connecticut, USA. I communicate in English by email and chat.' },
       ],
     },

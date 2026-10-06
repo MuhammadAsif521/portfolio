@@ -25,7 +25,7 @@ export const ABOUT_CONTENT = {
     ],
     [
       { text: 'Since October 2025 I have worked as a MEAN Stack Developer at ICTGE, where I delivered the ' },
-      { text: 'City of New Britain digital ecosystem', link: '/projects/city-of-new-britain-digital-ecosystem' },
+      // { text: 'City of New Britain digital ecosystem', link: '/projects/city-of-new-britain-digital-ecosystem' },
       {
         text: ': one multi-tenant Node.js backend and one Angular admin panel powering four public city websites. I have also rebuilt e-commerce platforms such as ',
       },

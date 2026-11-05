@@ -182,9 +182,7 @@ export class AnalyticsService {
     return setup;
   }
 
-  /**
-<<<<<<< HEAD
-=======
+  /** 
    * Sends a custom event (`tool_used`, `result_copied`, `cta_clicked`, `contact_submitted`, ...). In GTM
    * mode it is a dataLayer push for a Custom Event trigger of the same name; in gtag mode a GA4 event.
    * A no-op on the server and while analytics is off. Callers decide how often (e.g. once per tool).
@@ -195,13 +193,7 @@ export class AnalyticsService {
     if (setup.mode === 'gtm') this.dataLayer().push({ event, ...params });
     else if (setup.mode === 'gtag') this.gtag()('event', event, { ...params, send_to: setup.id });
   }
-
-  /**
->>>>>>> 34a523c (Save local portfolio work)
-   * Queues a page view for `url` (path + query; fragment-only changes are ignored). Views are sent in
-   * navigation order. After a navigation the view waits until the new page has set its own <title> (it
-   * often does so only once its data arrived), at most PAGE_SETTLE_MS.
-   */
+ 
   private trackPage(url: string, first: boolean): void {
     const page = url.split('#')[0] || '/';
     if (page === this.lastPage) return;

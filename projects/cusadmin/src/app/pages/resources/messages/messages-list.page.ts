@@ -19,7 +19,7 @@ const PATH = 'contact';
 
 type StatusFilter = ContactMessageStatus | '';
 
-/** Contact inbox (conb-sites-admin list-page pattern): status filter, sortable table, open/read/archive/delete actions. */
+/** Contact inbox (the admin template list-page pattern): status filter, sortable table, open/read/archive/delete actions. */
 @Component({
   selector: 'app-messages-list',
   standalone: true,

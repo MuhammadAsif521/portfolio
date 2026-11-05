@@ -36,13 +36,17 @@ let dropdownUid = 0;
 
       <!-- Trigger Button -->
       <button #triggerBtn type="button"
+        [attr.id]="controlName || null"
         (click)="toggleDropdown($event)"
+        (keydown)="onTriggerKeydown($event)"
         [disabled]="disable"
         class="fc-control"
         [class.fc-compact]="size === 'compact'"
         [class.fc-open]="isOpen"
         [class.fc-invalid]="control.invalid && (control.dirty || control.touched)"
         [class.fc-disabled]="disable"
+        aria-haspopup="listbox"
+        [attr.aria-label]="showLabel ? null : (label || null)"
         [attr.aria-expanded]="isOpen">
 
         <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
@@ -64,6 +68,10 @@ let dropdownUid = 0;
       @if (isOpen && !disable) {
         <div #panelRef
           class="fc-panel"
+          role="listbox"
+          [attr.aria-label]="label || null"
+          [attr.aria-multiselectable]="multiple || null"
+          (keydown)="onPanelKeydown($event)"
           [style.top.px]="panelTop"
           [style.left.px]="panelLeft"
           [style.width.px]="panelWidth">
@@ -111,6 +119,10 @@ let dropdownUid = 0;
                   <div class="fc-group-label">{{ group.name }}</div>
                   @for (item of group.options; track item.id) {
                     <div
+                      role="option"
+                      tabindex="-1"
+                      [attr.aria-selected]="isSelected(item.id)"
+                      [attr.aria-disabled]="group.disabled || null"
                       (click)="toggleSelection(item.id, group.disabled, $event)"
                       class="fc-option"
                       [class.fc-option-selected]="!multiple && isSelected(item.id)"
@@ -136,6 +148,9 @@ let dropdownUid = 0;
               }
               @for (item of filteredOptions; track item.id) {
                 <div
+                  role="option"
+                  tabindex="-1"
+                  [attr.aria-selected]="isSelected(item.id)"
                   (click)="toggleSelection(item.id, false, $event)"
                   class="fc-option"
                   [class.fc-option-selected]="!multiple && isSelected(item.id)"
@@ -185,6 +200,7 @@ export class CustomReactiveDropdownComponent implements OnInit, OnDestroy, OnCha
   @Output() onChange = new EventEmitter<any>();
 
   @ViewChild('triggerBtn') triggerBtn!: ElementRef<HTMLButtonElement>;
+  @ViewChild('panelRef') panelRef?: ElementRef<HTMLElement>;
 
   private instanceId = `reactive-dropdown-${++dropdownUid}`;
 
@@ -365,6 +381,67 @@ export class CustomReactiveDropdownComponent implements OnInit, OnDestroy, OnCha
       window.addEventListener('scroll', this.scrollListener, true);
       window.addEventListener('resize', this.resizeListener);
     });
+
+    // Move focus into the panel (search box, else the selected or first option) so keyboard users can act.
+    setTimeout(() => {
+      const panel = this.panelRef?.nativeElement;
+      if (!panel) return;
+      const target =
+        panel.querySelector<HTMLElement>('.fc-search-box input') ??
+        panel.querySelector<HTMLElement>('.fc-option[aria-selected="true"]') ??
+        panel.querySelector<HTMLElement>('.fc-option');
+      target?.focus({ preventScroll: true });
+    });
+  }
+
+  /** ArrowDown / ArrowUp on the closed trigger opens the list, like a native select. */
+  onTriggerKeydown(event: KeyboardEvent): void {
+    if (this.disable || this.isOpen) return;
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.toggleDropdown(event as unknown as MouseEvent);
+    }
+  }
+
+  /** Roving focus inside the open list: arrows, Home/End, Enter/Space to pick, Tab to leave. */
+  onPanelKeydown(event: KeyboardEvent): void {
+    const panel = this.panelRef?.nativeElement;
+    if (!panel) return;
+    const options = Array.from(panel.querySelectorAll<HTMLElement>('.fc-option'));
+    const index = options.indexOf(document.activeElement as HTMLElement);
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        options[Math.min(index + 1, options.length - 1)]?.focus();
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        options[Math.max(index - 1, 0)]?.focus();
+        break;
+      case 'Home':
+        if (index < 0) break;
+        event.preventDefault();
+        options[0]?.focus();
+        break;
+      case 'End':
+        if (index < 0) break;
+        event.preventDefault();
+        options[options.length - 1]?.focus();
+        break;
+      case 'Enter':
+      case ' ':
+        if (index >= 0) {
+          event.preventDefault();
+          options[index].click();
+        }
+        break;
+      case 'Tab':
+        // Hand focus back to the trigger first, so the browser moves on from there.
+        this.triggerBtn?.nativeElement.focus();
+        this.close();
+        break;
+    }
   }
 
   private updatePanelPosition(): void {
@@ -408,7 +485,11 @@ export class CustomReactiveDropdownComponent implements OnInit, OnDestroy, OnCha
   onDocumentClick(): void { if (this.isOpen) this.close(); }
 
   @HostListener('document:keydown.escape')
-  onEscape(): void { if (this.isOpen) this.close(); }
+  onEscape(): void {
+    if (!this.isOpen) return;
+    this.close();
+    this.triggerBtn?.nativeElement.focus();
+  }
 
   ngOnDestroy(): void {
     this.close();

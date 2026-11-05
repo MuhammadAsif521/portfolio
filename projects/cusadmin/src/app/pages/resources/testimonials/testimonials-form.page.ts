@@ -36,7 +36,7 @@ const RATING_OPTIONS = [
 
 const HALF = 'col-span-12 md:col-span-6';
 
-/** Create / edit a testimonial (conb-sites-admin form-page pattern). Real client quotes only. */
+/** Create / edit a testimonial (the admin template form-page pattern). Real client quotes only. */
 @Component({
   selector: 'app-testimonials-form',
   standalone: true,

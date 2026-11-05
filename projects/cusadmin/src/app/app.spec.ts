@@ -15,12 +15,13 @@ import { profileEffects } from './store/profile/profile.effects';
 import { profileFeature, selectProfileUser } from './store/profile/profile.feature';
 import { HttpClient } from '@angular/common/http';
 import { FullLayoutComponent } from './layouts/full-layout/full-layout';
+import { environment } from '@shared/environment/environment';
 
 @Component({ template: '<p>page</p>' })
 class Blank {}
 
 const tick = () => new Promise((r) => setTimeout(r));
-const API = 'http://localhost:3000/api/v1';
+const API = environment.server; // the tests follow whichever API the dev environment points at
 const user = { _id: 'u1', email: 'asif@example.com', name: 'Muhammad Asif', role: 'admin' as const, isActive: true };
 
 function setup() {
@@ -223,20 +224,20 @@ describe('login page with two-factor authentication', () => {
 });
 
 describe('shell', () => {
-  it('renders the grouped sidebar with the AP mark and the signed-in admin', async () => {
+  it('renders the grouped sidebar with the A mark and the signed-in admin', async () => {
     const { store } = setup();
     store.dispatch(ProfileActions.loadSuccess({ user }));
     const fixture = TestBed.createComponent(FullLayoutComponent);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.brand-mark')?.textContent?.trim()).toBe('AP');
+    expect(el.querySelector('.brand-mark')?.textContent?.trim()).toBe('A');
     expect(Array.from(el.querySelectorAll('.nav-caption')).map((n) => n.textContent?.trim())).toEqual([
       'Overview',
       'Content',
       'Inbox',
       'Administration',
     ]);
-    expect(el.querySelectorAll('a.nav-link').length).toBe(9);
+    expect(el.querySelectorAll('a.nav-link').length).toBe(10);
     expect(el.querySelector('.user-card strong')?.textContent?.trim()).toBe('Muhammad Asif');
   });
 });

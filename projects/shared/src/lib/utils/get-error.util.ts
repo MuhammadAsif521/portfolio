@@ -10,6 +10,8 @@ export interface ApiFieldError {
  * points at what actually needs fixing.
  */
 export function getError(err: any, fallback = 'Something went wrong'): string {
+  // A plain string is already the message (e.g. a client-side check such as "Pick at most 6 ...").
+  if (typeof err === 'string') return err.trim() || fallback;
   const body = err?.error ?? err;
   const errors: ApiFieldError[] | undefined = body?.errors;
 

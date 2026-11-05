@@ -15,7 +15,7 @@ import { SidebarComponent } from '@cusadmin/layouts/sidebar/sidebar';
 const APP_NAME = 'Portfolio Admin';
 
 /**
- * Dashboard shell (conb-sites-admin layout): sidebar + topbar, routed content, optional route tabs
+ * Dashboard shell (the admin template layout): sidebar + topbar, routed content, optional route tabs
  * (route data `tabs` / `activeTab`), Classic/Floating layout switcher. Page title from route data `title`.
  */
 @Component({

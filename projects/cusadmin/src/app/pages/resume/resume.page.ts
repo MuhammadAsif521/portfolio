@@ -27,7 +27,7 @@ const GENERATE_PATH = 'resume/generate';
 /** Scalars a PATCH may clear with null (everything not in the validator's notNullable list). */
 const NULLABLE = ['headline', 'location', 'website', 'linkedin', 'github', 'summary', 'accentColor'] as const;
 
-const LIMITS = { skills: 10, skillItems: 25, skillItemLength: 40, education: 6, certifications: 15, languages: 8, featuredProjects: 6 } as const;
+const LIMITS = { skills: 10, skillItems: 25, skillItemLength: 40, education: 6, certifications: 15, languages: 8, featuredProjects: 10 } as const;
 
 type LanguageLevel = 'native' | 'fluent' | 'professional' | 'basic';
 type PaperSize = 'A4' | 'LETTER';

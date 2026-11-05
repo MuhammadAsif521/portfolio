@@ -1,84 +1,80 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { AnalyticsService } from '@shared/services/analytics.service';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl } from '@angular/forms';
+import { ToolButton } from '../../../ui/tool-kit/tool-button';
+import { ToolEmpty } from '../../../ui/tool-kit/tool-empty';
+import { ToolInput } from '../../../ui/tool-kit/tool-fields';
+import { controlSignal, toolCopied, toolUsage } from '../../../ui/tool-kit/tool-form';
+import { ToolKeyValue, type ToolRow } from '../../../ui/tool-kit/tool-key-value';
+import { ToolNote } from '../../../ui/tool-kit/tool-note';
+import { ToolOutput } from '../../../ui/tool-kit/tool-output';
+import { ToolPanel } from '../../../ui/tool-kit/tool-panel';
 import { ToolLayout } from '../tool-layout/tool-layout';
 import { parseEpoch, relativeTime } from '../tool-logic-2';
 
 /** /tools/epoch-converter: Unix seconds/ms ⇄ dates. "Now" is only read in the browser, on demand. */
 @Component({
   selector: 'app-epoch-converter',
-  imports: [ToolLayout],
+  imports: [ToolLayout, ToolPanel, ToolInput, ToolButton, ToolOutput, ToolKeyValue, ToolNote, ToolEmpty],
   styleUrl: '../tool-ui.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-tool-layout slug="epoch-converter">
-      <div class="tool-row">
-        <div class="tool-field tool-grow">
-          <label class="tool-label" for="epoch">Timestamp (seconds or milliseconds) or date</label>
-          <input id="epoch" class="tool-input" autocomplete="off" spellcheck="false" placeholder="1767225600 or 2026-01-01T00:00:00Z"
-            [value]="input()" (input)="onInput($event)" />
-        </div>
-        <button type="button" class="tool-btn" (click)="useNow()">Now</button>
-      </div>
+      <div class="tool-split">
+        <app-tool-panel title="Timestamp or date">
+          <ng-container ngProjectAs="[panelActions]">
+            <app-tool-button size="small" icon="clock" label="Use current time" (pressed)="useNow()" />
+          </ng-container>
+          <app-tool-input
+            fieldId="epoch-input"
+            label="Timestamp (seconds or milliseconds) or date"
+            placeholder="1767225600 or 2026-01-01T00:00:00Z"
+            hint="13 digits or more are read as milliseconds. Dates use ISO 8601."
+            [control]="inputCtl"
+            [invalid]="!!input().trim() && !info()"
+          />
+        </app-tool-panel>
 
-      @if (info(); as i) {
-        <pre class="tool-output" role="status">Read as:     {{ i.unit }}
-Seconds:     {{ i.seconds }}
-Milliseconds:{{ ' ' + i.ms }}
-UTC (ISO):   {{ i.iso }}
-Local:       {{ local() }}
-Relative:    {{ relative() }}</pre>
-        <div class="tool-row">
-          <button type="button" class="tool-btn" (click)="copy(i.seconds.toString())">Copy seconds</button>
-          <button type="button" class="tool-btn" (click)="copy(i.ms.toString())">Copy milliseconds</button>
-          <button type="button" class="tool-btn" (click)="copy(i.iso)">Copy ISO</button>
-        </div>
-      } @else if (input().trim()) {
-        <p class="tool-error" role="alert">Enter a Unix timestamp or a date such as 2026-01-01T12:00:00Z.</p>
-      }
-      <p class="tool-status" aria-live="polite">{{ status() }}</p>
+        <app-tool-panel title="Converted">
+          @if (info()) {
+            <app-tool-output label="All formats" meta="Click Copy on any row">
+              <app-tool-key-value [rows]="rows()" (copied)="trackCopy()" />
+            </app-tool-output>
+          } @else if (input().trim()) {
+            <app-tool-note kind="error">Enter a Unix timestamp or a date such as 2026-01-01T12:00:00Z.</app-tool-note>
+          } @else {
+            <app-tool-empty icon="hourglass">Enter a timestamp or a date, or use the current time, to see it in every format.</app-tool-empty>
+          }
+        </app-tool-panel>
+      </div>
     </app-tool-layout>
   `,
 })
 export class EpochConverterTool {
-  private readonly analytics = inject(AnalyticsService);
-  private used = false;
+  private readonly markUsed = toolUsage('epoch-converter');
+  protected readonly trackCopy = toolCopied('epoch-converter');
 
-  protected readonly input = signal('');
+  protected readonly inputCtl = new FormControl('', { nonNullable: true });
+  protected readonly input = controlSignal(this.inputCtl);
   protected readonly info = computed(() => parseEpoch(this.input()));
-  protected readonly local = computed(() => {
+  protected readonly rows = computed<ToolRow[]>(() => {
     const i = this.info();
-    return i ? new Date(i.ms).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' }) : '';
+    if (!i) return [];
+    return [
+      { label: 'Read as', value: i.unit },
+      { label: 'Seconds', value: String(i.seconds), copy: true },
+      { label: 'Milliseconds', value: String(i.ms), copy: true },
+      { label: 'UTC (ISO)', value: i.iso, copy: true },
+      { label: 'Local', value: new Date(i.ms).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' }) },
+      { label: 'Relative', value: relativeTime(i.ms) },
+    ];
   });
-  protected readonly relative = computed(() => {
-    const i = this.info();
-    return i ? relativeTime(i.ms) : '';
-  });
-  protected readonly status = signal('');
 
-  protected onInput(event: Event): void {
-    this.input.set((event.target as HTMLInputElement).value);
-    this.markUsed();
+  constructor() {
+    this.inputCtl.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.info() && this.markUsed());
   }
 
   protected useNow(): void {
-    this.input.set(String(Math.floor(Date.now() / 1000)));
-    this.markUsed();
-  }
-
-  private markUsed(): void {
-    if (!this.used && this.info()) {
-      this.used = true;
-      this.analytics.track('tool_used', { tool: 'epoch-converter' });
-    }
-  }
-
-  protected async copy(value: string): Promise<void> {
-    try {
-      await navigator.clipboard.writeText(value);
-      this.status.set('Copied.');
-      this.analytics.track('result_copied', { tool: 'epoch-converter' });
-    } catch {
-      this.status.set('Copy failed. Select the text and copy it manually.');
-    }
+    this.inputCtl.setValue(String(Math.floor(Date.now() / 1000)));
   }
 }

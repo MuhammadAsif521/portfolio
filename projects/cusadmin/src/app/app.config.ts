@@ -22,7 +22,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideStore({ [profileFeature.name]: profileFeature.reducer }),
     provideEffects(profileEffects),
-    // Panel classes styled in shared styles/_material.scss (conb-sites-admin conventions).
+    // Panel classes styled in shared styles/_material.scss (the admin template conventions).
     { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: { tooltipClass: 'my-global-tooltip' } },
     { provide: MAT_MENU_DEFAULT_OPTIONS, useValue: { overlayPanelClass: 'global-mat-menu' } },
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { panelClass: 'global-mat-dialog', hasBackdrop: true } },

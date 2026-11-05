@@ -35,7 +35,7 @@ const HALF = 'col-span-12 md:col-span-6';
 /** ISO datetime from the API → 'YYYY-MM-DD' for the native date input. */
 const toDateInput = (v: unknown): string => (typeof v === 'string' && v ? v.slice(0, 10) : '');
 
-/** Create / edit an experience entry (conb-sites-admin form-page pattern: config-driven dynamic form). */
+/** Create / edit an experience entry (the admin template form-page pattern: config-driven dynamic form). */
 @Component({
   selector: 'app-experience-form',
   standalone: true,

@@ -5,6 +5,8 @@ import {
   decodeBase64,
   encodeBase64,
   encodeWav,
+  encodeWavBlob,
+  formatDuration,
   formatJson,
   highlightSegments,
   inspectUuid,
@@ -102,6 +104,30 @@ describe('wav', () => {
     expect(wav.getUint32(24, true)).toBe(16000);
     expect(wav.getUint32(40, true)).toBe(6);
     expect(wav.getInt16(46, true)).toBe(0x7fff);
+  });
+
+  it('the sliced Blob encoder writes exactly the same bytes, stereo and several slices long', async () => {
+    const left = Float32Array.from({ length: 70 }, (_, i) => Math.sin(i / 5));
+    const right = Float32Array.from({ length: 70 }, (_, i) => (i % 2 ? 1.5 : -0.25)); // 1.5 clips to full scale
+    let yields = 0;
+    const blob = await encodeWavBlob([left, right], 100, async () => void yields++); // 50-frame slices
+    expect(blob.type).toBe('audio/wav');
+    expect(yields).toBe(2);
+    expect(new Uint8Array(await blob.arrayBuffer())).toEqual(new Uint8Array(encodeWav([left, right], 100)));
+  });
+
+  it('an empty track is just a header', async () => {
+    const blob = await encodeWavBlob([new Float32Array(0)], 44100);
+    expect(blob.size).toBe(44);
+  });
+});
+
+describe('formatDuration', () => {
+  it('reads naturally from seconds to hours', () => {
+    expect(formatDuration(2.94)).toBe('2.9 s');
+    expect(formatDuration(125)).toBe('2 min 5 s');
+    expect(formatDuration(3780)).toBe('1 h 3 min');
+    expect(formatDuration(NaN)).toBe('0 s');
   });
 });
 

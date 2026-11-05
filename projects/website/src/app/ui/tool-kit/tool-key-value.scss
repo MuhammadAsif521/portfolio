@@ -1,0 +1,49 @@
+:host {
+  display: block;
+}
+
+.kv {
+  display: grid;
+  margin: 0;
+}
+
+.kv__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.125rem 0.75rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--band-dark-border);
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  @media (min-width: 40rem) {
+    grid-template-columns: 9rem minmax(0, 1fr) auto;
+  }
+}
+
+.kv__label {
+  grid-column: 1 / -1;
+  color: var(--band-dark-muted);
+  font-size: var(--text-xs);
+
+  @media (min-width: 40rem) {
+    grid-column: auto;
+    font-size: var(--text-sm);
+  }
+}
+
+.kv__value {
+  margin: 0;
+  color: var(--band-dark-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}

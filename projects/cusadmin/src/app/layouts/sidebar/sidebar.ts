@@ -29,7 +29,7 @@ import { AuthService } from '@cusadmin/services/auth.service';
 import { selectProfileUser } from '@cusadmin/store/profile/profile.feature';
 
 /**
- * Topbar + sidebar (conb-sites-admin layout): collapsible grouped nav, profile menu, theme toggle,
+ * Topbar + sidebar (the admin template layout): collapsible grouped nav, profile menu, theme toggle,
  * mobile drawer below 992px. Collapsed state persists in localStorage.
  */
 @Component({
@@ -55,7 +55,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   @Output() onBackClick = new EventEmitter<void>();
   @Output() sidebarCollapsed = new EventEmitter<boolean>();
 
-  readonly brandMark = 'AP';
+  readonly brandMark = 'A';
   readonly brandName = 'Asif Portfolio';
   readonly siteUrl = environment.siteUrl;
   readonly userData = toSignal(this.store.select(selectProfileUser), { initialValue: null });

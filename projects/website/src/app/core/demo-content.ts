@@ -43,8 +43,8 @@ const project = (
 });
 
 export const DEMO_PROJECTS: readonly Project[] = [
-  project(1, 'city-of-new-britain', 'City of New Britain Digital Ecosystem', 'City of New Britain, CT',
-    'One shared multi-tenant Node.js/MongoDB backend and one Angular + NgRx admin panel powering four independent public city websites.',
+  project(1, 'multi-tenant-platform', 'Multi-Tenant Website Platform', 'Demo client',
+    'One shared multi-tenant Node.js/MongoDB backend and one Angular + NgRx admin panel powering four independent public websites.',
     ['Angular SSR', 'NgRx', 'Node.js', 'MongoDB', 'Docker', 'nginx']),
   project(2, 'aa-bridal-studio', 'AA Bridal Studio', 'AA Bridal Studio',
     'Booking and CRM platform for a bridal & beauty salon: public booking site plus an admin dashboard for artists, customers and scheduling.',

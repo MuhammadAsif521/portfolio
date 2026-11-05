@@ -7,8 +7,9 @@ import { RecaptchaService } from '@shared/services/recaptcha.service';
 import { ProfileActions } from '@cusadmin/store/profile/profile.actions';
 import { profileFeature, selectProfileUser } from '@cusadmin/store/profile/profile.feature';
 import { ProfilePage } from './profile.page';
+import { environment } from '@shared/environment/environment';
 
-const API = 'http://localhost:3000/api/v1';
+const API = environment.server; // the tests follow whichever API the dev environment points at
 const user = {
   _id: 'u1',
   email: 'asif@example.com',

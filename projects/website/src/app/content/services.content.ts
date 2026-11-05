@@ -1,76 +1,88 @@
-/** "What I Do" (brief, Part 6). Edit copy here; the section renders whatever is listed. */
+/**
+ * "My Services" (home section and /services hub). One card per service page in services.data.ts: `page`
+ * is that page's slug, and the whole card links to /services/<slug>. Edit card copy here.
+ */
 export interface ServiceItem {
+  /** Slug of the /services/<slug> page (shared services.data.ts). */
+  page: string;
   title: string;
   summary: string;
   /** Short capability tags shown as chips. */
   points: string[];
-  /** Lucide icon name: the card's notch badge, and its screen until card artwork exists. */
-  icon: string; 
-  /** Slug of its /services/<slug> page (shared services.data.ts), when it has one. */
-  page?: string; 
-  /** Optional artwork (e.g. a WebP from the CDN); the icon panel is used when absent. */
-  image?: { src: string; alt: string; width: number; height: number };
+  /** Lucide icon name: the card's notch badge and its content panel. */
+  icon: string;
 }
 
-/** What a MEAN-stack developer delivers, front to back. Shown in the swipeable carousel. */
 export const SERVICES_CONTENT = {
   eyebrow: 'My',
   title: 'Services',
   intro:
-    'Production systems end to end — from server-rendered Angular front ends to the Node and MongoDB APIs and admin tools behind them.',
+    'Production systems end to end, from server-rendered Angular front ends to the Node and MongoDB APIs and admin tools behind them.',
+  /** Every service, in /services order. */
   items: [
     {
+      page: 'mean-stack-development',
       title: 'Full-Stack MEAN Web Apps',
       summary: 'Complete web applications on MongoDB, Express, Angular and Node, from first sketch to production.',
       points: ['MongoDB', 'Express', 'Angular', 'Node.js'],
-      icon: 'layers', 
-      page: 'mean-stack-development', 
+      icon: 'layers',
     },
     {
+      page: 'angular-ssr-development',
       title: 'Angular Front-End & SSR',
       summary: 'Fast, SEO-friendly Angular apps with server-side rendering, hydration and clean state management.',
       points: ['Angular SSR', 'NgRx', 'Tailwind', 'Core Web Vitals'],
-      icon: 'monitor-smartphone', 
-      page: 'angular-ssr-development', 
+      icon: 'monitor-smartphone',
     },
     {
+      page: 'node-express-api-development',
       title: 'REST APIs & Backend',
       summary: 'Secure, validated Node.js/Express APIs with authentication, roles and rate limiting built in.',
       points: ['Node.js / Express', 'Zod validation', 'JWT & RBAC'],
-      icon: 'server', 
-      page: 'node-express-api-development', 
+      icon: 'server',
     },
     {
-      title: 'MongoDB Database Design',
-      summary: 'Schemas, indexes and aggregation pipelines designed for your queries, not the other way round.',
-      points: ['Data modelling', 'Indexes', 'Aggregation'],
-      icon: 'database',
-    },
-    {
+      page: 'ecommerce-development-stripe',
       title: 'E-Commerce Platforms',
       summary: 'Storefronts that sell: checkout, catalogue and order flows, plus the admin back office to run them.',
       points: ['Stripe checkout', 'Orders & inventory', 'Admin back office'],
-      icon: 'shopping-bag', 
-      page: 'ecommerce-development-stripe', 
+      icon: 'shopping-bag',
     },
     {
+      page: 'admin-dashboard-development',
+      title: 'Admin Panels & Dashboards',
+      summary: 'Role-based admin panels and dashboards on Angular, Node.js and MongoDB for your own team.',
+      points: ['Role-based access', 'Data tables', 'Reports & activity log'],
+      icon: 'layout-dashboard',
+    },
+    {
+      page: 'real-time-websocket-apps',
       title: 'Real-Time Applications',
-      summary: 'Live features over WebSockets: chat, presence, live dashboards and instant notifications.',
-      points: ['WebSockets', 'Chat & presence', 'Live updates'],
+      summary: 'Chat, presence and live notifications over WebSockets that update the screen instantly.',
+      points: ['WebSockets', 'Chat & presence', 'Live notifications'],
       icon: 'radio-tower',
     },
     {
+      page: 'ionic-angular-mobile-apps',
       title: 'Hybrid Mobile Apps',
       summary: 'Ionic and Angular apps for Android and iOS from one codebase, sharing your web app’s APIs.',
       points: ['Ionic', 'Capacitor', 'Push notifications'],
-      icon: 'smartphone', 
-      page: 'ionic-angular-mobile-apps', 
+      icon: 'smartphone',
     },
     {
-      title: 'Deployment & DevOps',
-      summary: 'Dockerised builds, nginx and CI pipelines so releases are repeatable and boring.',
-      points: ['Docker', 'nginx', 'CI/CD'],
+      page: 'docker-nginx-deployment',
+      title: 'Docker & nginx Deployment',
+      summary: 'Docker Compose and nginx setups that make releases repeatable, with health checks and backups.',
+      points: ['Docker Compose', 'nginx', 'Backups & runbook'],
       icon: 'container',
     },
   ] satisfies ServiceItem[],
+  /** The strongest services shown on the home page (slugs of `items`); the rest live on /services. */
+  featured: [
+    'mean-stack-development',
+    'angular-ssr-development',
+    'node-express-api-development',
+    'ecommerce-development-stripe',
+  ],
+  allLabel: 'View all services',
 } as const;

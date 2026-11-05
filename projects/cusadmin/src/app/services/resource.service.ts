@@ -33,7 +33,7 @@ export interface UploadedImage extends AssetImage {
 }
 
 /**
- * Generic admin CRUD over portfolio-node's /api/v1/admin/<path> (conb-sites-admin ResourceService,
+ * Generic admin CRUD over portfolio-node's /api/v1/admin/<path> (the admin template ResourceService,
  * adapted): paginated lists, get/create/update(PATCH)/delete, custom actions and image uploads.
  * Responses keep the { status, statusCode, message, data } envelope so pages can toast `message`.
  */

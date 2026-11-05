@@ -17,7 +17,7 @@ import { ResourceService } from '@cusadmin/services/resource.service';
 
 const PATH = 'blog';
 
-/** Blog posts list (conb-sites-admin list-page pattern): search, sortable table, edit/delete actions. */
+/** Blog posts list (the admin template list-page pattern): search, sortable table, edit/delete actions. */
 @Component({
   selector: 'app-blog-list',
   standalone: true,

@@ -28,7 +28,7 @@ function toRef(image: Partial<AssetImage>, alt?: string): ImageRef {
 }
 
 /**
- * conb-sites-admin uploadFileFields, for portfolio-node image objects: each File is uploaded to
+ * the admin template uploadFileFields, for portfolio-node image objects: each File is uploaded to
  * /admin/uploads (WebP) and replaced by { key, alt, width, height }; an existing image object is reduced
  * to the same shape (sending `url` back is a 422); an empty value becomes null (cleared on PATCH).
  */

@@ -1,90 +1,109 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { AnalyticsService } from '@shared/services/analytics.service';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl } from '@angular/forms';
+import { ToolButton } from '../../../ui/tool-kit/tool-button';
+import { ToolEmpty } from '../../../ui/tool-kit/tool-empty';
+import { ToolTextarea, ToolSelect, ToolToggle } from '../../../ui/tool-kit/tool-fields';
+import { controlSignal, toolCopied, toolUsage } from '../../../ui/tool-kit/tool-form';
+import { ToolNote } from '../../../ui/tool-kit/tool-note';
+import { ToolOutput } from '../../../ui/tool-kit/tool-output';
+import { ToolPanel } from '../../../ui/tool-kit/tool-panel';
 import { ToolLayout } from '../tool-layout/tool-layout';
 import { formatBytes, formatJson, type JsonFormat } from '../tool-logic-2';
+
+const NEWLINE = String.fromCharCode(10);
+const SAMPLE ='{"name":"Asif","skills":["Angular","Node.js","MongoDB"],"available":true,"address":{"city":"Lahore","zip":null}}';
+const INDENTS = [
+  { id: '2', name: '2 spaces' },
+  { id: '4', name: '4 spaces' },
+  { id: 'tab', name: 'Tab' },
+  { id: 'minify', name: 'Minify' },
+];
 
 /** /tools/json-formatter: format / minify / validate with line and column errors. */
 @Component({
   selector: 'app-json-formatter',
-  imports: [ToolLayout],
+  imports: [ToolLayout, ToolPanel, ToolTextarea, ToolSelect, ToolToggle, ToolOutput, ToolNote, ToolEmpty, ToolButton],
   styleUrl: '../tool-ui.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-tool-layout slug="json-formatter">
-      <div class="tool-field">
-        <label class="tool-label" for="json">JSON</label>
-        <textarea id="json" class="tool-textarea" spellcheck="false" autocomplete="off" (input)="onInput($event)"></textarea>
-      </div>
-      <div class="tool-row">
-        <div class="tool-field">
-          <label class="tool-label" for="indent">Output</label>
-          <select id="indent" class="tool-select" (change)="setIndent($any($event.target).value)">
-            <option value="2">2 spaces</option>
-            <option value="4">4 spaces</option>
-            <option value="tab">Tab</option>
-            <option value="minify">Minify</option>
-          </select>
-        </div>
-        <label class="tool-check"><input type="checkbox" (change)="sortKeys.set(!sortKeys())" /> Sort keys</label>
-      </div>
+      <div class="tool-split">
+        <app-tool-panel title="Input">
+          <ng-container ngProjectAs="[panelActions]">
+            <app-tool-button size="small" icon="wand-sparkles" label="Load sample" (pressed)="sourceCtl.setValue(sample)" />
+            <app-tool-button size="small" icon="eraser" label="Clear" [disabled]="!source()" (pressed)="sourceCtl.setValue('')" />
+          </ng-container>
+          <app-tool-textarea
+            fieldId="json-input"
+            label="JSON"
+            placeholder='{"id": 1, "name": "Asif"}'
+            [control]="sourceCtl"
+            [rows]="12"
+            [invalid]="result()?.ok === false"
+          />
+          <div class="tool-controls">
+            <app-tool-select fieldId="json-indent" label="Output style" [control]="indentCtl" [options]="indents" />
+            <app-tool-toggle fieldId="json-sort" label="Sort keys" hint="Alphabetical, at every level" [control]="sortCtl" />
+          </div>
+        </app-tool-panel>
 
-      @if (result(); as r) {
-        @if (r.ok) {
-          <p class="tool-status" role="status">Valid JSON · {{ r.stats.keys }} keys · {{ size() }}</p>
-          <pre class="tool-output">{{ r.code }}</pre>
-          <button type="button" class="tool-btn" (click)="copy(r.code)">Copy</button>
-        } @else {
-          <p class="tool-error" role="alert">
-            Invalid JSON@if (r.line) { at line {{ r.line }}, column {{ r.column }}}: {{ r.error }}
-          </p>
-          @if (r.snippet !== undefined) {
-            <pre class="tool-output">{{ r.snippet }}
-{{ pointer() }}</pre>
+        <app-tool-panel title="Result">
+          @if (result(); as r) {
+            @if (r.ok) {
+              <app-tool-output
+                label="Formatted JSON"
+                [value]="r.code"
+                [meta]="'Valid · ' + r.stats.keys + (r.stats.keys === 1 ? ' key · ' : ' keys · ') + size()"
+                (copied)="trackCopy()"
+              />
+            } @else {
+              <app-tool-note kind="error">
+                <strong>Invalid JSON</strong>@if (r.line) { at line {{ r.line }}, column {{ r.column }}}: {{ r.error }}
+              </app-tool-note>
+              @if (snippet()) {
+                <app-tool-output label="Where it breaks" [value]="snippet()" [copyText]="''" />
+              }
+            }
+          } @else {
+            <app-tool-empty icon="braces">Paste JSON on the left, or load the sample, to format, minify or validate it.</app-tool-empty>
           }
-        }
-      }
-      <p class="tool-status" aria-live="polite">{{ status() }}</p>
+        </app-tool-panel>
+      </div>
     </app-tool-layout>
   `,
 })
 export class JsonFormatterTool {
-  private readonly analytics = inject(AnalyticsService);
-  private used = false;
+  private readonly markUsed = toolUsage('json-formatter');
+  protected readonly trackCopy = toolCopied('json-formatter');
 
-  protected readonly source = signal('');
-  protected readonly indent = signal<JsonFormat['indent']>(2);
-  protected readonly sortKeys = signal(false);
-  protected readonly result = computed(() => formatJson(this.source(), { indent: this.indent(), sortKeys: this.sortKeys() }));
+  protected readonly sample = SAMPLE;
+  protected readonly indents = INDENTS;
+  protected readonly sourceCtl = new FormControl('', { nonNullable: true });
+  protected readonly indentCtl = new FormControl('2', { nonNullable: true });
+  protected readonly sortCtl = new FormControl(false, { nonNullable: true });
+
+  protected readonly source = controlSignal(this.sourceCtl);
+  private readonly indent = controlSignal(this.indentCtl);
+  private readonly sortKeys = controlSignal(this.sortCtl);
+
+  protected readonly result = computed(() => formatJson(this.source(), { indent: this.toIndent(this.indent()), sortKeys: this.sortKeys() }));
   protected readonly size = computed(() => {
     const r = this.result();
     return r && r.ok ? formatBytes(r.stats.bytes) : '';
   });
-  /** A caret under the error column (long lines are shown in full; the caret is capped at 200 chars). */
-  protected readonly pointer = computed(() => {
+  /** The offending line with a caret under the error column (the caret is capped at 200 chars). */
+  protected readonly snippet = computed(() => {
     const r = this.result();
-    return r && !r.ok && r.column ? `${' '.repeat(Math.min(r.column - 1, 200))}^` : '';
+    if (!r || r.ok || r.snippet === undefined) return '';
+    return r.column ? [r.snippet, ' '.repeat(Math.min(r.column - 1, 200)) + '^'].join(NEWLINE) : r.snippet;
   });
-  protected readonly status = signal('');
 
-  protected setIndent(value: string): void {
-    this.indent.set(value === 'minify' ? 'minify' : value === 'tab' ? '\t' : Number(value));
+  constructor() {
+    this.sourceCtl.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => value.trim() && this.markUsed());
   }
 
-  protected onInput(event: Event): void {
-    this.source.set((event.target as HTMLTextAreaElement).value);
-    if (!this.used && this.source().trim()) {
-      this.used = true;
-      this.analytics.track('tool_used', { tool: 'json-formatter' });
-    }
-  }
-
-  protected async copy(value: string): Promise<void> {
-    try {
-      await navigator.clipboard.writeText(value);
-      this.status.set('Copied.');
-      this.analytics.track('result_copied', { tool: 'json-formatter' });
-    } catch {
-      this.status.set('Copy failed. Select the text and copy it manually.');
-    }
+  private toIndent(value: string): JsonFormat['indent'] {
+    return value === 'minify' ? 'minify' : value === 'tab' ? '\t' : Number(value);
   }
 }

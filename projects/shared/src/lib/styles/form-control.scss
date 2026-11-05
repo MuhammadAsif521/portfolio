@@ -702,3 +702,35 @@ $control-font-size-md: var(--text-sm);
     transition-duration: 0.01ms !important;
   }
 }
+
+// ── Keyboard focus for controls whose real input is visually hidden (checkbox, radio, toggle, options) ──
+
+.fc-option:focus-visible {
+  outline: none;
+  background: var(--form-control-hover-bg);
+  box-shadow: inset 0 0 0 2px var(--primary);
+}
+
+.fc-option.fc-option-selected:focus-visible {
+  background: var(--primary-hover);
+  box-shadow: inset 0 0 0 2px var(--on-primary);
+}
+
+.fc-row-option:has(input:focus-visible) {
+  box-shadow: var(--focus-ring);
+}
+
+input:focus-visible + .fc-toggle-track {
+  box-shadow: var(--focus-ring);
+}
+
+// Horizontal option groups (checkbox / radio with layout="inline"): a wrapping row of compact options.
+.fc-row-group.fc-row-group-inline {
+  flex-flow: row wrap;
+  gap: 0.375rem;
+  padding: 0.375rem;
+
+  .fc-row-option {
+    padding: 0.5rem 0.75rem;
+  }
+}

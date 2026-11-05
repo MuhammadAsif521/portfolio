@@ -74,3 +74,27 @@
 
   @include m.focus-ring;
 }
+
+.faq__more {
+  margin: clamp(1.75rem, 1.25rem + 2vw, 2.5rem) 0 0;
+  text-align: center;
+}
+
+// Same primary pill as the "Discuss your project" button on /services.
+.faq__button {
+  display: inline-block;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: var(--fs-ui);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--primary-hover);
+  }
+
+  @include m.focus-ring;
+}

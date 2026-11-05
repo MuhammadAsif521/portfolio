@@ -17,7 +17,7 @@ import { ResourceService } from '@cusadmin/services/resource.service';
 
 const PATH = 'projects';
 
-/** Projects list (conb-sites-admin list-page pattern): search, sortable table, edit/delete actions. */
+/** Projects list (the admin template list-page pattern): search, sortable table, edit/delete actions. */
 @Component({
   selector: 'app-projects-list',
   standalone: true,

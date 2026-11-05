@@ -50,6 +50,8 @@ export class MobileMenu {
   readonly open = input(false);
   /** Same key the desktop nav uses for its active pill (see navKey). */
   readonly activeKey = input('');
+  /** On the home page a route link (Services) can be active for the section in view: aria-current=location. */
+  readonly onHome = input(false);
   /** Close button, route link or Resume pressed. */
   readonly closeRequest = output<void>();
   /** A home-page section link was pressed; the header scrolls to it (or lets the router navigate). */

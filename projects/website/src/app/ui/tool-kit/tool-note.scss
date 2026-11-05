@@ -1,0 +1,36 @@
+:host {
+  --note: var(--info);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid color-mix(in srgb, var(--note) 35%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--note) 9%, var(--card-bg));
+  color: var(--heading);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+:host(.note--error) {
+  --note: var(--error);
+}
+
+:host(.note--warn) {
+  --note: var(--warning);
+}
+
+:host(.note--success) {
+  --note: var(--success);
+}
+
+.note__icon {
+  flex: none;
+  margin-top: 0.0625rem;
+  color: var(--note);
+}
+
+.note__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

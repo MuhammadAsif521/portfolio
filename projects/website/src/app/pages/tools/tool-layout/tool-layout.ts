@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { IconComponent } from '@shared/components/icon-component/icon-component';
 import { AnalyticsService } from '@shared/services/analytics.service';
 import { SeoService } from '@shared/services/seo.service';
 import { TOOLS_PATH, toolBySlug, type ToolMeta } from '@shared/tools/tools.manifest';
+import { ToolOutput } from '../../../ui/tool-kit/tool-output';
 import { injectLiveTools } from '../live-tools';
+import { CATEGORY_LABELS, toolPresentation } from '../tool-meta';
 
 /**
  * Shared frame of every /tools/<slug> page: breadcrumbs, H1, the tool itself (projected), a worked example,
@@ -12,7 +15,7 @@ import { injectLiveTools } from '../live-tools';
  */
 @Component({
   selector: 'app-tool-layout',
-  imports: [RouterLink],
+  imports: [RouterLink, IconComponent, ToolOutput],
   templateUrl: './tool-layout.html',
   styleUrl: './tool-layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +32,9 @@ export class ToolLayout {
     if (!tool) throw new Error(`Unknown tool: ${this.slug()}`);
     return tool;
   });
+  protected readonly look = computed(() => toolPresentation(this.slug()));
+  protected readonly categoryLabel = computed(() => CATEGORY_LABELS[this.tool().category]);
+  protected readonly presentation = toolPresentation;
   protected readonly related = computed(() => this.live().filter((t) => this.tool().related.includes(t.slug)));
 
   constructor() {

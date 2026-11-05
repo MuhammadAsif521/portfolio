@@ -32,7 +32,7 @@ const EXPIRY_MARGIN_MS = 30_000;
 const EXPIRY_HINT_KEY = 'public-session-expires-at';
 
 /**
- * Public API session for the website (same flow as nb-recovers, adapted to portfolio-node):
+ * Public API session for the website (the flow used in earlier projects, adapted to portfolio-node):
  *
  * - One token per browser visit, sent on every /public request by publicSessionInterceptor.
  * - reCAPTCHA quota is spent only when there is no valid session:

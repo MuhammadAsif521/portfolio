@@ -1,0 +1,31 @@
+@let s = item();
+<article class="service-card">
+  <!-- The title link is stretched over the whole card (service-card.scss), so the card is one real link. -->
+  @if (headingLevel() === 2) {
+    <h2 class="service-card__title"><a class="service-card__link" [routerLink]="['/services', s.page]">{{ s.title }}</a></h2>
+  } @else {
+    <h3 class="service-card__title"><a class="service-card__link" [routerLink]="['/services', s.page]">{{ s.title }}</a></h3>
+  }
+
+  <div class="service-card__media">
+    <span class="service-card__layer service-card__layer--back" aria-hidden="true"></span>
+    <span class="service-card__layer service-card__layer--mid" aria-hidden="true"></span>
+
+    <div class="service-card__screen">
+      <div class="service-card__ui">
+        <span class="service-card__icon" aria-hidden="true"><i-lucide [name]="s.icon" [size]="26" /></span>
+        <p class="service-card__summary">{{ s.summary }}</p>
+        <ul class="service-card__points" aria-label="Includes">
+          @for (point of s.points; track point) {
+            <li class="service-card__chip">{{ point }}</li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <!-- Decorative badge in the notch (Figma's navy circle). -->
+    <span class="service-card__badge" aria-hidden="true">
+      <i-lucide [name]="s.icon" [size]="36" [stroke]="2" />
+    </span>
+  </div>
+</article>

@@ -1,123 +1,193 @@
-// Shared controls for the tool pages (imported by every tool component via styleUrl).
+@use 'styles/mixins' as m;
+
+// Layout glue shared by the tool components (imported via styleUrl). The controls, panels, console and
+// buttons live in ui/tool-kit; keep this file small, it is bundled into every tool component.
 :host {
   display: block;
 }
 
-.tool-field {
+// Input and output side by side from lg, stacked below.
+.tool-split {
   display: grid;
-  gap: 0.5rem;
-  margin: 0 0 1rem;
-}
+  gap: 0.75rem;
 
-.tool-label {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--heading);
-}
-
-.tool-input,
-.tool-textarea,
-.tool-select {
-  width: 100%;
-  padding: 0.75rem 0.875rem;
-  border: 1px solid var(--border-strong);
-  border-radius: 0.75rem;
-  background: transparent;
-  color: var(--heading);
-  font: inherit;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-
-  &:focus-visible {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: var(--focus-ring);
+  @include m.up(lg) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
   }
 }
 
-.tool-textarea {
-  min-height: 9rem;
-  resize: vertical;
+.tool-stack {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
 }
 
-.tool-row {
+// A row of fields that sit next to each other when there is room.
+.tool-controls {
+  display: grid;
+  gap: 1rem;
+  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+}
+
+.tool-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: end;
+  gap: 0.5rem;
 }
 
-.tool-btn {
-  padding: 0.6rem 1rem;
+.tool-actions--top {
+  margin-top: 1rem;
+}
+
+.tool-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+// Preset chips (cron examples, flags): real buttons, styled as chips.
+.tool-chip-button {
+  padding: 0.375rem 0.75rem;
   border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  background: transparent;
+  border-radius: var(--radius-pill);
+  background: var(--card-bg);
   color: var(--heading);
   font: inherit;
-  font-size: var(--text-sm);
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
 
   &:hover {
+    border-color: var(--primary-muted);
     background: var(--primary-soft);
   }
 
-  &:focus-visible {
-    outline: none;
-    box-shadow: var(--focus-ring);
-  }
+  @include m.focus-ring;
 }
 
-.tool-output {
+.tool-meta {
   margin: 0;
-  padding: 1rem;
-  overflow: auto;
-  border: 1px solid var(--border-strong);
-  border-radius: 0.75rem;
-  background: var(--primary-soft);
-  color: var(--heading);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+
+app-custom-file-input {
+  display: block;
+  min-width: 0;
+}
+
+.tool-list {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--band-dark-text);
+  font-size: var(--text-sm);
+}
+
+.tool-sub {
+  margin: 0 0 0.5rem;
+  color: var(--band-dark-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.tool-sub:not(:first-child) {
+  margin-top: 1rem;
+}
+
+.tool-code {
+  color: var(--band-dark-text);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  line-height: 1.55;
+  line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-.tool-error {
-  margin: 0.5rem 0 0;
-  color: #b42318;
-  font-size: var(--text-sm);
+.tool-mark {
+  border-radius: 0.2rem;
+  background: color-mix(in srgb, var(--primary) 45%, transparent);
+  color: inherit;
 }
 
-.tool-grid {
-  display: grid;
-  gap: 1rem;
+.tool-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
 
-  @media (min-width: 48rem) {
-    grid-template-columns: 1fr 1fr;
+  th,
+  td {
+    padding: 0.5rem 0.625rem;
+    border-bottom: 1px solid var(--band-dark-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    color: var(--band-dark-muted);
+    font-size: var(--text-xs);
+    font-weight: 600;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  code {
+    font-family: var(--font-mono);
   }
 }
 
-.tool-status {
-  margin: 0.5rem 0 0;
-  font-size: var(--text-sm);
-  color: var(--text-muted);
+.tool-table-wrap {
+  overflow-x: auto;
 }
 
-.tool-check {
-  display: flex;
+.tool-tag {
+  display: inline-block;
+  margin: 0 0.25rem 0.25rem 0;
+  padding: 0.0625rem 0.5rem;
+  border: 1px solid var(--band-dark-border);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, #fff 6%, transparent);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+// A download link that looks like the primary button.
+.tool-link-button {
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: var(--text-sm);
-  color: var(--heading);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--primary-hover);
+  }
+
+  @include m.focus-ring;
 }
 
-.tool-group {
-  display: block;
-  margin: 1.5rem 0 0.75rem;
-  font-size: var(--text-lg);
+.tool-audio {
+  width: 100%;
+  accent-color: var(--primary);
 }
 
+// HTTP status index.
 .tool-codes {
   display: grid;
   gap: 0.5rem;
@@ -125,79 +195,60 @@
   padding: 0;
   list-style: none;
 
+  @include m.up(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   a {
     display: grid;
-    gap: 0.25rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.125rem 0.875rem;
+    align-items: baseline;
+    height: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--border-strong);
-    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
     color: var(--heading);
+    transition:
+      border-color var(--transition-fast),
+      background-color var(--transition-fast);
 
     &:hover {
+      border-color: var(--primary-muted);
       background: var(--primary-soft);
     }
+
+    @include m.focus-ring;
   }
 
-  span {
+  .tool-code-num {
+    grid-row: span 2;
+    color: var(--primary-ink);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+
+  span:not(.tool-code-num) {
     color: var(--text-muted);
     font-size: var(--text-sm);
+    line-height: 1.45;
   }
 }
 
-.tool-grow {
-  flex: 1 1 18rem;
-}
-
-.tool-section {
-  margin-top: 1.5rem;
-}
-
-.tool-mark {
-  border-radius: 0.2rem;
-  background: color-mix(in srgb, var(--primary) 35%, transparent);
-  color: inherit;
-}
-
-.tool-table {
-  width: 100%;
-  margin-top: 1rem;
-  border-collapse: collapse;
-  font-size: var(--text-sm);
-
-  th,
-  td {
-    padding: 0.4rem 0.5rem;
-    border-bottom: 1px solid var(--border-strong);
-    text-align: left;
-    vertical-align: top;
-  }
-}
-
-.tool-chip {
-  display: inline-block;
-  margin: 0 0.25rem 0.25rem 0;
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
-  background: var(--primary-soft);
-  font-family: var(--font-mono);
-}
-
-.tool-audio {
-  width: 100%;
-  margin-top: 1rem;
-}
-
-.tool-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.tool-warn {
-  margin: 0 0 1rem;
-  padding: 0.75rem 1rem;
-  border-left: 3px solid var(--primary);
-  background: var(--primary-soft);
-  border-radius: 0.5rem;
+.tool-group {
+  margin: 0 0 0.625rem;
   color: var(--heading);
-  font-size: var(--text-sm);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.tool-groups {
+  display: grid;
+  gap: 1.5rem;
 }

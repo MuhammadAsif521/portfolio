@@ -7,41 +7,58 @@
     </ol>
   </nav>
 
-  <header>
-    <h1 class="tool__title">{{ tool().h1 }}</h1>
-    <p class="tool__lead">{{ tool().description }}</p>
-    <p class="tool__privacy">Runs in your browser. Nothing is uploaded.</p>
+  <header class="tool__hero">
+    <span class="tool__icon" aria-hidden="true"><i-lucide [name]="look().icon" [size]="28" /></span>
+    <div class="tool__intro">
+      <h1 class="tool__title">{{ tool().h1 }}</h1>
+      <p class="tool__lead">{{ tool().description }}</p>
+      <div class="tool__facts">
+        <p class="tool__privacy">
+          <i-lucide name="shield-check" [size]="16" aria-hidden="true" />
+          Runs in your browser. Nothing is uploaded.
+        </p>
+        <span class="tool__chip">{{ categoryLabel() }}</span>
+      </div>
+    </div>
   </header>
 
-  <section class="tool__work" aria-label="Tool">
+  <section class="tool__work" aria-labelledby="tool-work-title">
+    <h2 class="sr-only" id="tool-work-title">{{ tool().name }}</h2>
     <ng-content />
   </section>
 
-  <section class="tool__section">
-    <h2 class="tool__h2">Example</h2>
-    <p class="tool__p">Input:</p>
-    <pre class="tool__example">{{ tool().example.input }}</pre>
-    <p class="tool__p">Result:</p>
-    <pre class="tool__example">{{ tool().example.output }}</pre>
+  <section class="tool__section" aria-labelledby="tool-example-title">
+    <h2 class="tool__h2" id="tool-example-title">Example</h2>
+    <div class="tool__example">
+      <app-tool-output label="Input" [value]="tool().example.input" />
+      <app-tool-output label="Result" [value]="tool().example.output" />
+    </div>
   </section>
 
   @for (section of tool().sections; track section.heading) {
     <section class="tool__section">
       <h2 class="tool__h2">{{ section.heading }}</h2>
-      @for (text of section.paragraphs; track $index) {
-        <p class="tool__p">{{ text }}</p>
-      }
+      <div class="tool__prose">
+        @for (text of section.paragraphs; track $index) {
+          <p class="tool__p">{{ text }}</p>
+        }
+      </div>
     </section>
   }
 
   <section class="tool__section tool__faq">
     <h2 class="tool__h2">Frequently asked questions</h2>
-    @for (item of tool().faq; track item.q) {
-      <details>
-        <summary>{{ item.q }}</summary>
-        <p>{{ item.a }}</p>
-      </details>
-    }
+    <div class="tool__qa">
+      @for (item of tool().faq; track item.q) {
+        <details>
+          <summary>
+            <span>{{ item.q }}</span>
+            <i-lucide class="tool__chev" name="chevron-down" [size]="18" aria-hidden="true" />
+          </summary>
+          <p>{{ item.a }}</p>
+        </details>
+      }
+    </div>
   </section>
 
   @if (related().length) {
@@ -49,15 +66,26 @@
       <h2 class="tool__h2">Related tools</h2>
       <ul class="tool__related">
         @for (r of related(); track r.slug) {
-          <li><a [routerLink]="['/tools', r.slug]">{{ r.name }}</a></li>
+          <li>
+            <a [routerLink]="['/tools', r.slug]">
+              <span class="tool__related-icon" aria-hidden="true"><i-lucide [name]="presentation(r.slug).icon" [size]="18" /></span>
+              <span class="tool__related-name">{{ r.name }}</span>
+              <span class="tool__related-text">{{ presentation(r.slug).tagline }}</span>
+            </a>
+          </li>
         }
       </ul>
     </section>
   }
 
-  <aside class="tool__cta">
-    <h2 class="tool__h2">Need a MEAN stack developer?</h2>
-    <p>I build Angular (SSR), Node.js, MongoDB and Ionic apps for clients worldwide.</p>
-    <a routerLink="/" fragment="contact" (click)="ctaClicked()">Hire me</a>
+  <aside class="tool__cta" aria-labelledby="tool-cta-title">
+    <div>
+      <h2 class="tool__cta-title" id="tool-cta-title">Need a MEAN stack developer?</h2>
+      <p>I build Angular (SSR), Node.js, MongoDB and Ionic apps for clients worldwide.</p>
+    </div>
+    <a class="tool__cta-link" routerLink="/" fragment="contact" (click)="ctaClicked()">
+      Hire me
+      <i-lucide name="arrow-right" [size]="18" aria-hidden="true" />
+    </a>
   </aside>
 </article>

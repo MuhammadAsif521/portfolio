@@ -24,14 +24,12 @@ export const ABOUT_CONTENT = {
       },
     ],
     [
-      { text: 'Since October 2025 I have worked as a MEAN Stack Developer at ICTGE, where I delivered the ' },
-      // { text: 'City of New Britain digital ecosystem', link: '/projects/city-of-new-britain-digital-ecosystem' }, 
       {
-        text: ': one multi-tenant Node.js backend and one Angular admin panel powering four public city websites. I have also rebuilt e-commerce platforms such as ',
+        text: 'Since October 2025 I have worked as a MEAN Stack Developer at ICTGE, where I delivered a multi-tenant platform: one Node.js backend and one Angular admin panel powering four public city websites. I have also built e-commerce platforms such as ',
       },
       { text: 'Wavy Cables', link: '/projects/wavy-cables' },
-      { text: ' on Angular 21 with Stripe checkout, and shipped real-time apps over WebSockets, from a ' },
-      { text: 'Slack-style chat platform', link: '/projects/chatmessenger' },
+      { text: ', an Angular 21 store with SSR, Stripe checkout and a quote builder for custom cables, and shipped real-time apps over WebSockets, from a ' },
+      { text: 'multi-tenant chat platform', link: '/projects/chatmessenger' },
       { text: ' to a ' },
       { text: 'facial-recognition attendance system', link: '/projects/student-management-system' },
       { text: '.' },

@@ -1,5 +1,5 @@
 /*
- * Single source of truth for the free developer tools (Phase 2 of PORTFOLIO_TRAFFIC_PLAN.md).
+ * Single source of truth for the free developer tools.
  * The website (hub, tool layout, routes) reads it directly. The backend keeps a verbatim copy at
  * portfolio-node/src/data/tools.manifest.ts for sitemap.xml, llms.txt and llms-full.txt: copy this file
  * over it whenever it changes. Keep it import-free so the copy works as is.
@@ -406,7 +406,7 @@ export const TOOLS: ToolMeta[] = [
         heading: 'How the conversion works',
         paragraphs: [
           'Choose a video file and the browser decodes its audio track with the Web Audio API, the same decoder it uses to play the video. The decoded samples are optionally mixed down to mono and resampled, then written into a standard WAV file (16-bit PCM) that every editor, player and transcription service can open. The file never leaves your device: there is no upload, so there is no queue, no size limit set by a server and no copy of your recording on someone else\'s disk.',
-          'Which formats work depends on your browser\'s built-in codecs. MP4 with AAC audio and WebM with Opus or Vorbis work in all current desktop browsers; MOV files from phones usually work because they contain AAC. If a file cannot be decoded, the tool says so instead of producing an empty file.',
+          'Before decoding, the tool reads the file\'s structure to find out whether it has an audio track at all. Many stock-footage downloads and screen recordings are silent, and for those the tool says so at once instead of failing. If the browser\'s fast decoder cannot read a file that does have sound, the tool tries a second decoder (WebCodecs, where your browser offers it) and, as a last resort, plays the file silently and records it in real time. That last method takes as long as the clip and is labelled as such. MP4 or MOV with AAC audio and WebM with Opus or Vorbis work in all current desktop browsers.',
         ],
       },
       {
@@ -420,14 +420,14 @@ export const TOOLS: ToolMeta[] = [
         heading: 'Common uses',
         paragraphs: [
           'Pull the audio out of a screen recording or a Zoom export to send to a transcription service, turn a lecture video into something you can listen to offline, prepare a voice-over for editing, or check what a video\'s audio track actually contains. Only convert files you own or have permission to use.',
-          'If a file plays in your browser but will not convert, its audio codec is probably one the Web Audio decoder does not expose (some MKV and older AVI files). Re-export it as MP4 from your editor or phone, then try again.',
+          'If the tool tells you the sound is stored in a format your browser cannot read (for example Dolby Digital in an MKV, or an old AVI), open the page in another browser such as Safari or Edge, or re-export the file as MP4 with AAC audio from your editor or phone and choose it again. If it says the video has no audio track, the file really contains only pictures and there is nothing to extract.',
         ],
       },
     ],
     faq: [
       {
         q: 'Is my video uploaded?',
-        a: 'No. Decoding and encoding run in your browser with the Web Audio API. Nothing is sent to a server.',
+        a: 'No. Reading, decoding and encoding all run in your browser (Web Audio, with WebCodecs as a backup). Nothing is sent to a server.',
       },
       {
         q: 'Why WAV and not MP3?',
@@ -435,7 +435,11 @@ export const TOOLS: ToolMeta[] = [
       },
       {
         q: 'Which video formats are supported?',
-        a: 'Whatever your browser can decode: MP4 (AAC), WebM (Opus/Vorbis) and most MOV files. Unsupported codecs show an error.',
+        a: 'Whatever your browser can decode: MP4 and MOV with AAC audio, WebM with Opus or Vorbis, and audio files such as M4A, MP3, WAV, OGG and FLAC. If the sound is in a format your browser cannot read, the tool names the format instead of failing silently.',
+      },
+      {
+        q: 'Why does it say my video has no audio track?',
+        a: 'Because the file contains only video. Clips downloaded from stock-footage sites and many screen recordings are saved without sound. Play the file: if you hear nothing, there is nothing to extract.',
       },
       {
         q: 'Can I extract audio from a YouTube link?',

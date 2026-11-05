@@ -194,22 +194,28 @@ describe('home GEO content', () => {
     expect(text).not.toMatch(/\s[.,:]/);
     // Internal links to the case studies it mentions.
     const links = Array.from(el.querySelectorAll<HTMLAnchorElement>('.about__bio a')).map((a) => a.getAttribute('href'));
-    expect(links).toContain('/projects/city-of-new-britain-digital-ecosystem');
+    expect(links).toEqual(['/projects/wavy-cables', '/projects/chatmessenger', '/projects/student-management-system']);
     expect(links.length).toBe(ABOUT_CONTENT.bio.flat().filter((part) => 'link' in part).length);
   });
 
-  it('renders every FAQ answer in the HTML under a question heading', async () => {
+  it('renders the first five FAQ answers in the HTML under question headings, plus a button to /faq', async () => {
     setupStore();
     const fixture = TestBed.createComponent(Faq);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('h2')?.textContent).toContain('Questions');
     const questions = Array.from(el.querySelectorAll('h3')).map((h) => h.textContent?.trim());
-    expect(questions).toEqual(FAQ_CONTENT.items.map((item) => item.question));
+    expect(FAQ_CONTENT.items.length).toBeGreaterThan(5);
+    expect(questions.length).toBe(5);
+    expect(questions).toEqual(FAQ_CONTENT.items.slice(0, 5).map((item) => item.question));
     expect(questions.every((q) => q?.endsWith('?'))).toBe(true);
     const answers = Array.from(el.querySelectorAll('.faq__answer'));
+    expect(answers.length).toBe(5);
     expect(answers.every((p) => words(p.textContent ?? '') >= 20)).toBe(true);
     expect(el.querySelector('a[href="/#contact"]')).toBeTruthy();
+    const more = el.querySelector<HTMLAnchorElement>('a.faq__button');
+    expect(more?.getAttribute('href')).toBe('/faq');
+    expect(more?.textContent?.trim()).toBe('View all questions');
   });
 });
 

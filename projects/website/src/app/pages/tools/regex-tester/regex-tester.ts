@@ -1,10 +1,27 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, type WritableSignal, computed, inject, signal } from '@angular/core';
-import { AnalyticsService } from '@shared/services/analytics.service';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl } from '@angular/forms';
+import { merge } from 'rxjs';
+import { ToolEmpty } from '../../../ui/tool-kit/tool-empty';
+import { ToolChoice, ToolInput, ToolTextarea } from '../../../ui/tool-kit/tool-fields';
+import { controlSignal, toolCopied, toolUsage } from '../../../ui/tool-kit/tool-form';
+import { ToolNote } from '../../../ui/tool-kit/tool-note';
+import { ToolOutput } from '../../../ui/tool-kit/tool-output';
+import { ToolPanel } from '../../../ui/tool-kit/tool-panel';
 import { ToolLayout } from '../tool-layout/tool-layout';
 import { MAX_MATCHES, highlightSegments, type RegexResult } from '../tool-logic-2';
 
 const TIMEOUT_MS = 1000;
 const FLAGS = ['g', 'i', 'm', 's', 'u', 'y', 'd'] as const;
+const FLAG_OPTIONS = [
+  { id: 'g', name: 'g global' },
+  { id: 'i', name: 'i ignore case' },
+  { id: 'm', name: 'm multiline' },
+  { id: 's', name: 's dotAll' },
+  { id: 'u', name: 'u unicode' },
+  { id: 'y', name: 'y sticky' },
+  { id: 'd', name: 'd indices' },
+];
 
 /**
  * The worker mirrors runRegex() in tool-logic-2.ts (which the unit tests cover). It runs in a Blob
@@ -44,98 +61,109 @@ self.onmessage = (e) => {
   }
 };`;
 
+
 @Component({
   selector: 'app-regex-tester',
-  imports: [ToolLayout],
+  imports: [ToolLayout, ToolPanel, ToolInput, ToolTextarea, ToolChoice, ToolOutput, ToolNote, ToolEmpty],
   styleUrl: '../tool-ui.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-tool-layout slug="regex-tester">
-      <div class="tool-row">
-        <div class="tool-field tool-grow">
-          <label class="tool-label" for="pattern">Pattern</label>
-          <input id="pattern" class="tool-input" spellcheck="false" autocomplete="off" placeholder="(?<user>[\\w.]+)@(?<domain>[\\w.]+)"
-            [value]="pattern()" (input)="set(pattern, $event)" />
-        </div>
-      </div>
-      <div class="tool-row" role="group" aria-label="Flags">
-        @for (f of flagList; track f) {
-          <label class="tool-check"><input type="checkbox" [checked]="flags().includes(f)" (change)="toggleFlag(f)" /> {{ f }}</label>
-        }
-      </div>
-      <div class="tool-field">
-        <label class="tool-label" for="text">Test text</label>
-        <textarea id="text" class="tool-textarea" spellcheck="false" [value]="text()" (input)="set(text, $event)"></textarea>
-      </div>
-      <div class="tool-field">
-        <label class="tool-label" for="replace">Replace with (optional, supports $1 and $&lt;name&gt;)</label>
-        <input id="replace" class="tool-input" spellcheck="false" autocomplete="off" [value]="replacement()" (input)="set(replacement, $event)" />
-      </div>
+      <div class="tool-split">
+        <app-tool-panel title="Pattern and text">
+          <app-tool-input
+            fieldId="regex-pattern"
+            label="Pattern"
+            placeholder="(?<user>[\\w.]+)@(?<domain>[\\w.]+)"
+            [control]="patternCtl"
+            [invalid]="!!error()"
+          />
+          <app-tool-choice fieldId="regex-flags" label="Flags" kind="checkbox" [control]="flagsCtl" [options]="flagOptions" />
+          <app-tool-textarea fieldId="regex-text" label="Test text" placeholder="Write or paste the text to search" [control]="textCtl" [rows]="8" [wrap]="true" />
+          <app-tool-input
+            fieldId="regex-replace"
+            label="Replace with (optional)"
+            hint="Supports $1 and $<name>"
+            [control]="replaceCtl"
+          />
+        </app-tool-panel>
 
-      @if (error()) {
-        <p class="tool-error" role="alert">{{ error() }}</p>
-      } @else if (result(); as r) {
-        <p class="tool-status" role="status">
-          {{ r.matches.length }} {{ r.matches.length === 1 ? 'match' : 'matches' }}@if (r.truncated) { (stopped at {{ max }})}
-        </p>
-        <pre class="tool-output">@for (seg of segments(); track $index) {@if (seg.match) {<mark class="tool-mark">{{ seg.text }}</mark>} @else {<span>{{ seg.text }}</span>}}</pre>
-        @if (r.matches.length) {
-          <table class="tool-table">
-            <thead><tr><th scope="col">#</th><th scope="col">Index</th><th scope="col">Match</th><th scope="col">Groups</th></tr></thead>
-            <tbody>
-              @for (m of r.matches.slice(0, 200); track $index) {
-                <tr>
-                  <td>{{ $index + 1 }}</td>
-                  <td>{{ m.index }}</td>
-                  <td><code>{{ m.text }}</code></td>
-                  <td>
-                    @for (g of m.groups; track g.name) {
-                      <span class="tool-chip">{{ g.name }}: {{ g.value ?? 'undefined' }}</span>
-                    }
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        }
-        @if (r.replaced !== null) {
-          <h3 class="tool-label">After replace</h3>
-          <pre class="tool-output">{{ r.replaced }}</pre>
-        }
-      }
+        <app-tool-panel title="Matches">
+          @if (error()) {
+            <app-tool-note kind="error">{{ error() }}</app-tool-note>
+          } @else if (result(); as r) {
+            <app-tool-output
+              label="Highlighted text"
+              [copyText]="''"
+              [meta]="r.matches.length + (r.matches.length === 1 ? ' match' : ' matches') + (r.truncated ? ' (stopped at ' + max + ')' : '')"
+            >
+              <pre class="tool-code">@for (seg of segments(); track $index) {@if (seg.match) {<mark class="tool-mark">{{ seg.text }}</mark>} @else {<span>{{ seg.text }}</span>}}</pre>
+            </app-tool-output>
+            @if (r.matches.length) {
+              <app-tool-output label="Match details" [copyText]="''">
+                <div class="tool-table-wrap">
+                  <table class="tool-table">
+                    <caption class="sr-only">Every match with its index and capture groups</caption>
+                    <thead><tr><th scope="col">#</th><th scope="col">Index</th><th scope="col">Match</th><th scope="col">Groups</th></tr></thead>
+                    <tbody>
+                      @for (m of r.matches.slice(0, 200); track $index) {
+                        <tr>
+                          <td>{{ $index + 1 }}</td>
+                          <td>{{ m.index }}</td>
+                          <td><code>{{ m.text }}</code></td>
+                          <td>
+                            @for (g of m.groups; track g.name) {
+                              <span class="tool-tag">{{ g.name }}: {{ g.value ?? 'undefined' }}</span>
+                            }
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </app-tool-output>
+            }
+            @if (r.replaced !== null) {
+              <app-tool-output label="After replace" copyLabel="Copy result" [value]="r.replaced" (copied)="trackCopy()" />
+            }
+          } @else {
+            <app-tool-empty icon="regex">Enter a pattern to see every match highlighted, with its capture groups.</app-tool-empty>
+          }
+        </app-tool-panel>
+      </div>
     </app-tool-layout>
   `,
 })
 export class RegexTesterTool {
-  private readonly analytics = inject(AnalyticsService);
-  private used = false;
+  private readonly markUsed = toolUsage('regex-tester');
+  protected readonly trackCopy = toolCopied('regex-tester');
   private worker: Worker | null = null;
   private timer: ReturnType<typeof setTimeout> | undefined;
   private seq = 0;
 
-  protected readonly flagList = FLAGS;
+  protected readonly flagOptions = FLAG_OPTIONS;
   protected readonly max = MAX_MATCHES;
-  protected readonly pattern = signal('');
-  protected readonly flags = signal('g');
-  protected readonly text = signal('');
-  protected readonly replacement = signal('');
+  protected readonly patternCtl = new FormControl('', { nonNullable: true });
+  protected readonly flagsCtl = new FormControl<string[]>(['g'], { nonNullable: true });
+  protected readonly textCtl = new FormControl('', { nonNullable: true });
+  protected readonly replaceCtl = new FormControl('', { nonNullable: true });
+
+  private readonly pattern = controlSignal(this.patternCtl);
+  private readonly flagList = controlSignal(this.flagsCtl);
+  private readonly text = controlSignal(this.textCtl);
+  private readonly replacement = controlSignal(this.replaceCtl);
+  /** Flags in canonical order, whatever order they were ticked in. */
+  private readonly flags = computed(() => FLAGS.filter((f) => this.flagList().includes(f)).join(''));
+
   protected readonly result = signal<RegexResult | null>(null);
   protected readonly error = signal('');
   protected readonly segments = computed(() => highlightSegments(this.text(), this.result()?.matches ?? []));
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this.stop());
-  }
-
-  protected set(target: WritableSignal<string>, event: Event): void {
-    target.set((event.target as HTMLInputElement).value);
-    this.run();
-  }
-
-  protected toggleFlag(flag: string): void {
-    const has = this.flags().includes(flag);
-    this.flags.set(has ? this.flags().replace(flag, '') : FLAGS.filter((f) => f === flag || this.flags().includes(f)).join(''));
-    this.run();
+    merge(this.patternCtl.valueChanges, this.flagsCtl.valueChanges, this.textCtl.valueChanges, this.replaceCtl.valueChanges)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.run());
   }
 
   private stop(): void {
@@ -152,10 +180,7 @@ export class RegexTesterTool {
       this.error.set('');
       return;
     }
-    if (!this.used) {
-      this.used = true;
-      this.analytics.track('tool_used', { tool: 'regex-tester' });
-    }
+    this.markUsed();
     const id = ++this.seq;
     const url = URL.createObjectURL(new Blob([WORKER_SOURCE], { type: 'text/javascript' }));
     const worker = new Worker(url);

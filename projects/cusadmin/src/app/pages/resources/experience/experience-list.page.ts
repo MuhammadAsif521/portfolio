@@ -16,7 +16,7 @@ const PATH = 'experience';
 /** Admin rows also carry the visibility flags (not part of the public Experience shape). */
 type ExperienceRow = Experience & { showOnResume?: boolean; showOnWebsite?: boolean };
 
-/** Experience timeline (conb-sites-admin simple resource): sortable list, create/edit on the experience form page. */
+/** Experience timeline (the admin template simple resource): sortable list, create/edit on the experience form page. */
 @Component({
   selector: 'app-experience-list',
   standalone: true,

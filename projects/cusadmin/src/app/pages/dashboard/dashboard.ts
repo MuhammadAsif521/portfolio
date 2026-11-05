@@ -22,7 +22,7 @@ interface StatCard {
 }
 
 /**
- * Dashboard (conb-sites-admin summary layout). portfolio-node has no stats endpoint, so each count is a
+ * Dashboard (the admin template summary layout). portfolio-node has no stats endpoint, so each count is a
  * `limit=1` list call reading `total`; a failed count shows "—" instead of breaking the page.
  */
 @Component({

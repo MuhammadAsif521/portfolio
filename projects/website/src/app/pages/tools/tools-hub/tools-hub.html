@@ -6,17 +6,31 @@
     </ol>
   </nav>
 
-  <header>
+  <header class="hub__head">
     <h1 class="hub__title">{{ hub.h1 }}</h1>
     <p class="hub__intro">{{ hub.intro }}</p>
+    <ul class="hub__facts" aria-label="What to expect">
+      <li><i-lucide name="shield-check" [size]="16" aria-hidden="true" /> Runs in your browser</li>
+      <li><i-lucide name="check" [size]="16" aria-hidden="true" /> No sign-up</li>
+      <li><i-lucide name="check" [size]="16" aria-hidden="true" /> {{ tools().length }} tools and counting</li>
+    </ul>
   </header>
 
-  <ul class="hub__grid">
-    @for (tool of tools(); track tool.slug) {
+  @if (tabs().length > 2) {
+    <app-custom-tabs class="hub__tabs" [tabs]="tabs()" [activeTab]="category()" (activeTabChange)="category.set($event)" />
+  }
+
+  <ul class="hub__grid" aria-live="polite">
+    @for (tool of visible(); track tool.slug) {
       <li>
         <a class="hub__card" [routerLink]="['/tools', tool.slug]">
+          <span class="hub__icon" aria-hidden="true"><i-lucide [name]="look(tool.slug).icon" [size]="24" /></span>
           <h2 class="hub__name">{{ tool.name }}</h2>
-          <p class="hub__text">{{ tool.description }}</p>
+          <p class="hub__text">{{ look(tool.slug).tagline }}</p>
+          <span class="hub__foot">
+            <span class="hub__chip">{{ categoryLabels[tool.category] }}</span>
+            <i-lucide class="hub__arrow" name="arrow-up-right" [size]="20" aria-hidden="true" />
+          </span>
         </a>
       </li>
     }

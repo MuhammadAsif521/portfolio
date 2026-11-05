@@ -31,7 +31,7 @@ export interface ImagePreviewData {
         </button>
       }
 
-      <img [src]="data.imageUrl(images[activeIndex()])" alt="Preview"
+      <img [src]="data.imageUrl(images[activeIndex()])" [alt]="'Image ' + (activeIndex() + 1) + ' of ' + images.length"
            class="max-w-full max-h-full object-contain" />
 
       @if (images.length > 1) {

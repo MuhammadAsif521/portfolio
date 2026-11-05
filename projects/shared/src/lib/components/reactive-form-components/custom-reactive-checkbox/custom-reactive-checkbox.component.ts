@@ -11,12 +11,12 @@ import { IconComponent } from "@shared/components/icon-component/icon-component"
   template: `
     <div class="fc-wrapper">
       @if (label) {
-        <label [attr.for]="controlName" class="fc-label">
+        <label [attr.id]="controlName ? controlName + '-label' : null" class="fc-label">
           {{ label }}
         </label>
       }
 
-      <div class="fc-row-group" [class.fc-invalid]="control.invalid && (control.dirty || control.touched)">
+      <div class="fc-row-group" role="group" [attr.aria-labelledby]="label && controlName ? controlName + '-label' : null" [class.fc-row-group-inline]="layout === 'inline'" [class.fc-invalid]="control.invalid && (control.dirty || control.touched)">
         @for (option of options; track option.id) {
           <label
             class="fc-row-option"
@@ -56,6 +56,8 @@ export class CustomReactiveCheckboxComponent implements OnInit, OnDestroy {
   @Input() options: { name: string; id: any }[] = [];
   @Input() required: boolean = false;
   @Input() disable: boolean = false;
+  /** 'inline' lays the options out in a wrapping row instead of a column. */
+  @Input() layout: 'stacked' | 'inline' = 'stacked';
 
   label: string = '';
   private destroy$ = new Subject<void>();

@@ -22,7 +22,7 @@
         } @else {
           <span class="site-nav__mark">{{ brand.mark }}</span>
         }
-        <!-- No aria-label: the name starts with the visible "AP" (label-in-name), "AP, Muhammad Asif, home";
+        <!-- No aria-label: the name starts with the visible "A" (label-in-name), "A, Muhammad Asif, home";
              with a logo image (alt="") it is "Muhammad Asif, home". -->
         <span class="sr-only">{{ logo() ? '' : ', ' }}{{ siteName() }}, home</span>
         <!-- Hover / focus credit (decorative) -->
@@ -62,12 +62,12 @@
     </div>
   </nav>
 
-  <app-mobile-menu [open]="menuOpen()" [activeKey]="activeKey()" (closeRequest)="closeMenu()" (sectionClick)="onSectionClick($event.event, $event.link)" />
+  <app-mobile-menu [open]="menuOpen()" [activeKey]="activeKey()" [onHome]="onHome()" (closeRequest)="closeMenu()" (sectionClick)="onSectionClick($event.event, $event.link)" />
 </header>
 
 <ng-template #navItem let-link>
   @if (link.route) {
-    <a #navLink class="site-nav__link" [attr.data-key]="keyOf(link)" [class.is-active]="isActive(link)" [routerLink]="link.route" [attr.aria-current]="isActive(link) ? 'page' : null">
+    <a #navLink class="site-nav__link" [attr.data-key]="keyOf(link)" [class.is-active]="isActive(link)" [routerLink]="link.route" [attr.aria-current]="isActive(link) ? (onHome() ? 'location' : 'page') : null">
       {{ link.label }}
     </a>
   } @else {

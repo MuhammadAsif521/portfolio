@@ -24,7 +24,7 @@ export interface ResourceFormDialogData {
   onSubmit: (value: Record<string, unknown>) => Observable<unknown>;
 }
 
-/** Create/edit dialog for simple resources (conb-sites-admin ResourceFormDialogComponent). */
+/** Create/edit dialog for simple resources (the admin template ResourceFormDialogComponent). */
 @Component({
   selector: 'app-resource-form-dialog',
   standalone: true,

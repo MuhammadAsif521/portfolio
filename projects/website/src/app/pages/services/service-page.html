@@ -1,0 +1,119 @@
+<article class="sp">
+  <nav class="sp__crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li><a routerLink="/services">Services</a></li>
+      <li aria-current="page">{{ service()?.name ?? 'Not found' }}</li>
+    </ol>
+  </nav>
+
+  @if (service(); as s) {
+    <header class="sp__hero">
+      <img class="sp__blob" src="/assets/images/blob-320.webp" alt="" aria-hidden="true" width="640" height="639" loading="lazy" decoding="async" />
+      <div class="sp__hero-main">
+        <span class="sp__icon" aria-hidden="true"><i-lucide [name]="s.icon" [size]="28" /></span>
+        <h1 class="sp__title">{{ s.h1 }}</h1>
+        @for (text of s.intro; track $index) {
+          <p class="sp__lead">{{ text }}</p>
+        }
+        <p class="sp__actions">
+          <a class="sp__button" routerLink="/" fragment="contact" (click)="cta('top')">Discuss your project</a>
+          <a class="sp__ghost" routerLink="/services">All services</a>
+        </p>
+      </div>
+
+      <aside class="sp__stack" aria-labelledby="sp-tech-title">
+        <h2 id="sp-tech-title" class="sp__stack-title">Tech I use</h2>
+        <ul class="sp__chips">
+          @for (item of s.tech; track item) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      </aside>
+    </header>
+
+    <section class="sp__section" aria-labelledby="sp-included">
+      <h2 id="sp-included" class="sp__h2">What's included</h2>
+      <ul class="sp__included">
+        @for (item of s.included; track item) {
+          <li>
+            <span class="sp__tick" aria-hidden="true"><i-lucide name="check" [size]="16" [stroke]="3" /></span>
+            <span>{{ item }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="sp__section" aria-labelledby="sp-process">
+      <h2 id="sp-process" class="sp__h2">How we'll work</h2>
+      <ol class="sp__steps">
+        @for (p of s.process; track p.step; let i = $index) {
+          <li class="sp__step">
+            <span class="sp__step-no" aria-hidden="true">{{ i + 1 }}</span>
+            <h3 class="sp__h3">{{ p.step }}</h3>
+            <p class="sp__text">{{ p.detail }}</p>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <section class="sp__section" aria-labelledby="sp-cases">
+      <h2 id="sp-cases" class="sp__h2">Case studies</h2>
+      <ul class="sp__cases">
+        @for (c of s.caseStudies; track c.slug) {
+          <li>
+            <a class="sp__case" [routerLink]="['/projects', c.slug]">
+              <span class="sp__case-body">
+                <span class="sp__case-title">{{ c.title }}</span>
+                <span class="sp__case-why">{{ c.why }}</span>
+              </span>
+              <span class="sp__go" aria-hidden="true"><i-lucide name="arrow-up-right" [size]="20" [stroke]="2.5" /></span>
+            </a>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="sp__section sp__faq" aria-labelledby="sp-faq">
+      <h2 id="sp-faq" class="sp__h2">Frequently asked questions</h2>
+      @for (item of s.faq; track item.q) {
+        <details>
+          <summary>{{ item.q }}</summary>
+          <p>{{ item.a }}</p>
+        </details>
+      }
+    </section>
+
+    @if (tools().length) {
+      <section class="sp__section" aria-labelledby="sp-tools">
+        <h2 id="sp-tools" class="sp__h2">Free tools I built</h2>
+        <ul class="sp__pills">
+          @for (t of tools(); track t.slug) {
+            <li><a [routerLink]="['/tools', t.slug]">{{ t.name }}</a></li>
+          }
+        </ul>
+      </section>
+    }
+
+    <section class="sp__section" aria-labelledby="sp-others">
+      <h2 id="sp-others" class="sp__h2">Other services</h2>
+      <ul class="sp__pills">
+        @for (o of others(); track o.slug) {
+          <li><a [routerLink]="['/services', o.slug]">{{ o.name }}</a></li>
+        }
+      </ul>
+    </section>
+
+    <aside class="sp__cta" aria-labelledby="sp-cta">
+      <h2 id="sp-cta" class="sp__cta-title">Have a project in mind?</h2>
+      <p class="sp__cta-text">Send a short brief and I usually reply within a day.</p>
+      <a class="sp__button" routerLink="/" fragment="contact" (click)="cta('bottom')">Contact me</a>
+    </aside>
+  } @else {
+    <header class="sp__missing">
+      <h1 class="sp__title sp__title--plain">Service not found</h1>
+      <p class="sp__text">This service page does not exist.</p>
+      <p><a class="sp__button" routerLink="/services">See all services</a></p>
+    </header>
+  }
+</article>

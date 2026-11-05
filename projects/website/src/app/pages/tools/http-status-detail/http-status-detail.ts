@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, RESPONSE_INIT, computed, effect, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { IconComponent } from '@shared/components/icon-component/icon-component';
 import { AnalyticsService } from '@shared/services/analytics.service';
 import { SeoService } from '@shared/services/seo.service';
 import { HTTP_STATUSES, HTTP_STATUS_PATH, STATUS_CLASS_LABELS, statusByCode } from '@shared/tools/http-status.data';
 import { TOOLS_PATH } from '@shared/tools/tools.manifest';
 import { injectNotFoundUrl } from '../../../core/not-found-url';
+import { ToolOutput } from '../../../ui/tool-kit/tool-output';
 
 /**
  * /tools/http-status-codes/:code: one indexable reference page per covered status code (unique meaning,
@@ -13,8 +15,8 @@ import { injectNotFoundUrl } from '../../../core/not-found-url';
  */
 @Component({
   selector: 'app-http-status-detail',
-  imports: [RouterLink],
-  styleUrls: ['../tool-layout/tool-layout.scss', '../tool-ui.scss'],
+  imports: [RouterLink, IconComponent, ToolOutput],
+  styleUrl: '../tool-layout/tool-layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <article class="tool">
@@ -28,52 +30,77 @@ import { injectNotFoundUrl } from '../../../core/not-found-url';
       </nav>
 
       @if (status(); as s) {
-        <header>
-          <p class="tool__privacy">{{ classLabel() }}</p>
-          <h1 class="tool__title">HTTP {{ s.code }} {{ s.name }}</h1>
-          <p class="tool__lead">{{ s.summary }}</p>
+        <header class="tool__hero">
+          <span class="tool__icon" aria-hidden="true"><i-lucide name="globe" [size]="28" /></span>
+          <div class="tool__intro">
+            <h1 class="tool__title">HTTP {{ s.code }} {{ s.name }}</h1>
+            <p class="tool__lead">{{ s.summary }}</p>
+            <div class="tool__facts">
+              <span class="tool__chip">{{ classLabel() }}</span>
+            </div>
+          </div>
         </header>
 
         <section class="tool__section">
           <h2 class="tool__h2">What {{ s.code }} {{ s.name }} means</h2>
-          <p class="tool__p">{{ s.meaning }}</p>
+          <div class="tool__prose"><p class="tool__p">{{ s.meaning }}</p></div>
         </section>
 
         <section class="tool__section">
           <h2 class="tool__h2">Common causes</h2>
-          <ul class="tool__p">
-            @for (cause of s.causes; track cause) {
-              <li>{{ cause }}</li>
-            }
-          </ul>
+          <div class="tool__prose">
+            <ul class="tool__p">
+              @for (cause of s.causes; track cause) {
+                <li>{{ cause }}</li>
+              }
+            </ul>
+          </div>
         </section>
 
         <section class="tool__section">
           <h2 class="tool__h2">How to fix or use it</h2>
-          <p class="tool__p">{{ s.fix }}</p>
-          <h3 class="tool-label">Express (Node.js) example</h3>
-          <pre class="tool__example"><code>{{ s.express }}</code></pre>
+          <div class="tool__prose">
+            <p class="tool__p">{{ s.fix }}</p>
+            <app-tool-output label="Express (Node.js) example" [value]="s.express" />
+          </div>
         </section>
 
         <section class="tool__section">
           <h2 class="tool__h2">SEO impact</h2>
-          <p class="tool__p">{{ s.seo }}</p>
+          <div class="tool__prose"><p class="tool__p">{{ s.seo }}</p></div>
         </section>
 
         <section class="tool__section">
           <h2 class="tool__h2">Other {{ classLabel() }} codes</h2>
           <ul class="tool__related">
             @for (other of siblings(); track other.code) {
-              <li><a [routerLink]="['/tools/http-status-codes', other.code]">{{ other.code }} {{ other.name }}</a></li>
+              <li>
+                <a [routerLink]="['/tools/http-status-codes', other.code]">
+                  <span class="tool__related-icon" aria-hidden="true"><i-lucide name="globe" [size]="18" /></span>
+                  <span class="tool__related-name">{{ other.code }} {{ other.name }}</span>
+                  <span class="tool__related-text">{{ other.summary }}</span>
+                </a>
+              </li>
             }
-            <li><a routerLink="/tools/http-status-codes">All status codes</a></li>
+            <li>
+              <a routerLink="/tools/http-status-codes">
+                <span class="tool__related-icon" aria-hidden="true"><i-lucide name="arrow-right" [size]="18" /></span>
+                <span class="tool__related-name">All status codes</span>
+                <span class="tool__related-text">Search and filter the full reference.</span>
+              </a>
+            </li>
           </ul>
         </section>
 
-        <aside class="tool__cta">
-          <h2 class="tool__h2">Status codes wrong in your app?</h2>
-          <p>I build Angular SSR and Node.js apps that send the right code for every case, so caches and Google behave.</p>
-          <a routerLink="/" fragment="contact" (click)="ctaClicked()">Hire me</a>
+        <aside class="tool__cta" aria-labelledby="status-cta-title">
+          <div>
+            <h2 class="tool__cta-title" id="status-cta-title">Status codes wrong in your app?</h2>
+            <p>I build Angular SSR and Node.js apps that send the right code for every case, so caches and Google behave.</p>
+          </div>
+          <a class="tool__cta-link" routerLink="/" fragment="contact" (click)="ctaClicked()">
+            Hire me
+            <i-lucide name="arrow-right" [size]="18" aria-hidden="true" />
+          </a>
         </aside>
       } @else {
         <header>

@@ -1,0 +1,71 @@
+<article class="faqp">
+  <nav class="faqp__crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li aria-current="page">FAQ</li>
+    </ol>
+  </nav>
+
+  <header class="faqp__head">
+    <h1 class="faqp__title">Frequently asked questions</h1>
+    <p class="faqp__lead">
+      What clients ask before hiring me, and what developers ask about the services and free tools on this site.
+    </p>
+  </header>
+
+  <section class="faqp__section" aria-labelledby="faqp-general">
+    <h2 id="faqp-general" class="faqp__h2">Hiring and working together</h2>
+    <div class="faqp__answers">
+      @for (item of general; track item.question) {
+        <article class="faqp__item">
+          <h3 class="faqp__q">{{ item.question }}</h3>
+          <p class="faqp__a">
+            @for (part of item.answer; track $index) {
+              @if (part.link; as link) {<a [routerLink]="link" [fragment]="part.fragment">{{ part.text }}</a>} @else {<ng-container>{{ part.text }}</ng-container>}
+            }
+          </p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="faqp__section" aria-labelledby="faqp-services">
+    <h2 id="faqp-services" class="faqp__h2">Questions about each service</h2>
+    <div class="faqp__groups">
+      @for (s of services; track s.slug) {
+        <section class="faqp__group">
+          <h3 class="faqp__group-title"><a [routerLink]="['/services', s.slug]">{{ s.name }}</a></h3>
+          <ul class="faqp__links">
+            @for (f of s.faq; track f.q) {
+              <li><a [routerLink]="['/services', s.slug]">{{ f.q }}</a></li>
+            }
+          </ul>
+        </section>
+      }
+    </div>
+  </section>
+
+  @if (tools().length) {
+    <section class="faqp__section" aria-labelledby="faqp-tools">
+      <h2 id="faqp-tools" class="faqp__h2">Questions about the free tools</h2>
+      <div class="faqp__groups">
+        @for (t of tools(); track t.slug) {
+          <section class="faqp__group">
+            <h3 class="faqp__group-title"><a [routerLink]="['/tools', t.slug]">{{ t.name }}</a></h3>
+            <ul class="faqp__links">
+              @for (f of t.faq; track f.q) {
+                <li><a [routerLink]="['/tools', t.slug]">{{ f.q }}</a></li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+    </section>
+  }
+
+  <aside class="faqp__cta" aria-labelledby="faqp-cta">
+    <h2 id="faqp-cta" class="faqp__cta-title">Question not answered here?</h2>
+    <p class="faqp__cta-text">Ask me directly. I usually reply within a day.</p>
+    <a class="faqp__button" routerLink="/" fragment="contact">Contact me</a>
+  </aside>
+</article>

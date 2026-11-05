@@ -26,7 +26,7 @@
     @for (link of links; track link.label; let i = $index) {
       <li class="mobile-menu__item" [style.--i]="i">
         @if (link.route) {
-          <a class="mobile-menu__link" [class.is-active]="isActive(link)" [routerLink]="link.route" [attr.aria-current]="isActive(link) ? 'page' : null" (click)="closeRequest.emit()">
+          <a class="mobile-menu__link" [class.is-active]="isActive(link)" [routerLink]="link.route" [attr.aria-current]="isActive(link) ? (onHome() ? 'location' : 'page') : null" (click)="closeRequest.emit()">
             <ng-container [ngTemplateOutlet]="row" [ngTemplateOutletContext]="{ $implicit: link, index: i }" />
           </a>
         } @else {

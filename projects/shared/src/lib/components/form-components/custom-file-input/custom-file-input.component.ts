@@ -101,7 +101,7 @@ const EXECUTABLE_SIGNATURES = ['4d5a', '7f454c46', 'feedface', 'cafebabe'];
                     [attr.sizes]="item.srcset ? '2.5rem' : null"
                     [attr.srcset]="item.srcset ?? null"
                     [src]="item.url"
-                    alt="preview"
+                    [alt]="'Thumbnail of ' + item.name"
                     (error)="onImgError($event)"
                   />
                 } @else {
@@ -122,6 +122,7 @@ const EXECUTABLE_SIGNATURES = ['4d5a', '7f454c46', 'feedface', 'cafebabe'];
 
                 <!-- Replace / Edit (single) or Add more (multiple) -->
                 <label class="fc-file-action"
+                  [attr.aria-label]="(multiple ? 'Add more files' : 'Replace ' + item.name)"
                   [title]="multiple ? 'Add more' : 'Replace'">
                   <i-lucide [name]="multiple ? 'upload' : 'pencil'" [size]="15" color="primary"></i-lucide>
                   <input
@@ -137,6 +138,7 @@ const EXECUTABLE_SIGNATURES = ['4d5a', '7f454c46', 'feedface', 'cafebabe'];
                 <button type="button"
                   class="fc-file-action"
                   (click)="removeFile($index)"
+                  [attr.aria-label]="'Remove ' + item.name"
                   title="Remove">
                   <i-lucide name="x" [size]="15" color="error"></i-lucide>
                 </button>
@@ -201,6 +203,10 @@ export class CustomFileInputComponent implements OnInit, OnChanges, OnDestroy {
   @Input() maxFiles: number | null = null;
   @Input() maxFileSize: number | null = 10; // MB
   @Input() cropConfig: FileCropConfig | null = null;
+  /** Set false for tools that read the file locally and never upload it: skips the extension / magic-byte block list. */
+  @Input() scanFiles = true;
+  /** Set false to keep the original file name (by default names are reduced to 15 alphanumerics). */
+  @Input() sanitizeNames = true;
 
   private readonly dialog = inject(MatDialog);
 
@@ -463,6 +469,7 @@ export class CustomFileInputComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private sanitize(f: File): File {
+    if (!this.sanitizeNames) return f;
     const parts = f.name.split('.');
     const ext = parts.pop()!;
     const name = parts.join('.').replace(/[^a-zA-Z0-9]/g, '').substring(0, 15);
@@ -474,6 +481,7 @@ export class CustomFileInputComponent implements OnInit, OnChanges, OnDestroy {
   // double extensions (e.g. "invoice.pdf.exe"), and files whose real content
   // (magic bytes) doesn't match an image MIME type they claim to be.
   private async scanFile(file: File): Promise<FileSecurityResult> {
+    if (!this.scanFiles) return { isSafe: true };
     const extension = file.name.split('.').pop()?.toLowerCase() || '';
 
     if (DANGEROUS_EXTENSIONS.includes(extension)) {

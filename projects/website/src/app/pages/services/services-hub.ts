@@ -2,12 +2,14 @@ import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/cor
 import { RouterLink } from '@angular/router';
 import { SeoService } from '@shared/services/seo.service';
 import { SERVICES_HUB, SERVICES_PATH, SERVICE_PAGES } from '@shared/services-pages/services.data';
+import { SERVICES_CONTENT } from '../../content/services.content';
+import { ServiceCard } from '../../ui/service-card/service-card';
 
-/** /services: every service page (CollectionPage + ItemList). Reuses the tools hub styles. */
+/** /services: every service as the home page's service card, linking to its page (CollectionPage + ItemList JSON-LD). */
 @Component({
   selector: 'app-services-hub',
-  imports: [RouterLink],
-  styleUrl: '../tools/tools-hub/tools-hub.scss',
+  imports: [RouterLink, ServiceCard],
+  styleUrl: './services-hub.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="hub">
@@ -17,26 +19,36 @@ import { SERVICES_HUB, SERVICES_PATH, SERVICE_PAGES } from '@shared/services-pag
           <li aria-current="page">Services</li>
         </ol>
       </nav>
-      <header>
+
+      <header class="hub__head">
         <h1 class="hub__title">{{ hub.h1 }}</h1>
         <p class="hub__intro">{{ hub.intro }}</p>
       </header>
-      <ul class="hub__grid">
-        @for (s of services; track s.slug) {
-          <li>
-            <a class="hub__card" [routerLink]="['/services', s.slug]">
-              <h2 class="hub__name">{{ s.name }}</h2>
-              <p class="hub__text">{{ s.description }}</p>
-            </a>
-          </li>
-        }
-      </ul>
+
+      <div class="hub__panel">
+        <ul class="hub__grid">
+          @for (item of services; track item.page) {
+            <li><app-service-card [item]="item" [headingLevel]="2" /></li>
+          }
+        </ul>
+      </div>
+
+      <aside class="hub__help" aria-labelledby="hub-help-title">
+        <div>
+          <h2 id="hub-help-title" class="hub__help-title">Not sure which service fits?</h2>
+          <p class="hub__help-text">Describe your project in a few lines and I will tell you what it needs and what to build first.</p>
+        </div>
+        <div class="hub__help-actions">
+          <a class="hub__button" routerLink="/" fragment="contact">Discuss your project</a>
+          <a class="hub__link" routerLink="/faq">Read the FAQ</a>
+        </div>
+      </aside>
     </div>
   `,
 })
 export class ServicesHubPage {
   protected readonly hub = SERVICES_HUB;
-  protected readonly services = SERVICE_PAGES;
+  protected readonly services = SERVICES_CONTENT.items;
 
   constructor() {
     const seo = inject(SeoService);

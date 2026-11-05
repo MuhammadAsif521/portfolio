@@ -21,7 +21,7 @@
         </a>
         } @else {
         <button type="button" class="nav-tab" [class.active]="activeTab === tab.value" [class.disabled]="tab.disabled"
-            [disabled]="tab.disabled" (click)="onTabClick(tab)">
+            [disabled]="tab.disabled" [attr.aria-pressed]="activeTab === tab.value" (click)="onTabClick(tab)">
             @if (tab.icon) {
             <i-lucide [name]="tab.icon" class="tab-icon"></i-lucide>
             }

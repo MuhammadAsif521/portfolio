@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.out {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--band-dark-border);
+  border-radius: var(--radius-md);
+  background: var(--band-texture-base);
+  color: var(--band-dark-text);
+
+  // The one accent of the console: a thin brand line along its top edge.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 2px;
+    background: var(--brand-gradient);
+  }
+}
+
+.out__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  min-height: 3rem;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  border-bottom: 1px solid var(--band-dark-border);
+  background: var(--band-dark);
+}
+
+.out__label {
+  color: var(--band-dark-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.out__meta {
+  min-width: 0;
+  color: var(--band-dark-muted);
+  font-size: var(--text-xs);
+}
+
+.out__copy {
+  margin-left: auto;
+}
+
+.out__scroll {
+  max-height: 28rem;
+  overflow: auto;
+  padding: 1rem;
+  scrollbar-color: var(--band-dark-border) transparent;
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+  }
+}
+
+.out__code {
+  margin: 0;
+  color: var(--band-dark-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

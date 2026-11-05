@@ -1,7 +1,7 @@
 import { NavItem } from '@cusadmin/core/interfaces/nav-item.interface';
 
 /**
- * Sidebar navigation (same shape as conb-sites-admin: `navCap` entries start a collapsible group).
+ * Sidebar navigation (same shape as the admin template: `navCap` entries start a collapsible group).
  * Icons are lucide names.
  */
 export const navItems: NavItem[] = [

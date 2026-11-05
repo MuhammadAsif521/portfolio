@@ -5,7 +5,7 @@ import { AdminLoginPage } from '@cusadmin/pages/auth/login/login';
 import { DashboardPage } from '@cusadmin/pages/dashboard/dashboard';
 
 /**
- * Same layout as conb-sites-admin: auth pages outside the shell, everything else inside FullLayout behind
+ * Same layout as the admin template: auth pages outside the shell, everything else inside FullLayout behind
  * authChildGuard. Route `data.title` drives the topbar heading and the document title. Resource pages are
  * lazy-loaded so the first load stays small.
  */

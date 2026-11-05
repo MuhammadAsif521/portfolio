@@ -12,7 +12,7 @@ interface AuthModeContent {
 }
 
 /**
- * Split auth screen (same layout as conb-sites-admin): form column on the left, branded panel with a
+ * Split auth screen (same layout as the admin template): form column on the left, branded panel with a
  * grid overlay on the right (lg+). Used by cusadmin's login page; the form goes in the content slot.
  */
 @Component({
@@ -24,7 +24,7 @@ interface AuthModeContent {
 export class AuthLayoutComponent {
   @Input() mode: AuthMode = 'login';
 
-  readonly mark = 'AP';
+  readonly mark = 'A';
 
   private readonly content: Record<AuthMode, AuthModeContent> = {
     login: {

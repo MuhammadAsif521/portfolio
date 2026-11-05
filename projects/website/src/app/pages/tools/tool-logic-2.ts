@@ -274,12 +274,10 @@ export function highlightSegments(text: string, matches: RegexMatch[]): { text: 
 
 // ── WAV encoder ──────────────────────────────────────────────────────────────
 
-/** 16-bit PCM WAV from planar float samples (-1..1). */
-export function encodeWav(channels: Float32Array[], sampleRate: number): ArrayBuffer {
-  const count = channels.length;
-  const frames = channels[0]?.length ?? 0;
-  const dataBytes = frames * count * 2;
-  const buffer = new ArrayBuffer(44 + dataBytes);
+/** The 44-byte header of a 16-bit PCM WAV with the given number of sample frames. */
+export function wavHeader(frames: number, channels: number, sampleRate: number): ArrayBuffer {
+  const dataBytes = frames * channels * 2;
+  const buffer = new ArrayBuffer(44);
   const view = new DataView(buffer);
   const ascii = (offset: number, s: string) => [...s].forEach((c, i) => view.setUint8(offset + i, c.charCodeAt(0)));
   ascii(0, 'RIFF');
@@ -288,22 +286,74 @@ export function encodeWav(channels: Float32Array[], sampleRate: number): ArrayBu
   ascii(12, 'fmt ');
   view.setUint32(16, 16, true); // PCM chunk size
   view.setUint16(20, 1, true); // PCM
-  view.setUint16(22, count, true);
+  view.setUint16(22, channels, true);
   view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * count * 2, true); // byte rate
-  view.setUint16(32, count * 2, true); // block align
+  view.setUint32(28, sampleRate * channels * 2, true); // byte rate
+  view.setUint16(32, channels * 2, true); // block align
   view.setUint16(34, 16, true); // bits per sample
   ascii(36, 'data');
   view.setUint32(40, dataBytes, true);
-  let offset = 44;
-  for (let i = 0; i < frames; i++) {
+  return buffer;
+}
+
+/** Interleaves frames [from, to) of planar float samples (-1..1) into little-endian 16-bit PCM. */
+function interleave16(channels: Float32Array[], from: number, to: number): ArrayBuffer {
+  const count = channels.length;
+  const out = new ArrayBuffer((to - from) * count * 2);
+  const view = new DataView(out);
+  let offset = 0;
+  for (let i = from; i < to; i++) {
     for (let c = 0; c < count; c++) {
       const s = Math.max(-1, Math.min(1, channels[c][i]));
       view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
       offset += 2;
     }
   }
-  return buffer;
+  return out;
+}
+
+/** 16-bit PCM WAV from planar float samples (-1..1). */
+export function encodeWav(channels: Float32Array[], sampleRate: number): ArrayBuffer {
+  const frames = channels[0]?.length ?? 0;
+  const header = new Uint8Array(wavHeader(frames, channels.length, sampleRate));
+  const body = new Uint8Array(interleave16(channels, 0, frames));
+  const out = new Uint8Array(44 + body.length);
+  out.set(header);
+  out.set(body, 44);
+  return out.buffer;
+}
+
+/** Largest WAV the format can describe (the RIFF size field is 32-bit). */
+export const MAX_WAV_BYTES = 0xffffffff - 44;
+
+/**
+ * Same WAV as encodeWav, built as a Blob in slices of about a second so a long track never blocks the page
+ * for more than a moment (`yieldToUi` runs between slices) and never needs one giant contiguous buffer.
+ */
+export async function encodeWavBlob(
+  channels: Float32Array[],
+  sampleRate: number,
+  yieldToUi: () => Promise<void> = () => new Promise((resolve) => setTimeout(resolve)),
+  onProgress?: (done: number) => void,
+): Promise<Blob> {
+  const frames = channels[0]?.length ?? 0;
+  const parts: BlobPart[] = [wavHeader(frames, channels.length, sampleRate)];
+  const slice = Math.max(1, Math.floor(sampleRate / 2));
+  for (let from = 0; from < frames; from += slice) {
+    parts.push(interleave16(channels, from, Math.min(frames, from + slice)));
+    onProgress?.(Math.min(1, (from + slice) / frames));
+    await yieldToUi();
+  }
+  return new Blob(parts, { type: 'audio/wav' });
+}
+
+/** Seconds → "2.9 s", "2 min 5 s" or "1 h 3 min". */
+export function formatDuration(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return '0 s';
+  if (seconds < 60) return `${seconds.toFixed(1)} s`;
+  const whole = Math.round(seconds);
+  if (whole < 3600) return `${Math.floor(whole / 60)} min ${whole % 60} s`;
+  return `${Math.floor(whole / 3600)} h ${Math.floor((whole % 3600) / 60)} min`;
 }
 
 /** Bytes → "12.3 MB". */

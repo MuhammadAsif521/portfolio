@@ -22,7 +22,7 @@ import { siteFeature } from '../../core/store/site.feature';
 import { UiActions, uiFeature } from '../../core/store/ui.feature';
 import { MobileMenu } from '../mobile-menu/mobile-menu';
 import { ThemeToggle } from '../theme-toggle/theme-toggle';
-import { NAV_LEFT, NAV_RIGHT, navKey, type NavLink } from './nav-links';
+import { NAV_LEFT, NAV_RIGHT, activeNavKey, navKey, type NavLink } from './nav-links';
 
 /** Matches the lg breakpoint where the desktop links replace the mobile menu (styles/_mixins.scss). */
 const DESKTOP_MIN_WIDTH = 1024;
@@ -53,11 +53,11 @@ export class SiteHeader {
   protected readonly activeSection = this.store.selectSignal(uiFeature.selectActiveSection);
   protected readonly menuOpen = this.store.selectSignal(uiFeature.selectMenuOpen);
 
-  /** "AP" mark; hover/focus reveals "Made by Asif". */
+  /** "A" mark; hover/focus reveals "Made by Asif". */
   protected readonly brand = BRAND_CONTENT;
 
   private readonly currentUrl = signal(this.router.url);
-  private readonly onHome = computed(() => this.currentUrl().split(/[?#]/)[0] === '/');
+  protected readonly onHome = computed(() => this.currentUrl().split(/[?#]/)[0] === '/');
 
   // Sliding active-pill indicator (desktop): positioned over the active link, animated with CSS.
   private readonly bar = viewChild<ElementRef<HTMLElement>>('bar');
@@ -98,11 +98,8 @@ export class SiteHeader {
     inject(DestroyRef).onDestroy(() => this.setScrollLock(false));
   }
 
-  /** Nav item that should look active: the Blog route, or the section in view on the home page. */
-  protected readonly activeKey = computed(() => {
-    if (this.currentUrl().startsWith('/blog')) return 'route:/blog';
-    return this.onHome() ? `section:${this.activeSection()}` : '';
-  });
+  /** Nav item that should look active: the open route (Services, Blog, Tools) or the home section in view. */
+  protected readonly activeKey = computed(() => activeNavKey(this.currentUrl(), this.activeSection()));
 
   protected keyOf(link: NavLink): string {
     return navKey(link);

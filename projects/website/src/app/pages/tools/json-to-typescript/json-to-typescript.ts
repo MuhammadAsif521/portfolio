@@ -1,76 +1,83 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { AnalyticsService } from '@shared/services/analytics.service';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl } from '@angular/forms';
+import { ToolButton } from '../../../ui/tool-kit/tool-button';
+import { ToolEmpty } from '../../../ui/tool-kit/tool-empty';
+import { ToolChoice, ToolInput, ToolTextarea } from '../../../ui/tool-kit/tool-fields';
+import { controlSignal, toolCopied, toolUsage } from '../../../ui/tool-kit/tool-form';
+import { ToolNote } from '../../../ui/tool-kit/tool-note';
+import { ToolOutput } from '../../../ui/tool-kit/tool-output';
+import { ToolPanel } from '../../../ui/tool-kit/tool-panel';
 import { ToolLayout } from '../tool-layout/tool-layout';
 import { jsonToTypeScript, type TsStyle } from '../tool-logic';
+
+const SAMPLE = '{"id": 1, "name": "Asif", "tags": ["angular", "node"], "profile": {"city": "Lahore", "remote": true}}';
+const STYLES = [
+  { id: 'interface', name: 'interface' },
+  { id: 'type', name: 'type alias' },
+];
 
 /** /tools/json-to-typescript: infer nested interfaces/types from a JSON sample. */
 @Component({
   selector: 'app-json-to-typescript',
-  imports: [ToolLayout],
+  imports: [ToolLayout, ToolPanel, ToolTextarea, ToolInput, ToolChoice, ToolOutput, ToolNote, ToolEmpty, ToolButton],
   styleUrl: '../tool-ui.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-tool-layout slug="json-to-typescript">
-      <div class="tool-field">
-        <label class="tool-label" for="json">JSON</label>
-        <textarea id="json" class="tool-textarea" spellcheck="false" autocomplete="off"
-          placeholder='{"id": 1, "name": "Asif"}' (input)="onInput($event)"></textarea>
-      </div>
-      <div class="tool-row">
-        <div class="tool-field">
-          <label class="tool-label" for="root">Root type name</label>
-          <input id="root" class="tool-input" value="Root" autocomplete="off" (input)="rootName.set(value($event))" />
-        </div>
-        <div class="tool-field">
-          <label class="tool-label" for="style">Output</label>
-          <select id="style" class="tool-select" (change)="style.set(value($event) === 'type' ? 'type' : 'interface')">
-            <option value="interface">interface</option>
-            <option value="type">type</option>
-          </select>
-        </div>
-      </div>
+      <div class="tool-split">
+        <app-tool-panel title="Input">
+          <ng-container ngProjectAs="[panelActions]">
+            <app-tool-button size="small" icon="wand-sparkles" label="Load sample" (pressed)="sourceCtl.setValue(sample)" />
+            <app-tool-button size="small" icon="eraser" label="Clear" [disabled]="!source()" (pressed)="sourceCtl.setValue('')" />
+          </ng-container>
+          <app-tool-textarea
+            fieldId="ts-json"
+            label="JSON"
+            placeholder='{"id": 1, "name": "Asif"}'
+            [control]="sourceCtl"
+            [rows]="12"
+            [invalid]="result()?.ok === false"
+          />
+          <div class="tool-controls">
+            <app-tool-input fieldId="ts-root" label="Root type name" [control]="rootCtl" />
+            <app-tool-choice fieldId="ts-style" label="Output" [control]="styleCtl" [options]="styles" />
+          </div>
+        </app-tool-panel>
 
-      @if (result(); as r) {
-        @if (r.ok) {
-          <pre class="tool-output">{{ r.code }}</pre>
-          <button type="button" class="tool-btn" (click)="copy(r.code)">Copy TypeScript</button>
-        } @else {
-          <p class="tool-error" role="alert">{{ r.error }}</p>
-        }
-      }
-      <p class="tool-status" aria-live="polite">{{ status() }}</p>
+        <app-tool-panel title="Result">
+          @if (result(); as r) {
+            @if (r.ok) {
+              <app-tool-output label="TypeScript" copyLabel="Copy TypeScript" [value]="r.code" (copied)="trackCopy()" />
+            } @else {
+              <app-tool-note kind="error">{{ r.error }}</app-tool-note>
+            }
+          } @else {
+            <app-tool-empty icon="file-code">Paste a JSON sample on the left and the interfaces appear here, nested objects included.</app-tool-empty>
+          }
+        </app-tool-panel>
+      </div>
     </app-tool-layout>
   `,
 })
 export class JsonToTypescriptTool {
-  private readonly analytics = inject(AnalyticsService);
-  private used = false;
+  private readonly markUsed = toolUsage('json-to-typescript');
+  protected readonly trackCopy = toolCopied('json-to-typescript');
 
-  protected readonly source = signal('');
-  protected readonly rootName = signal('Root');
-  protected readonly style = signal<TsStyle>('interface');
-  protected readonly result = computed(() => jsonToTypeScript(this.source(), this.rootName(), this.style()));
-  protected readonly status = signal('');
+  protected readonly sample = SAMPLE;
+  protected readonly styles = STYLES;
+  protected readonly sourceCtl = new FormControl('', { nonNullable: true });
+  protected readonly rootCtl = new FormControl('Root', { nonNullable: true });
+  protected readonly styleCtl = new FormControl('interface', { nonNullable: true });
 
-  protected value(event: Event): string {
-    return (event.target as HTMLInputElement | HTMLSelectElement).value;
-  }
+  protected readonly source = controlSignal(this.sourceCtl);
+  private readonly rootName = controlSignal(this.rootCtl);
+  private readonly style = controlSignal(this.styleCtl);
+  protected readonly result = computed(() =>
+    jsonToTypeScript(this.source(), this.rootName(), (this.style() === 'type' ? 'type' : 'interface') satisfies TsStyle),
+  );
 
-  protected onInput(event: Event): void {
-    this.source.set((event.target as HTMLTextAreaElement).value);
-    if (!this.used && this.result()?.ok) {
-      this.used = true;
-      this.analytics.track('tool_used', { tool: 'json-to-typescript' });
-    }
-  }
-
-  protected async copy(code: string): Promise<void> {
-    try {
-      await navigator.clipboard.writeText(code);
-      this.status.set('Copied.');
-      this.analytics.track('result_copied', { tool: 'json-to-typescript' });
-    } catch {
-      this.status.set('Copy failed. Select the text and copy it manually.');
-    }
+  constructor() {
+    this.sourceCtl.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.result()?.ok && this.markUsed());
   }
 }

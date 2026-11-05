@@ -21,7 +21,7 @@ export const EXPERIENCE_CONTENT = {
       startDate: '2025-10-01',
       current: true,
       summary:
-        'Delivered the City of New Britain ecosystem, three e-commerce redesigns and three internal platform products.',
+        'Delivered a multi-tenant platform behind four public websites, three e-commerce redesigns and three internal platform products.',
       highlights: [],
       techStack: [],
     },

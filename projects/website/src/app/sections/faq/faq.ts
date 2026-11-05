@@ -5,7 +5,7 @@ import { disposeWith, revealOnScroll } from '../../core/motion';
 
 /**
  * Home-page FAQ: question headings with short, answer-first paragraphs, all in the server-rendered HTML
- * (no accordion hiding the answers), so readers, search engines and AI answer engines see them as is.
+ * (no accordion hiding the answers), limited to the first few with a button to /faq for the rest, so readers, search engines and AI answer engines see them as is.
  */
 @Component({
   selector: 'app-faq',
@@ -19,7 +19,8 @@ export class Faq {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly content = FAQ_CONTENT;
-  protected readonly items: readonly FaqItem[] = FAQ_CONTENT.items;
+  /** Only the first few questions on the home page; /faq lists all of them. */
+  protected readonly items: readonly FaqItem[] = FAQ_CONTENT.items.slice(0, FAQ_CONTENT.homeCount);
 
   constructor() {
     afterNextRender(() => {

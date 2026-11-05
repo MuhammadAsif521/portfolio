@@ -111,7 +111,7 @@ describe('Projects section', () => {
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
     const titles = Array.from(el.querySelectorAll('app-project-card h3')).map((node) => node.textContent);
-    expect(titles[0]).toBe('City of New Britain Digital Ecosystem');
+    expect(titles[0]).toBe('Multi-Tenant Website Platform');
     expect(titles.length).toBe(7);
     expect(el.querySelector('.projects__empty')).toBeNull();
   });
@@ -163,7 +163,7 @@ describe('Projects section', () => {
 
 describe('Project case study page', () => {
   const project = {
-    ...projectCard('city-of-new-britain', { featured: true, client: 'City of New Britain, CT' }),
+    ...projectCard('multi-tenant-platform', { featured: true, client: 'Demo client' }),
     content: '<h2>Challenge</h2><p>Four sites, one backend.</p><script>alert(1)</script>',
     liveUrl: 'https://nbrecovers.com',
     coverImage: { key: 'projects/2026/09/c.webp', url: 'https://cdn.test/c.webp', alt: 'Cover' },
@@ -177,7 +177,7 @@ describe('Project case study page', () => {
     const responseInit: ResponseInit = {};
     setup({ getProject } as unknown as Partial<PublicApiService>, responseInit);
     const fixture = TestBed.createComponent(ProjectDetailPage);
-    fixture.componentRef.setInput('slug', 'city-of-new-britain');
+    fixture.componentRef.setInput('slug', 'multi-tenant-platform');
     await fixture.whenStable();
     return { el: fixture.nativeElement as HTMLElement, responseInit };
   }
@@ -192,9 +192,9 @@ describe('Project case study page', () => {
 
   it('renders the case study with diagram, sanitized content, gallery and outbound links', async () => {
     const { el, responseInit } = await render(() => of(project));
-    expect(el.querySelector('h1')?.textContent).toBe('Project city-of-new-britain');
-    expect(el.querySelector('.case__client')?.textContent).toBe('City of New Britain, CT');
-    expect(el.querySelector('[aria-current="page"]')?.textContent).toBe('Project city-of-new-britain');
+    expect(el.querySelector('h1')?.textContent).toBe('Project multi-tenant-platform');
+    expect(el.querySelector('.case__client')?.textContent).toBe('Demo client');
+    expect(el.querySelector('[aria-current="page"]')?.textContent).toBe('Project multi-tenant-platform');
     expect(el.querySelector('.case__figure img')?.getAttribute('alt')).toBe('Architecture diagram');
     expect(el.querySelector('.case__content h2')?.textContent).toBe('Challenge');
     expect(el.querySelector('.case__content script')).toBeNull();
@@ -231,22 +231,22 @@ describe('Project case study page', () => {
 
   it('sets the title and CreativeWork + BreadcrumbList JSON-LD', async () => {
     await render(() => of(project));
-    expect(TestBed.inject(Title).getTitle()).toContain('Project city-of-new-britain');
+    expect(TestBed.inject(Title).getTitle()).toContain('Project multi-tenant-platform');
 
     const work = jsonLd().find((schema) => schema['@type'] === 'CreativeWork');
     expect(work).toMatchObject({
-      name: 'Project city-of-new-britain',
+      name: 'Project multi-tenant-platform',
       image: ['https://cdn.test/c.webp'],
       datePublished: '2026-09-01T00:00:00.000Z',
       dateModified: '2026-09-20T00:00:00.000Z',
     });
-    expect(work?.['url']).toMatch(/\/projects\/city-of-new-britain$/);
+    expect(work?.['url']).toMatch(/\/projects\/multi-tenant-platform$/);
     expect(work?.['author']['@id']).toMatch(/#person$/);
 
     const crumbs = jsonLd().find((schema) => schema['@type'] === 'BreadcrumbList');
     expect(crumbs?.['itemListElement'].map((item: { name: string }) => item.name)).toEqual([
       'Home',
-      'Project city-of-new-britain',
+      'Project multi-tenant-platform',
     ]);
   });
 
@@ -275,7 +275,7 @@ describe('Project case study page', () => {
       .mockReturnValueOnce(of(project));
     setup({ getProject } as unknown as Partial<PublicApiService>);
     const fixture = TestBed.createComponent(ProjectDetailPage);
-    fixture.componentRef.setInput('slug', 'city-of-new-britain');
+    fixture.componentRef.setInput('slug', 'multi-tenant-platform');
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
 
@@ -291,17 +291,17 @@ describe('Project case study page', () => {
     TestBed.inject(Store).dispatch(
       ContentActions.loadProjectListSuccess({
         key: 'limit=12',
-        result: page([{ ...projectCard('city-of-new-britain'), coverImage: project.coverImage }]) as never,
+        result: page([{ ...projectCard('multi-tenant-platform'), coverImage: project.coverImage }]) as never,
         loadedAt: Date.now(),
       }),
     );
     const fixture = TestBed.createComponent(ProjectDetailPage);
-    fixture.componentRef.setInput('slug', 'city-of-new-britain');
+    fixture.componentRef.setInput('slug', 'multi-tenant-platform');
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
 
-    expect(el.querySelector('h1')?.textContent).toBe('Project city-of-new-britain');
-    expect(el.querySelector('.case__lead')?.textContent).toBe('Summary of city-of-new-britain');
+    expect(el.querySelector('h1')?.textContent).toBe('Project multi-tenant-platform');
+    expect(el.querySelector('.case__lead')?.textContent).toBe('Summary of multi-tenant-platform');
     expect(el.querySelector('img.case__cover')?.getAttribute('src')).toBe('https://cdn.test/c.webp');
     expect(el.querySelector('.case__content')).toBeNull();
     expect(el.querySelector('[role="status"]')?.textContent).toContain('Loading');

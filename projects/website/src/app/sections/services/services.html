@@ -14,59 +14,15 @@
     </header>
 
     <div data-reveal>
-      <app-carousel [items]="content.items" [slide]="card" label="Services" [onDark]="true" />
-    </div> 
+      <app-carousel [items]="featured" [slide]="card" label="Services" [onDark]="true" />
+    </div>
 
-    <!-- The cards stay informational (no links inside the draggable carousel); the service pages are linked here. -->
-    <nav class="mt-8" aria-label="Service pages" data-reveal>
-      <ul class="m-0 flex list-none flex-wrap justify-center gap-3 p-0">
-        @for (item of linkedServices; track item.page) {
-          <li><a class="inline-block rounded-full border border-band-dark-border px-4 py-2 text-sm font-semibold text-band-dark-text no-underline transition-colors hover:border-primary hover:text-primary focus-visible:shadow-focus focus-visible:outline-none" [routerLink]="['/services', item.page]">{{ item.title }}</a></li>
-        }
-        <li><a class="inline-block rounded-full px-4 py-2 text-sm font-semibold text-primary no-underline focus-visible:shadow-focus focus-visible:outline-none" routerLink="/services">All services</a></li>
-      </ul>
-    </nav> 
+    <p class="mt-8 text-center" data-reveal>
+      <a class="inline-block rounded-full border border-band-dark-border px-5 py-2.5 text-sm font-semibold text-band-dark-text no-underline transition-colors hover:border-primary hover:text-primary focus-visible:shadow-focus focus-visible:outline-none" routerLink="/services">{{ content.allLabel }}</a>
+    </p>
   </div>
 </section>
 
 <ng-template #card let-item>
-  <article class="service-card">
-    <h3 class="service-card__title">{{ item.title }}</h3>
-
-    <div class="service-card__media">
-      <span class="service-card__layer service-card__layer--back" aria-hidden="true"></span>
-      <span class="service-card__layer service-card__layer--mid" aria-hidden="true"></span>
-
-      <div class="service-card__screen">
-        @if (item.image; as image) {
-          <img
-            class="service-card__image"
-            [src]="image.src"
-            [alt]="image.alt"
-            [width]="image.width"
-            [height]="image.height"
-            loading="lazy"
-            decoding="async"
-            draggable="false"
-          />
-        } @else {
-          <!-- UI-style panel built from the service's own content until artwork exists. -->
-          <div class="service-card__ui">
-            <span class="service-card__icon" aria-hidden="true"><i-lucide [name]="item.icon" [size]="26" /></span>
-            <p class="service-card__summary">{{ item.summary }}</p>
-            <ul class="service-card__points" aria-label="Includes">
-              @for (point of item.points; track point) {
-                <li class="service-card__chip">{{ point }}</li>
-              }
-            </ul>
-          </div>
-        }
-      </div>
-
-      <!-- Decorative badge in the notch (Figma's navy circle). Not a link: services have no page of their own. -->
-      <span class="service-card__badge" aria-hidden="true">
-        <i-lucide [name]="item.icon" [size]="36" [stroke]="2" />
-      </span>
-    </div>
-  </article>
+  <app-service-card [item]="item" />
 </ng-template>

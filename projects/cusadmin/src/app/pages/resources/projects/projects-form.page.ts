@@ -20,7 +20,7 @@ const PATH = 'projects';
 /** Fields portfolio-node lets a PATCH clear with null (projects validator). */
 const NULLABLE = ['client', 'content', 'coverImage', 'architectureDiagram', 'liveUrl', 'repoUrl'] as const;
 
-/** Create / edit a project (conb-sites-admin form-page pattern: config-driven dynamic form). */
+/** Create / edit a project (the admin template form-page pattern: config-driven dynamic form). */
 @Component({
   selector: 'app-projects-form',
   standalone: true,

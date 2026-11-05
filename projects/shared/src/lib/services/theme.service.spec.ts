@@ -10,7 +10,7 @@ function mockSystemDark(initial: boolean) {
     removeEventListener: (_: string, listener: (event: MediaQueryListEvent) => void) => listeners.delete(listener),
   };
   window.matchMedia = ((q: string) =>
-    q.includes('prefers-color-scheme') ? query : { matches: true, addEventListener() {}, removeEventListener() {} }) as never;
+    q.includes('prefers-color-scheme') ? query : { matches: true, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }) as never;
   return {
     change(dark: boolean) {
       query.matches = dark;

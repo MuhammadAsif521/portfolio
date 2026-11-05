@@ -77,7 +77,7 @@ function blankHtml(value: unknown): string {
 }
 
 /**
- * Site settings singleton (GET / PATCH /admin/settings), conb-sites-admin site-settings pattern: one
+ * Site settings singleton (GET / PATCH /admin/settings), the admin template site-settings pattern: one
  * FormGroup split across tabs; every tab stays rendered (hidden) so one Save sends everything.
  */
 @Component({

@@ -16,6 +16,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
         <div class="relative flex-shrink-0">
           <input
             type="checkbox"
+            role="switch"
             [formControl]="control"
             [id]="controlName"
             class="sr-only"

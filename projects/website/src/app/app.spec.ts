@@ -56,28 +56,28 @@ describe('App shell', () => {
     expect(el.querySelector('main#main')).toBeTruthy();
   });
 
-  it('shows the "AP" mark and the hover credit (resume lives in the hero); the brand link name starts with the visible mark', async () => {
+  it('shows the "A" mark and the hover credit (resume lives in the hero); the brand link name starts with the visible mark', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.site-nav__mark')?.textContent?.trim()).toBe('AP');
+    expect(el.querySelector('.site-nav__mark')?.textContent?.trim()).toBe('A');
     const brand = el.querySelector('.site-nav__brand')!;
-    // Label-in-name (WCAG 2.5.3): no aria-label overriding the visible "AP"; the name starts with it.
+    // Label-in-name (WCAG 2.5.3): no aria-label overriding the visible "A"; the name starts with it.
     expect(brand.hasAttribute('aria-label')).toBe(false);
     const name = [brand.querySelector('.site-nav__mark'), brand.querySelector('.sr-only')].map((n) => n?.textContent).join('');
-    expect(name).toBe('AP, Muhammad Asif, home');
+    expect(name).toBe('A, Muhammad Asif, home');
     expect(brand.querySelector('.site-nav__made')?.getAttribute('aria-hidden')).toBe('true');
     expect(el.querySelector('.site-nav__made')?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Made by Asif');
     expect(el.querySelector('.site-nav__resume')).toBeNull(); // the hero's Resume button replaces it
   });
 
-  it('lists every section link plus the Blog route', async () => {
+  it('lists every section link plus the Services, Blog and Tools routes', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const labels = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.site-nav__link')).map((a) =>
       a.textContent?.trim(),
     ); 
-    expect(labels).toEqual(['Home', 'What I Do', 'Experience', 'About', 'Projects', 'Blog', 'Tools', 'Contact']); 
+    expect(labels).toEqual(['Home', 'Services', 'Experience', 'About', 'Projects', 'Blog', 'Tools', 'Contact']); 
   });
 });
 
@@ -139,44 +139,49 @@ describe('Hero', () => {
 describe('Services', () => {
   beforeEach(setup);
 
-  it('renders the heading and one labelled slide per service', async () => {
+  const featured = () => SERVICES_CONTENT.featured.map((page) => SERVICES_CONTENT.items.find((item) => item.page === page)!);
+
+  it('renders the heading and a few featured cards in the original carousel design', async () => {
     const fixture = TestBed.createComponent(Services);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('#services h2')?.textContent?.replace(/\s+/g, ' ').trim()).toBe('My Services');
-    expect(el.querySelector('[aria-roledescription="carousel"]')?.getAttribute('aria-label')).toBe('Services');
-    const slides = el.querySelectorAll('[aria-roledescription="slide"]');
-    expect(slides.length).toBe(SERVICES_CONTENT.items.length);
-    expect(slides[0]?.getAttribute('aria-label')).toBe(`1 of ${SERVICES_CONTENT.items.length}`);
-    expect(slides[0]?.querySelector('h3')?.textContent).toBe(SERVICES_CONTENT.items[0].title);
-  });
-
-  it('keeps the service cards informational: no links, buttons, tab stops or arrow icons', async () => {
-    const fixture = TestBed.createComponent(Services);
-    await fixture.whenStable();
-    const cards = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.service-card'));
-    expect(cards.length).toBe(SERVICES_CONTENT.items.length);
+    expect(el.querySelector('[role="region"][aria-roledescription="carousel"]')).toBeTruthy();
+    const cards = Array.from(el.querySelectorAll('article.service-card'));
+    expect(cards.length).toBe(SERVICES_CONTENT.featured.length);
+    expect(cards.length).toBeGreaterThanOrEqual(3);
+    expect(cards.length).toBeLessThanOrEqual(4);
+    expect(cards.map((c) => c.querySelector('h3')?.textContent?.trim())).toEqual(featured().map((s) => s.title));
+    // Original card parts: glass title, stacked layers, content panel with chips, notch badge.
     for (const card of cards) {
-      expect(card.querySelector('a, button, [routerLink], [tabindex]')).toBeNull();
-      expect(card.closest('a, button')).toBeNull();
-      expect(card.querySelector('[name^="arrow"]')).toBeNull();
+      expect(card.querySelectorAll('.service-card__layer').length).toBe(2);
+      expect(card.querySelector('.service-card__screen .service-card__ui')).toBeTruthy();
       expect(card.querySelector('.service-card__badge')?.getAttribute('aria-hidden')).toBe('true');
     }
   });
 
-  it('keeps the dots hidden until the track is measured as overflowing', async () => {
+  it('makes each whole card a link to its service page through the title anchor, with its summary and points', async () => {
     const fixture = TestBed.createComponent(Services);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
-    // Dots and prev/next arrows share one row, hidden until the track is measured as overflowing.
-    const nav = el.querySelector<HTMLElement>('.carousel__nav')!;
-    expect(nav.hidden).toBe(true); // jsdom has no layout, so nothing overflows
-    expect(Array.from(nav.querySelectorAll('.carousel__arrow')).map((b) => b.getAttribute('aria-label'))).toEqual([
-      'Previous slide',
-      'Next slide',
-    ]);
-    expect(el.querySelectorAll('.carousel__dot').length).toBe(SERVICES_CONTENT.items.length);
-    expect(el.querySelector('.carousel__dot.is-active')?.getAttribute('aria-current')).toBe('true');
+    const cards = Array.from(el.querySelectorAll('article.service-card'));
+    for (const [i, card] of cards.entries()) {
+      const item = featured()[i];
+      const links = card.querySelectorAll('a, button, [tabindex]');
+      expect(links.length).toBe(1);
+      expect(links[0].classList.contains('service-card__link')).toBe(true);
+      expect(links[0].getAttribute('href')).toBe('/services/' + item.page);
+      expect(links[0].closest('h3')).toBeTruthy();
+      expect(card.querySelector('.service-card__summary')?.textContent?.trim()).toBe(item.summary);
+      expect(Array.from(card.querySelectorAll('.service-card__chip')).map((c) => c.textContent?.trim())).toEqual(item.points);
+    }
+  });
+
+  it('links to the full /services list', async () => {
+    const fixture = TestBed.createComponent(Services);
+    await fixture.whenStable();
+    const all = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>('p > a[href="/services"]');
+    expect(all?.textContent?.trim()).toBe(SERVICES_CONTENT.allLabel);
   });
 });
 
@@ -189,7 +194,7 @@ describe('Experience', () => {
       role: 'Angular Developer',
       startDate: '2025-10-01T00:00:00.000Z',
       current: true,
-      highlights: ['Shipped the City of New Britain ecosystem'],
+      highlights: ['Shipped the multi-tenant platform'],
       techStack: ['Angular', 'NgRx'],
       order: 0,
     },

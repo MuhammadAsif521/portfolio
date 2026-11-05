@@ -1,0 +1,163 @@
+@use 'styles/mixins' as m;
+
+// /services: heading row (title left, intro right from lg), the cards on a rounded light panel (like the
+// home Services band: same dark texture), then a short "not sure?" strip. Cards come from ui/service-card.
+
+:host {
+  display: block;
+  background: var(--band-a);
+}
+
+.hub {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem) var(--container-gutter) clamp(3rem, 2rem + 4vw, 5rem);
+}
+
+.hub__crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  padding: 0;
+  list-style: none;
+  color: var(--heading);
+  font-size: var(--text-sm);
+
+  li + li::before {
+    content: '/';
+    margin-right: 0.5rem;
+    color: var(--border-strong);
+  }
+
+  a {
+    color: var(--text-muted);
+  }
+}
+
+.hub__head {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: clamp(1.75rem, 1.25rem + 2vw, 3rem);
+
+  @include m.up(lg) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 34rem);
+    align-items: end;
+    gap: 3rem;
+  }
+}
+
+.hub__title {
+  margin: 0;
+  color: var(--heading);
+  font-size: clamp(2rem, 1.4rem + 3vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.hub__intro {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-lead);
+  line-height: var(--leading-relaxed);
+}
+
+// The same dark textured band as the home Services section, which the glass cards are made for.
+.hub__panel {
+  padding: clamp(1rem, 0.5rem + 2vw, 2.5rem);
+  border-radius: var(--radius-band);
+  background:
+    linear-gradient(var(--band-scrim), var(--band-scrim)),
+    var(--band-texture-base) url('/assets/images/band-texture.webp') center / cover no-repeat;
+  color: var(--band-dark-text);
+
+  @include m.down(md) {
+    margin-inline: calc(var(--container-gutter) * -0.5);
+    background-image:
+      linear-gradient(var(--band-scrim), var(--band-scrim)),
+      url('/assets/images/band-texture-sm.webp');
+  }
+}
+
+.hub__grid {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include m.up(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+// ── "Not sure?" strip ──
+
+.hub__help {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  padding: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+
+  @include m.up(md) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+
+.hub__help-title {
+  margin: 0;
+  color: var(--heading);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.hub__help-text {
+  max-width: 52ch;
+  margin: 0.5rem 0 0;
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+}
+
+.hub__help-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+
+.hub__button {
+  display: inline-block;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: var(--fs-ui);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: var(--primary-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+  }
+}
+
+.hub__link {
+  color: var(--primary-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+
+  @include m.focus-ring;
+}

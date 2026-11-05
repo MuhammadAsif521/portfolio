@@ -21,7 +21,7 @@ const PATH = 'blog';
 const NULLABLE = ['coverImage'] as const;
 
 /**
- * Create / edit a blog post (conb-sites-admin form-page pattern: config-driven dynamic form).
+ * Create / edit a blog post (the admin template form-page pattern: config-driven dynamic form).
  * readingTime and publishedAt are server-owned and have no controls, so they are never sent.
  */
 @Component({

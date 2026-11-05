@@ -3,6 +3,7 @@ import { Type } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideMockStore } from '@ngrx/store/testing';
 import { describe, expect, it } from 'vitest';
+import { TOOLS as MANIFEST_TOOLS } from '@shared/tools/tools.manifest';
 import { provideWebsiteIcons } from '../../core/icons';
 import { siteFeature } from '../../core/store/site.feature';
 import { Base64EncoderTool } from './base64-encoder/base64-encoder';
@@ -68,7 +69,7 @@ describe('tool pages', () => {
 
   it('the hub lists every tool with an icon and a one-line summary', async () => {
     const el = await render(ToolsHubPage);
-    expect(el.querySelectorAll('.hub__card').length).toBe(TOOLS.length);
+    expect(el.querySelectorAll('.hub__card').length).toBe(MANIFEST_TOOLS.length);
     for (const card of Array.from(el.querySelectorAll('.hub__card'))) {
       expect(card.querySelector('i-lucide')).not.toBeNull();
       expect(card.querySelector('.hub__text')?.textContent?.trim().length).toBeGreaterThan(10);

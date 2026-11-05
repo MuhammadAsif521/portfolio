@@ -62,7 +62,11 @@
     </div>
   </nav>
 
-  <app-mobile-menu [open]="menuOpen()" [activeKey]="activeKey()" [onHome]="onHome()" (closeRequest)="closeMenu()" (sectionClick)="onSectionClick($event.event, $event.link)" />
+  <!-- Rendered on the server (links stay in the HTML); its code loads and hydrates when the browser is idle,
+       which keeps it out of the initial bundle. -->
+  @defer (hydrate on idle) {
+    <app-mobile-menu [open]="menuOpen()" [activeKey]="activeKey()" [onHome]="onHome()" (closeRequest)="closeMenu()" (sectionClick)="onSectionClick($event.event, $event.link)" />
+  }
 </header>
 
 <ng-template #navItem let-link>

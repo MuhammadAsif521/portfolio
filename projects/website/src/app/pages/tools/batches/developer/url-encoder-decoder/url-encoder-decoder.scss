@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+.param-row {
+  display: grid;
+  gap: 0.5rem;
+  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--border);
+
+  &:last-of-type {
+    border-bottom: 0;
+  }
+
+  @media (max-width: 36rem) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.param-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.layers {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--band-dark-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+
+  li {
+    overflow-wrap: anywhere;
+  }
+
+  span {
+    margin-right: 0.5rem;
+    color: var(--band-dark-muted);
+    font-family: var(--font-body, inherit);
+    font-size: var(--text-xs);
+  }
+}

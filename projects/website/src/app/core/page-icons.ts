@@ -1,4 +1,9 @@
 import type { IconNode } from '@shared/components/icon-component/icon-component';
+import { CONVERTERS_ICONS } from '../pages/tools/batches/converters/icons';
+import { DEVELOPER_ICONS } from '../pages/tools/batches/developer/icons';
+import { DOCUMENTS_ICONS } from '../pages/tools/batches/documents/icons';
+import { IMAGES_PDF_ICONS } from '../pages/tools/batches/images-pdf/icons';
+import { TEXT_ICONS } from '../pages/tools/batches/text/icons';
 // One module per icon (see src/lucide-icons.d.ts): importing from 'lucide' itself would bundle all ~1,700.
 import ArrowLeft from 'lucide/dist/esm/icons/arrow-left.mjs';
 import AudioLines from 'lucide/dist/esm/icons/audio-lines.mjs';
@@ -108,6 +113,11 @@ export const PAGE_ICONS: Readonly<Record<string, IconNode[]>> = {
   TriangleAlert,
   Upload,
   WandSparkles,
+  ...DOCUMENTS_ICONS,
+  ...CONVERTERS_ICONS,
+  ...IMAGES_PDF_ICONS,
+  ...TEXT_ICONS,
+  ...DEVELOPER_ICONS,
 };
 
 export function registerPageIcons(): void {

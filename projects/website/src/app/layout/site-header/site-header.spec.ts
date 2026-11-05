@@ -30,6 +30,11 @@ async function setup() {
   const store = TestBed.inject(MockStore);
   await fixture.whenStable();
   const el = fixture.nativeElement as HTMLElement;
+  // The mobile menu sits in a deferred block (loaded on idle): wait until its chunk has rendered.
+  for (let i = 0; i < 100 && !el.querySelector('#mobile-menu'); i++) {
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    await fixture.whenStable();
+  }
   const toggle = el.querySelector<HTMLButtonElement>('button[aria-controls="mobile-menu"]')!;
   const panel = el.querySelector<HTMLElement>('#mobile-menu')!;
   const open = async () => {

@@ -22,6 +22,7 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "projects/website/src/main.ts",
+            "allowedCommonJsDependencies": ["papaparse"],
             "tsConfig": "projects/website/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {

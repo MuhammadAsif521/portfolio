@@ -1,0 +1,22 @@
+.svg__fig {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+
+.svg__img {
+  display: block;
+  width: 100%;
+  max-height: 20rem;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  // Checkerboard so transparency is visible.
+  background:
+    conic-gradient(#0000 25%, color-mix(in srgb, var(--border) 60%, transparent) 0 50%, #0000 0 75%, color-mix(in srgb, var(--border) 60%, transparent) 0) 0 0 / 16px 16px,
+    var(--card-bg);
+}

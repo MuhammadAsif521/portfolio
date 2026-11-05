@@ -1,0 +1,55 @@
+@use 'styles/mixins' as m;
+
+// Before / after preview: two figures side by side when there is room, stacked on phones.
+.cmp {
+  display: grid;
+  gap: 0.75rem;
+
+  @include m.up(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    .tool-meta,
+    app-tool-note {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.cmp__fig {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  margin: 0;
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+
+  strong {
+    color: var(--heading);
+    font-weight: 600;
+  }
+}
+
+.cmp__fig--stale .cmp__img {
+  opacity: 0.55;
+}
+
+.cmp__img {
+  display: block;
+  width: 100%;
+  max-height: 16rem;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  // Checkerboard so transparent areas are visible.
+  background:
+    conic-gradient(#0000 25%, color-mix(in srgb, var(--border) 60%, transparent) 0 50%, #0000 0 75%, color-mix(in srgb, var(--border) 60%, transparent) 0) 0 0 / 16px 16px,
+    var(--card-bg);
+  transition: opacity 0.15s ease;
+}
+
+.cmp__note {
+  display: block;
+  color: var(--text-muted);
+}

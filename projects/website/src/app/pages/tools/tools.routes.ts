@@ -1,4 +1,9 @@
 import { Routes } from '@angular/router';
+import { CONVERTERS_ROUTES } from './batches/converters/routes';
+import { DEVELOPER_ROUTES } from './batches/developer/routes';
+import { DOCUMENTS_ROUTES } from './batches/documents/routes';
+import { IMAGES_PDF_ROUTES } from './batches/images-pdf/routes';
+import { TEXT_ROUTES } from './batches/text/routes';
 import { toolEnabled } from './tool-enabled.guard';
 
 /**
@@ -78,5 +83,11 @@ export const TOOLS_ROUTES: Routes = [
     canMatch: [toolEnabled('json-formatter')],
     loadComponent: () => import('./json-formatter/json-formatter').then((m) => m.JsonFormatterTool),
   },
+  // One routes file per tool batch (each entry guarded by toolEnabled).
+  ...DOCUMENTS_ROUTES,
+  ...CONVERTERS_ROUTES,
+  ...IMAGES_PDF_ROUTES,
+  ...TEXT_ROUTES,
+  ...DEVELOPER_ROUTES,
   // Unknown or switched-off /tools/* slugs fall through to the app's ** route (real 404, noindex).
 ];

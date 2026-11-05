@@ -1,11 +1,26 @@
 /*
- * Single source of truth for the free developer tools.
- * The website (hub, tool layout, routes) reads it directly. The backend keeps a verbatim copy at
- * portfolio-node/src/data/tools.manifest.ts for sitemap.xml, llms.txt and llms-full.txt: copy this file
- * over it whenever it changes. Keep it import-free so the copy works as is.
+ * Single source of truth for the free tools.
+ * The website (hub, tool layout, routes) reads it directly. The backend keeps a verbatim copy of this file
+ * and of batches/*.tools.ts in portfolio-node/src/data for sitemap.xml, llms.txt and llms-full.txt: run
+ * `npm run sync:tools` whenever they change. Imports are limited to the sibling data files below.
  */
+import { CONVERTER_TOOLS } from './batches/converters.tools.js';
+import { DEVELOPER_TOOLS } from './batches/developer.tools.js';
+import { DOCUMENT_TOOLS } from './batches/documents.tools.js';
+import { IMAGE_PDF_TOOLS } from './batches/images-pdf.tools.js';
+import { TEXT_TOOLS } from './batches/text.tools.js';
 
-export type ToolCategory = 'mongodb' | 'typescript' | 'web' | 'seo' | 'utility';
+export type ToolCategory =
+  | 'mongodb'
+  | 'typescript'
+  | 'web'
+  | 'seo'
+  | 'utility'
+  | 'documents'
+  | 'converters'
+  | 'images'
+  | 'text'
+  | 'security';
 
 export interface ToolSection {
   heading: string;
@@ -46,7 +61,7 @@ export const TOOLS_HUB = {
   updatedAt: '2026-11-05',
 } as const;
 
-export const TOOLS: ToolMeta[] = [
+const CORE_TOOLS: ToolMeta[] = [
   {
     slug: 'objectid-to-date',
     name: 'ObjectId to Date',
@@ -719,6 +734,16 @@ export const TOOLS: ToolMeta[] = [
     ],
     updatedAt: '2026-11-05',
   },
+];
+
+/** Every tool, in hub order: the original developer tools first, then each batch. */
+export const TOOLS: ToolMeta[] = [
+  ...CORE_TOOLS,
+  ...DOCUMENT_TOOLS,
+  ...CONVERTER_TOOLS,
+  ...IMAGE_PDF_TOOLS,
+  ...TEXT_TOOLS,
+  ...DEVELOPER_TOOLS,
 ];
 
 export const toolBySlug = (slug: string): ToolMeta | undefined => TOOLS.find((tool) => tool.slug === slug);

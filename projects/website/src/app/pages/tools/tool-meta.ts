@@ -1,4 +1,9 @@
 import type { ToolCategory } from '@shared/tools/tools.manifest';
+import { CONVERTERS_PRESENTATION } from './batches/converters/presentation';
+import { DEVELOPER_PRESENTATION } from './batches/developer/presentation';
+import { DOCUMENTS_PRESENTATION } from './batches/documents/presentation';
+import { IMAGES_PDF_PRESENTATION } from './batches/images-pdf/presentation';
+import { TEXT_PRESENTATION } from './batches/text/presentation';
 
 /** Presentation data for the tools (icon on cards and headers, one-line summary). Copy and SEO stay in the manifest. */
 export interface ToolPresentation {
@@ -21,6 +26,11 @@ export const TOOL_PRESENTATION: Record<string, ToolPresentation> = {
   'base64-encoder': { icon: 'binary', tagline: 'Encode and decode text and files, URL-safe too.' },
   'uuid-generator': { icon: 'fingerprint-pattern', tagline: 'Generate v4 or v7 UUIDs and inspect any UUID.' },
   'json-formatter': { icon: 'braces', tagline: 'Format, minify and validate JSON with exact errors.' },
+  ...DOCUMENTS_PRESENTATION,
+  ...CONVERTERS_PRESENTATION,
+  ...IMAGES_PDF_PRESENTATION,
+  ...TEXT_PRESENTATION,
+  ...DEVELOPER_PRESENTATION,
 };
 
 const FALLBACK: ToolPresentation = { icon: 'code', tagline: '' };
@@ -33,4 +43,9 @@ export const CATEGORY_LABELS: Record<ToolCategory, string> = {
   web: 'Web',
   seo: 'SEO',
   utility: 'Utility',
+  documents: 'Documents',
+  converters: 'Converters',
+  images: 'Images & PDF',
+  text: 'Text',
+  security: 'Security',
 };

@@ -5,12 +5,9 @@ export interface ServiceItem {
   /** Short capability tags shown as chips. */
   points: string[];
   /** Lucide icon name: the card's notch badge, and its screen until card artwork exists. */
-  icon: string;
-<<<<<<< HEAD
-=======
+  icon: string; 
   /** Slug of its /services/<slug> page (shared services.data.ts), when it has one. */
-  page?: string;
->>>>>>> 34a523c (Save local portfolio work)
+  page?: string; 
   /** Optional artwork (e.g. a WebP from the CDN); the icon panel is used when absent. */
   image?: { src: string; alt: string; width: number; height: number };
 }
@@ -26,31 +23,22 @@ export const SERVICES_CONTENT = {
       title: 'Full-Stack MEAN Web Apps',
       summary: 'Complete web applications on MongoDB, Express, Angular and Node, from first sketch to production.',
       points: ['MongoDB', 'Express', 'Angular', 'Node.js'],
-      icon: 'layers',
-<<<<<<< HEAD
-=======
-      page: 'mean-stack-development',
->>>>>>> 34a523c (Save local portfolio work)
+      icon: 'layers', 
+      page: 'mean-stack-development', 
     },
     {
       title: 'Angular Front-End & SSR',
       summary: 'Fast, SEO-friendly Angular apps with server-side rendering, hydration and clean state management.',
       points: ['Angular SSR', 'NgRx', 'Tailwind', 'Core Web Vitals'],
-      icon: 'monitor-smartphone',
-<<<<<<< HEAD
-=======
-      page: 'angular-ssr-development',
->>>>>>> 34a523c (Save local portfolio work)
+      icon: 'monitor-smartphone', 
+      page: 'angular-ssr-development', 
     },
     {
       title: 'REST APIs & Backend',
       summary: 'Secure, validated Node.js/Express APIs with authentication, roles and rate limiting built in.',
       points: ['Node.js / Express', 'Zod validation', 'JWT & RBAC'],
-      icon: 'server',
-<<<<<<< HEAD
-=======
-      page: 'node-express-api-development',
->>>>>>> 34a523c (Save local portfolio work)
+      icon: 'server', 
+      page: 'node-express-api-development', 
     },
     {
       title: 'MongoDB Database Design',
@@ -62,11 +50,8 @@ export const SERVICES_CONTENT = {
       title: 'E-Commerce Platforms',
       summary: 'Storefronts that sell: checkout, catalogue and order flows, plus the admin back office to run them.',
       points: ['Stripe checkout', 'Orders & inventory', 'Admin back office'],
-      icon: 'shopping-bag',
-<<<<<<< HEAD
-=======
-      page: 'ecommerce-development-stripe',
->>>>>>> 34a523c (Save local portfolio work)
+      icon: 'shopping-bag', 
+      page: 'ecommerce-development-stripe', 
     },
     {
       title: 'Real-Time Applications',
@@ -78,11 +63,8 @@ export const SERVICES_CONTENT = {
       title: 'Hybrid Mobile Apps',
       summary: 'Ionic and Angular apps for Android and iOS from one codebase, sharing your web app’s APIs.',
       points: ['Ionic', 'Capacitor', 'Push notifications'],
-      icon: 'smartphone',
-<<<<<<< HEAD
-=======
-      page: 'ionic-angular-mobile-apps',
->>>>>>> 34a523c (Save local portfolio work)
+      icon: 'smartphone', 
+      page: 'ionic-angular-mobile-apps', 
     },
     {
       title: 'Deployment & DevOps',

@@ -69,12 +69,8 @@ describe('SiteHeader mobile menu', () => {
     expect(panel.hasAttribute('inert')).toBe(false);
     const rows = Array.from(panel.querySelectorAll('.mobile-menu__link')).map((a) =>
       a.textContent?.replace(/\s+/g, ' ').trim(),
-    );
-<<<<<<< HEAD
-    expect(rows).toEqual(['01Home', '02What I Do', '03Experience', '04About', '05Projects', '06Blog', '07Contact']);
-=======
-    expect(rows).toEqual(['01Home', '02What I Do', '03Experience', '04About', '05Projects', '06Blog', '07Tools', '08Contact']);
->>>>>>> 34a523c (Save local portfolio work)
+    ); 
+    expect(rows).toEqual(['01Home', '02What I Do', '03Experience', '04About', '05Projects', '06Blog', '07Tools', '08Contact']); 
     expect(panel.querySelector('.mobile-menu__link.is-active')?.getAttribute('aria-current')).toBe('location');
     expect(panel.querySelector<HTMLAnchorElement>('.mobile-menu__cta')?.getAttribute('href')).toBe('/#contact');
     expect(panel.querySelector<HTMLAnchorElement>('.mobile-menu__cta--ghost')?.href).toBe('https://cdn.test/resume/a.pdf');

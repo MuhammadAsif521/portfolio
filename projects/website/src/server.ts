@@ -138,11 +138,7 @@ app.use((req, res, next) => {
   angularApp
     .handle(req)
     .then((response) => {
-      if (!response) return next();
-<<<<<<< HEAD
-=======
-      // /tools and /tools/*: static, manifest-driven pages, so shared caches may keep them for an hour and
-      // serve them stale for a day while re-rendering. Only successful HTML (404/503 pages stay uncached).
+      if (!response) return next(); 
       if (
         (req.method === 'GET' || req.method === 'HEAD') &&
         /^\/tools(\/|$)/.test(req.path) &&
@@ -151,8 +147,7 @@ app.use((req, res, next) => {
         response.headers.get('content-type')?.startsWith('text/html')
       ) {
         response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
-      }
->>>>>>> 34a523c (Save local portfolio work)
+      } 
       if (
         cdnCacheControl &&
         (req.method === 'GET' || req.method === 'HEAD') &&

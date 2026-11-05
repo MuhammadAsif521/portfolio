@@ -5,11 +5,8 @@ export const NOT_FOUND_CONTENT = {
   links: [
     { label: 'Home', path: '/', fragment: undefined },
     { label: 'Projects', path: '/', fragment: 'projects' },
-    { label: 'Blog', path: '/blog', fragment: undefined },
-<<<<<<< HEAD
-=======
-    { label: 'Free tools', path: '/tools', fragment: undefined },
->>>>>>> 34a523c (Save local portfolio work)
+    { label: 'Blog', path: '/blog', fragment: undefined }, 
+    { label: 'Free tools', path: '/tools', fragment: undefined }, 
     { label: 'Contact', path: '/', fragment: 'contact' },
   ],
 } as const;

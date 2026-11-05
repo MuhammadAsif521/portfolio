@@ -1,12 +1,8 @@
 import { createActionGroup, createFeature, createReducer, createSelector, emptyProps, on, props } from '@ngrx/store';
 import { environment } from '@shared/environment/environment';
 import type { SiteSettings } from '@shared/interfaces/auth.interface';
-
-<<<<<<< HEAD
-=======
-const NONE: readonly string[] = [];
-
->>>>>>> 34a523c (Save local portfolio work)
+ 
+const NONE: readonly string[] = []; 
 export const SiteActions = createActionGroup({
   source: 'Site',
   events: {
@@ -40,14 +36,11 @@ export const siteFeature = createFeature({
     selectLogo: createSelector(selectSettings, (settings) => settings?.siteLogo ?? null),
     selectResumeUrl: createSelector(selectSettings, (settings) => settings?.resume?.url ?? null),
     selectDescription: createSelector(selectSettings, (settings) => settings?.description ?? null),
-    selectContactEmail: createSelector(selectSettings, (settings) => settings?.contactEmail ?? null),
-<<<<<<< HEAD
-=======
+    selectContactEmail: createSelector(selectSettings, (settings) => settings?.contactEmail ?? null), 
     /**
      * Tool slugs switched off in cusadmin → Tools. Only the slugs live here (the manifest with all its copy
      * stays in the lazy tool chunks); see pages/tools/live-tools.ts. Empty when settings failed: fail open.
      */
-    selectDisabledTools: createSelector(selectSettings, (settings) => settings?.disabledTools ?? NONE),
->>>>>>> 34a523c (Save local portfolio work)
+    selectDisabledTools: createSelector(selectSettings, (settings) => settings?.disabledTools ?? NONE), 
   }),
 });

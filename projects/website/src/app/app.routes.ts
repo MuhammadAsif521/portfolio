@@ -19,9 +19,7 @@ export const routes: Routes = [
   {
     path: 'blog/:slug',
     loadComponent: () => import('./pages/blog-post/blog-post').then((m) => m.BlogPostPage),
-  },
-<<<<<<< HEAD
-=======
+  }, 
   // Free developer tools (hub + one page per tool), see pages/tools/tools.routes.ts.
   {
     path: 'tools',
@@ -40,8 +38,7 @@ export const routes: Routes = [
   {
     path: 'services/:slug',
     loadComponent: () => import('./pages/services/service-page').then((m) => m.ServicePageComponent),
-  },
->>>>>>> 34a523c (Save local portfolio work)
+  }, 
   // Legal pages: one lazy component, admin HTML from Site Settings or a built-in default. Server-rendered
   // like everything else (see app.routes.server.ts), so admin edits show without a redeploy.
   {
@@ -58,15 +55,12 @@ export const routes: Routes = [
     path: 'cookie-policy',
     loadComponent: () => import('./pages/legal/legal-page').then((m) => m.LegalPage),
     data: { kind: 'cookies' },
-  },
-<<<<<<< HEAD
-=======
+  }, 
   // /404 is what the address bar shows on every not-found page (core/not-found-url.ts); same page, same 404 status.
   {
     path: '404',
     loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFoundPage),
-  },
->>>>>>> 34a523c (Save local portfolio work)
+  }, 
   // Everything else: a real 404 page (status 404, noindex), not a redirect to the home page.
   {
     path: '**',

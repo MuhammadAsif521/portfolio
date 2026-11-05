@@ -18,11 +18,8 @@ export const NAV_LEFT: readonly NavLink[] = [
 
 export const NAV_RIGHT: readonly NavLink[] = [
   { label: 'Projects', section: 'projects' },
-  { label: 'Blog', route: '/blog' },
-<<<<<<< HEAD
-=======
-  { label: 'Tools', route: '/tools' },
->>>>>>> 34a523c (Save local portfolio work)
+  { label: 'Blog', route: '/blog' }, 
+  { label: 'Tools', route: '/tools' }, 
   { label: 'Contact', section: 'contact' },
 ];
 

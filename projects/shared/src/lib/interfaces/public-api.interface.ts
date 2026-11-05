@@ -65,12 +65,7 @@ export interface BlogPostCard extends Timestamped {
   readingTime: number;
   seo: SeoMeta;
 }
-
-<<<<<<< HEAD
-export interface BlogPost extends BlogPostCard {
-  /** Sanitized HTML. */
-  content: string;
-=======
+ 
 export interface PostLink {
   title: string;
   slug: string;
@@ -82,8 +77,7 @@ export interface BlogPost extends BlogPostCard {
   /** GET /public/blog/:slug only: up to 3 related posts (shared tags first), and the posts around it. */
   related?: BlogPostCard[];
   previous?: PostLink | null;
-  next?: PostLink | null;
->>>>>>> 34a523c (Save local portfolio work)
+  next?: PostLink | null; 
 }
 
 export type BlogSort = 'publishedAt' | '-publishedAt' | 'title' | '-title';

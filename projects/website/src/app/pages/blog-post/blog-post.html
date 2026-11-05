@@ -54,18 +54,13 @@
         />
       }
 
-      @if (post(); as full) {
-<<<<<<< HEAD
-        <!-- Sanitized on the server (sanitize-html allowlist) and again by Angular's [innerHTML]. -->
-        <div class="post__content prose" [innerHTML]="full.content" [appCodeBlocks]="full.content"></div>
-=======
+      @if (post(); as full) { 
         @if (toc().length > 1) {
           <app-post-toc [entries]="toc()" />
         }
         <!-- Sanitized on the server (sanitize-html allowlist) and again by Angular's [innerHTML]. -->
         <div class="post__content prose" [innerHTML]="full.content" [appCodeBlocks]="full.content" [appHeadingIds]="full.content"></div>
-        <app-post-aside [post]="full" [url]="canonicalUrl()" />
->>>>>>> 34a523c (Save local portfolio work)
+        <app-post-aside [post]="full" [url]="canonicalUrl()" /> 
       } @else if (failed()) {
         <app-load-error class="post__content" [heading]="content.errorTitle" [text]="view().error" [retrying]="retrying()" (retry)="load()" />
       } @else {

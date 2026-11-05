@@ -11,11 +11,7 @@ export const CONTACT_CONTENT = {
     button: 'Send',
     sent: "Thanks! I'll email you within a day.",
     /** Figures must stay real and defensible (brief, Part 10: confirm before launch). */
-    badges: [
-<<<<<<< HEAD
-      { icon: 'star', label: 'Top Rated Freelancer' },
-=======
->>>>>>> 34a523c (Save local portfolio work)
+    badges: [ 
       { icon: 'award', label: 'Full-Stack Angular/Node' },
       { icon: 'shield-check', label: '2+ Years Experience' },
     ],
@@ -42,11 +38,7 @@ export const CONTACT_CONTENT = {
     quickText: 'Drop your email and I will reach out.',
     quickPlaceholder: 'Email Address',
     quickLabel: 'Your email address for a reply',
-    email: 'm.asif340315@gmail.com',
-<<<<<<< HEAD
-    location: 'Pakpattan / Lahore, Pakistan',
-=======
-    location: 'Pakpattan, Pakistan',
->>>>>>> 34a523c (Save local portfolio work)
+    email: 'm.asif340315@gmail.com', 
+    location: 'Pakpattan, Pakistan', 
   },
 } as const;

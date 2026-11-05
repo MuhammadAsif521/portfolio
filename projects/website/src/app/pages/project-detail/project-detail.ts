@@ -9,11 +9,8 @@ import { CodeBlocksDirective } from '../../core/code-blocks.directive';
 import { dayMonthYear } from '../../core/dates';
 import { PROJECT_COVER_SIZES } from '../../core/image-sizes';
 import { ContentActions, contentFeature } from '../../core/store/content.feature';
-import { LoadError } from '../../ui/load-error/load-error';
-<<<<<<< HEAD
-=======
-import { injectNotFoundUrl } from '../../core/not-found-url';
->>>>>>> 34a523c (Save local portfolio work)
+import { LoadError } from '../../ui/load-error/load-error'; 
+import { injectNotFoundUrl } from '../../core/not-found-url'; 
 
 /**
  * /projects/:slug case study (brief, Parts 4/5). Rendered on the server with the project's own SEO,
@@ -32,12 +29,8 @@ export class ProjectDetailPage {
 
   private readonly store = inject(Store);
   private readonly seo = inject(SeoService);
-  private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
-<<<<<<< HEAD
-=======
-  /** Shows /404 in the address bar (the response itself stays a 404 at this URL). */
-  private readonly showNotFoundUrl = injectNotFoundUrl();
->>>>>>> 34a523c (Save local portfolio work)
+  private readonly responseInit = inject(RESPONSE_INIT, { optional: true }); 
+  private readonly showNotFoundUrl = injectNotFoundUrl(); 
 
   protected readonly content = PROJECTS_CONTENT.detail;
   protected readonly coverSizes = PROJECT_COVER_SIZES;
@@ -67,11 +60,8 @@ export class ProjectDetailPage {
       if (project) {
         this.applySeo(project, path);
       } else if (this.notFound() || this.failed()) {
-        if (this.responseInit) this.responseInit.status = this.notFound() ? 404 : 503;
-<<<<<<< HEAD
-=======
-        if (this.notFound()) this.showNotFoundUrl();
->>>>>>> 34a523c (Save local portfolio work)
+        if (this.responseInit) this.responseInit.status = this.notFound() ? 404 : 503; 
+        if (this.notFound()) this.showNotFoundUrl(); 
         this.seo.updateFromRouteData(
           {
             title: this.notFound() ? this.content.notFoundTitle : this.content.errorTitle,

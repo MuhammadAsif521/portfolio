@@ -1,0 +1,24 @@
+<div class="hub">
+  <nav class="hub__crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li aria-current="page">Tools</li>
+    </ol>
+  </nav>
+
+  <header>
+    <h1 class="hub__title">{{ hub.h1 }}</h1>
+    <p class="hub__intro">{{ hub.intro }}</p>
+  </header>
+
+  <ul class="hub__grid">
+    @for (tool of tools(); track tool.slug) {
+      <li>
+        <a class="hub__card" [routerLink]="['/tools', tool.slug]">
+          <h2 class="hub__name">{{ tool.name }}</h2>
+          <p class="hub__text">{{ tool.description }}</p>
+        </a>
+      </li>
+    }
+  </ul>
+</div>

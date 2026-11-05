@@ -1,0 +1,203 @@
+// Shared controls for the tool pages (imported by every tool component via styleUrl).
+:host {
+  display: block;
+}
+
+.tool-field {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.tool-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--heading);
+}
+
+.tool-input,
+.tool-textarea,
+.tool-select {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--heading);
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--focus-ring);
+  }
+}
+
+.tool-textarea {
+  min-height: 9rem;
+  resize: vertical;
+}
+
+.tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.tool-btn {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--heading);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--primary-soft);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+}
+
+.tool-output {
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.75rem;
+  background: var(--primary-soft);
+  color: var(--heading);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.tool-error {
+  margin: 0.5rem 0 0;
+  color: #b42318;
+  font-size: var(--text-sm);
+}
+
+.tool-grid {
+  display: grid;
+  gap: 1rem;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.tool-status {
+  margin: 0.5rem 0 0;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.tool-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-sm);
+  color: var(--heading);
+}
+
+.tool-group {
+  display: block;
+  margin: 1.5rem 0 0.75rem;
+  font-size: var(--text-lg);
+}
+
+.tool-codes {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  a {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 0.75rem;
+    color: var(--heading);
+
+    &:hover {
+      background: var(--primary-soft);
+    }
+  }
+
+  span {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+  }
+}
+
+.tool-grow {
+  flex: 1 1 18rem;
+}
+
+.tool-section {
+  margin-top: 1.5rem;
+}
+
+.tool-mark {
+  border-radius: 0.2rem;
+  background: color-mix(in srgb, var(--primary) 35%, transparent);
+  color: inherit;
+}
+
+.tool-table {
+  width: 100%;
+  margin-top: 1rem;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+
+  th,
+  td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border-strong);
+    text-align: left;
+    vertical-align: top;
+  }
+}
+
+.tool-chip {
+  display: inline-block;
+  margin: 0 0.25rem 0.25rem 0;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  font-family: var(--font-mono);
+}
+
+.tool-audio {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.tool-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.tool-warn {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--primary);
+  background: var(--primary-soft);
+  border-radius: 0.5rem;
+  color: var(--heading);
+  font-size: var(--text-sm);
+}

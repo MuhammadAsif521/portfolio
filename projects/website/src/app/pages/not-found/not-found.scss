@@ -39,6 +39,17 @@
   list-style: none;
 }
 
+<<<<<<< HEAD
+=======
+.missing__code {
+  margin: 0;
+  font-size: clamp(4rem, 3rem + 6vw, 8rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--primary-ink);
+}
+
+>>>>>>> 34a523c (Save local portfolio work)
 .missing__link {
   display: inline-flex;
   padding: 0.7rem 1.4rem;

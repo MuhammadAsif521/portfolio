@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+// Preloaded so the home page's lazy `import('gsap/ScrollTrigger')` (core/motion.ts) resolves from the module
+// cache instead of loading after the test environment is torn down (an unhandled EnvironmentTeardownError
+// that made the run exit 1 even when every test passed).
+import 'gsap/ScrollTrigger';
+>>>>>>> 34a523c (Save local portfolio work)
 import { DOCUMENT } from '@angular/common';
 import { RESPONSE_INIT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -188,7 +195,11 @@ describe('home GEO content', () => {
       .join(' ');
     expect(words(text)).toBeGreaterThanOrEqual(134);
     expect(words(text)).toBeLessThanOrEqual(167);
+<<<<<<< HEAD
     expect(text.slice(0, 120)).toContain('MEAN stack developer in Lahore, Pakistan');
+=======
+    expect(text.slice(0, 120)).toContain('MEAN stack developer based in Pakpattan, Pakistan');
+>>>>>>> 34a523c (Save local portfolio work)
     // Runs join without stray spaces before punctuation.
     expect(text).not.toMatch(/\s[.,:]/);
     // Internal links to the case studies it mentions.

@@ -125,6 +125,11 @@ export const routes: Routes = [
         data: { title: 'Site Settings' },
       },
       {
+        path: 'tools',
+        loadComponent: () => import('./pages/tools/tools-admin.page').then((m) => m.ToolsAdminPage),
+        data: { title: 'Tools' },
+      },
+      {
         path: 'themes',
         loadComponent: () => import('./pages/resources/themes/themes-list.page').then((m) => m.ThemesListPage),
         data: { title: 'Themes' },

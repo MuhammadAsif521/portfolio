@@ -1,0 +1,154 @@
+:host {
+  display: block;
+}
+
+.aside {
+  display: grid;
+  gap: clamp(2rem, 1.5rem + 2vw, 3rem);
+  max-width: var(--post-width);
+  margin: 2rem auto 0;
+}
+
+.aside__label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.aside__share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.aside__chip {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--heading);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    background: var(--primary-soft);
+  }
+}
+
+.aside__pager {
+  display: grid;
+  gap: 0.75rem;
+
+  @media (min-width: 40rem) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.aside__step {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  color: var(--heading);
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--primary);
+  }
+}
+
+.aside__step--next {
+  text-align: right;
+
+  @media (min-width: 40rem) {
+    grid-column: 2;
+  }
+}
+
+.aside__step-title {
+  font-weight: 600;
+}
+
+.aside__author {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: var(--primary-soft);
+}
+
+.aside__photo {
+  flex: none;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.aside__name,
+.aside__heading {
+  margin: 0 0 0.375rem;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--heading);
+}
+
+.aside__bio {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+}
+
+.aside__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0.5rem 0 0;
+  font-weight: 600;
+
+  a {
+    color: var(--primary-ink);
+  }
+}
+
+.aside__grid,
+.aside__tools {
+  display: grid;
+  gap: 1rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.aside__tools a {
+  display: grid;
+  gap: 0.25rem;
+  height: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  color: var(--heading);
+  text-decoration: none;
+
+  span {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+  }
+
+  &:hover {
+    border-color: var(--primary);
+  }
+}

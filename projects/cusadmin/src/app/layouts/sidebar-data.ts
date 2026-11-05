@@ -20,5 +20,6 @@ export const navItems: NavItem[] = [
   { navCap: 'Administration' },
   { displayName: 'Site Settings', icon: 'settings', route: '/settings' },
   { displayName: 'Themes', icon: 'palette', route: '/themes' },
+  { displayName: 'Tools', icon: 'wrench', route: '/tools' },
   { displayName: 'Resume', icon: 'file-text', route: '/resume' },
 ];

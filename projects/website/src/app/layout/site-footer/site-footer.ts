@@ -3,6 +3,10 @@ import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { IconComponent } from '@shared/components/icon-component/icon-component';
 import { ConsentService } from '@shared/services/consent.service';
+<<<<<<< HEAD
+=======
+import { SERVICES_PATH, SERVICE_PAGES } from '@shared/services-pages/services.data';
+>>>>>>> 34a523c (Save local portfolio work)
 import { BRAND_CONTENT } from '../../content/brand.content';
 import { CONTACT_CONTENT } from '../../content/contact.content';
 import { siteFeature } from '../../core/store/site.feature';
@@ -48,6 +52,17 @@ export class SiteFooter {
     (this.settings()?.socialLinks ?? []).filter((link) => link.label?.trim() && SAFE_LINK.test(link.value ?? '')),
   );
   protected readonly mark = BRAND_CONTENT.mark;
+<<<<<<< HEAD
+=======
+  /** Site-wide internal links to the service pages and tools (crawl paths + commercial pages). */
+  protected readonly exploreLinks = [
+    { label: 'Services', path: SERVICES_PATH },
+    ...SERVICE_PAGES.map((s) => ({ label: s.name, path: `${SERVICES_PATH}/${s.slug}` })),
+    { label: 'Free tools', path: '/tools' },
+    { label: 'FAQ', path: '/faq' },
+  ];
+
+>>>>>>> 34a523c (Save local portfolio work)
   protected readonly legalLinks = LEGAL_ORDER.map((kind) => ({
     path: LEGAL_LINKS[kind].path,
     label: LEGAL_LINKS[kind].title,

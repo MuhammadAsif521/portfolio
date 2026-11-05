@@ -110,6 +110,11 @@ export interface SiteSettings extends Timestamped {
   googleSiteVerification?: string;
 
   domain?: string;
+<<<<<<< HEAD
+=======
+  /** Free-tool slugs switched off in cusadmin (Tools page). Absent/empty: every tool is live. */
+  disabledTools?: string[];
+>>>>>>> 34a523c (Save local portfolio work)
   activeThemeId: string;
   activeTheme: ThemePalette | null;
   /** Public endpoint only (absent on /admin/settings). */

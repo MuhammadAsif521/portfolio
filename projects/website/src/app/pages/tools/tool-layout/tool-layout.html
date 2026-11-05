@@ -1,0 +1,63 @@
+<article class="tool">
+  <nav class="tool__crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li><a routerLink="/tools">Tools</a></li>
+      <li aria-current="page">{{ tool().name }}</li>
+    </ol>
+  </nav>
+
+  <header>
+    <h1 class="tool__title">{{ tool().h1 }}</h1>
+    <p class="tool__lead">{{ tool().description }}</p>
+    <p class="tool__privacy">Runs in your browser. Nothing is uploaded.</p>
+  </header>
+
+  <section class="tool__work" aria-label="Tool">
+    <ng-content />
+  </section>
+
+  <section class="tool__section">
+    <h2 class="tool__h2">Example</h2>
+    <p class="tool__p">Input:</p>
+    <pre class="tool__example">{{ tool().example.input }}</pre>
+    <p class="tool__p">Result:</p>
+    <pre class="tool__example">{{ tool().example.output }}</pre>
+  </section>
+
+  @for (section of tool().sections; track section.heading) {
+    <section class="tool__section">
+      <h2 class="tool__h2">{{ section.heading }}</h2>
+      @for (text of section.paragraphs; track $index) {
+        <p class="tool__p">{{ text }}</p>
+      }
+    </section>
+  }
+
+  <section class="tool__section tool__faq">
+    <h2 class="tool__h2">Frequently asked questions</h2>
+    @for (item of tool().faq; track item.q) {
+      <details>
+        <summary>{{ item.q }}</summary>
+        <p>{{ item.a }}</p>
+      </details>
+    }
+  </section>
+
+  @if (related().length) {
+    <section class="tool__section">
+      <h2 class="tool__h2">Related tools</h2>
+      <ul class="tool__related">
+        @for (r of related(); track r.slug) {
+          <li><a [routerLink]="['/tools', r.slug]">{{ r.name }}</a></li>
+        }
+      </ul>
+    </section>
+  }
+
+  <aside class="tool__cta">
+    <h2 class="tool__h2">Need a MEAN stack developer?</h2>
+    <p>I build Angular (SSR), Node.js, MongoDB and Ionic apps for clients worldwide.</p>
+    <a routerLink="/" fragment="contact" (click)="ctaClicked()">Hire me</a>
+  </aside>
+</article>

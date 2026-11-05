@@ -77,7 +77,11 @@ describe('App shell', () => {
     const labels = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.site-nav__link')).map((a) =>
       a.textContent?.trim(),
     );
+<<<<<<< HEAD
     expect(labels).toEqual(['Home', 'What I Do', 'Experience', 'About', 'Projects', 'Blog', 'Contact']);
+=======
+    expect(labels).toEqual(['Home', 'What I Do', 'Experience', 'About', 'Projects', 'Blog', 'Tools', 'Contact']);
+>>>>>>> 34a523c (Save local portfolio work)
   });
 });
 

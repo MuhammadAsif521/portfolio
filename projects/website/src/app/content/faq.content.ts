@@ -22,7 +22,11 @@ export const FAQ_CONTENT = {
         {
           text: 'I build full-stack MEAN applications: server-rendered Angular front ends, Node.js and Express REST APIs, MongoDB data models, e-commerce platforms with Stripe checkout, real-time features over WebSockets, Ionic hybrid mobile apps, and the Docker and nginx setup to deploy them. ',
         },
+<<<<<<< HEAD
         { text: 'See all services', link: '/', fragment: 'services' },
+=======
+        { text: 'See all services', link: '/services' },
+>>>>>>> 34a523c (Save local portfolio work)
         { text: '.' },
       ],
     },
@@ -50,7 +54,11 @@ export const FAQ_CONTENT = {
         {
           text: 'I am based in Pakistan and work on Pakistan Standard Time (PKT, UTC+5). I already work with clients abroad: the ',
         },
+<<<<<<< HEAD
         // { text: 'City of New Britain ecosystem', link: '/projects/city-of-new-britain-digital-ecosystem' },
+=======
+        { text: 'City of New Britain ecosystem', link: '/projects/city-of-new-britain-digital-ecosystem' },
+>>>>>>> 34a523c (Save local portfolio work)
         { text: ' serves a city in Connecticut, USA. I communicate in English by email and chat.' },
       ],
     },

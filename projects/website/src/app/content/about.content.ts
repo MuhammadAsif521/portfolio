@@ -20,12 +20,20 @@ export const ABOUT_CONTENT = {
   bio: [
     [
       {
+<<<<<<< HEAD
         text: "I'm Muhammad Asif, a MEAN stack developer in Lahore, Pakistan. I build production web applications end to end: server-rendered Angular front ends, Node.js and Express APIs on MongoDB, and the admin panels that keep them running.",
+=======
+        text: "I'm Muhammad Asif, a MEAN stack developer based in Pakpattan, Pakistan, working with ICTGE in Lahore. I build production web applications end to end: server-rendered Angular front ends, Node.js and Express APIs on MongoDB, and the admin panels that keep them running.",
+>>>>>>> 34a523c (Save local portfolio work)
       },
     ],
     [
       { text: 'Since October 2025 I have worked as a MEAN Stack Developer at ICTGE, where I delivered the ' },
+<<<<<<< HEAD
       // { text: 'City of New Britain digital ecosystem', link: '/projects/city-of-new-britain-digital-ecosystem' },
+=======
+      { text: 'City of New Britain digital ecosystem', link: '/projects/city-of-new-britain-digital-ecosystem' },
+>>>>>>> 34a523c (Save local portfolio work)
       {
         text: ': one multi-tenant Node.js backend and one Angular admin panel powering four public city websites. I have also rebuilt e-commerce platforms such as ',
       },

@@ -2,6 +2,11 @@ import { createActionGroup, createFeature, createReducer, createSelector, emptyP
 import { environment } from '@shared/environment/environment';
 import type { SiteSettings } from '@shared/interfaces/auth.interface';
 
+<<<<<<< HEAD
+=======
+const NONE: readonly string[] = [];
+
+>>>>>>> 34a523c (Save local portfolio work)
 export const SiteActions = createActionGroup({
   source: 'Site',
   events: {
@@ -36,5 +41,13 @@ export const siteFeature = createFeature({
     selectResumeUrl: createSelector(selectSettings, (settings) => settings?.resume?.url ?? null),
     selectDescription: createSelector(selectSettings, (settings) => settings?.description ?? null),
     selectContactEmail: createSelector(selectSettings, (settings) => settings?.contactEmail ?? null),
+<<<<<<< HEAD
+=======
+    /**
+     * Tool slugs switched off in cusadmin → Tools. Only the slugs live here (the manifest with all its copy
+     * stays in the lazy tool chunks); see pages/tools/live-tools.ts. Empty when settings failed: fail open.
+     */
+    selectDisabledTools: createSelector(selectSettings, (settings) => settings?.disabledTools ?? NONE),
+>>>>>>> 34a523c (Save local portfolio work)
   }),
 });

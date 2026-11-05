@@ -11,6 +11,14 @@ import { POST_COVER_SIZES } from '../../core/image-sizes';
 import { ContentActions, contentFeature } from '../../core/store/content.feature';
 import { siteFeature } from '../../core/store/site.feature';
 import { LoadError } from '../../ui/load-error/load-error';
+<<<<<<< HEAD
+=======
+import { HeadingIdsDirective } from './heading-ids.directive';
+import { PostAside } from './post-aside/post-aside';
+import { extractToc } from './post-extras';
+import { PostToc } from './post-toc/post-toc';
+import { injectNotFoundUrl } from '../../core/not-found-url';
+>>>>>>> 34a523c (Save local portfolio work)
 
 /**
  * /blog/:slug (brief, Parts 3/4): server-rendered post with its own SEO, og:type article, BlogPosting +
@@ -18,7 +26,11 @@ import { LoadError } from '../../ui/load-error/load-error';
  */
 @Component({
   selector: 'app-blog-post',
+<<<<<<< HEAD
   imports: [RouterLink, IconComponent, CodeBlocksDirective, LoadError],
+=======
+  imports: [RouterLink, IconComponent, CodeBlocksDirective, LoadError, HeadingIdsDirective, PostToc, PostAside],
+>>>>>>> 34a523c (Save local portfolio work)
   templateUrl: './blog-post.html',
   styleUrl: './blog-post.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +41,11 @@ export class BlogPostPage {
   private readonly store = inject(Store);
   private readonly seo = inject(SeoService);
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
+<<<<<<< HEAD
+=======
+  /** Shows /404 in the address bar (the response itself stays a 404 at this URL). */
+  private readonly showNotFoundUrl = injectNotFoundUrl();
+>>>>>>> 34a523c (Save local portfolio work)
 
   protected readonly content = BLOG_CONTENT.post;
   protected readonly coverSizes = POST_COVER_SIZES;
@@ -53,6 +70,13 @@ export class BlogPostPage {
     return updated && updated.iso !== this.published()?.iso ? updated : null;
   });
 
+<<<<<<< HEAD
+=======
+  /** "On this page" entries from the post's h2 headings (shown from 2 sections up). */
+  protected readonly toc = computed(() => extractToc(this.post()?.content));
+  protected readonly canonicalUrl = computed(() => this.seo.buildUrl(`/blog/${this.slug()}`));
+
+>>>>>>> 34a523c (Save local portfolio work)
   constructor() {
     // Load-if-needed for the current slug. During SSR the render waits for it (pendingUntilEvent in the effect).
     effect(() => this.load());
@@ -65,6 +89,10 @@ export class BlogPostPage {
         this.applySeo(post, path);
       } else if (this.notFound() || this.failed()) {
         if (this.responseInit) this.responseInit.status = this.notFound() ? 404 : 503;
+<<<<<<< HEAD
+=======
+        if (this.notFound()) this.showNotFoundUrl();
+>>>>>>> 34a523c (Save local portfolio work)
         this.seo.updateFromRouteData(
           {
             title: this.notFound() ? this.content.notFoundTitle : this.content.errorTitle,

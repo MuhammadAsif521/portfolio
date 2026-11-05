@@ -1,0 +1,73 @@
+<div class="aside">
+  <div class="aside__share" role="group" aria-label="Share this post">
+    <span class="aside__label">Share</span>
+    <button type="button" class="aside__chip" (click)="copyLink()">{{ copied() ? 'Link copied' : 'Copy link' }}</button>
+    <a class="aside__chip" [href]="share().linkedin" target="_blank" rel="noopener noreferrer" (click)="shared('linkedin')">LinkedIn</a>
+    <a class="aside__chip" [href]="share().x" target="_blank" rel="noopener noreferrer" (click)="shared('x')">X</a>
+    <span class="sr-only" aria-live="polite">{{ copied() ? 'Link copied to the clipboard' : '' }}</span>
+  </div>
+
+  @if (post().previous || post().next) {
+    <nav class="aside__pager" aria-label="More posts">
+      @if (post().previous; as prev) {
+        <a class="aside__step" [routerLink]="['/blog', prev.slug]" rel="prev">
+          <span class="aside__label">Previous post</span>
+          <span class="aside__step-title">{{ prev.title }}</span>
+        </a>
+      }
+      @if (post().next; as nxt) {
+        <a class="aside__step aside__step--next" [routerLink]="['/blog', nxt.slug]" rel="next">
+          <span class="aside__label">Next post</span>
+          <span class="aside__step-title">{{ nxt.title }}</span>
+        </a>
+      }
+    </nav>
+  }
+
+  <section class="aside__author" aria-labelledby="author-title">
+    <img class="aside__photo" [src]="portrait.src" alt="" width="96" height="96" loading="lazy" decoding="async" />
+    <div>
+      <h2 id="author-title" class="aside__name">Written by {{ author().name }}</h2>
+      <p class="aside__bio">
+        {{ author().byline }}. I build Angular SSR front ends and Node.js and MongoDB backends for clients, and
+        write up what I learn shipping them.
+      </p>
+      <p class="aside__links">
+        @if (author().github) {
+          <a [href]="author().github" rel="me noopener" target="_blank">GitHub</a>
+        }
+        @if (author().linkedin) {
+          <a [href]="author().linkedin" rel="me noopener" target="_blank">LinkedIn</a>
+        }
+        <a routerLink="/" fragment="about">About me</a>
+      </p>
+    </div>
+  </section>
+
+  @if (related().length) {
+    <section class="aside__block" aria-labelledby="related-title">
+      <h2 id="related-title" class="aside__heading">Related posts</h2>
+      <ul class="aside__grid">
+        @for (card of related(); track card.slug) {
+          <li><app-post-card [post]="card" [headingLevel]="3" /></li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (tools().length) {
+    <section class="aside__block" aria-labelledby="tools-title">
+      <h2 id="tools-title" class="aside__heading">Free tools for this topic</h2>
+      <ul class="aside__tools">
+        @for (tool of tools(); track tool.slug) {
+          <li>
+            <a [routerLink]="['/tools', tool.slug]">
+              <strong>{{ tool.name }}</strong>
+              <span>{{ tool.description }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</div>

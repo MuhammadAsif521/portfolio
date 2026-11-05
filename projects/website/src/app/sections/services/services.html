@@ -16,6 +16,19 @@
     <div data-reveal>
       <app-carousel [items]="content.items" [slide]="card" label="Services" [onDark]="true" />
     </div>
+<<<<<<< HEAD
+=======
+
+    <!-- The cards stay informational (no links inside the draggable carousel); the service pages are linked here. -->
+    <nav class="mt-8" aria-label="Service pages" data-reveal>
+      <ul class="m-0 flex list-none flex-wrap justify-center gap-3 p-0">
+        @for (item of linkedServices; track item.page) {
+          <li><a class="inline-block rounded-full border border-band-dark-border px-4 py-2 text-sm font-semibold text-band-dark-text no-underline transition-colors hover:border-primary hover:text-primary focus-visible:shadow-focus focus-visible:outline-none" [routerLink]="['/services', item.page]">{{ item.title }}</a></li>
+        }
+        <li><a class="inline-block rounded-full px-4 py-2 text-sm font-semibold text-primary no-underline focus-visible:shadow-focus focus-visible:outline-none" routerLink="/services">All services</a></li>
+      </ul>
+    </nav>
+>>>>>>> 34a523c (Save local portfolio work)
   </div>
 </section>
 
